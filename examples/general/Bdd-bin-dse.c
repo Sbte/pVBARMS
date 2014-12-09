@@ -12,6 +12,10 @@
  *                       BJ, RAS, SCHUR
  *--------------------------------------------------------------------*/
 
+
+
+//test version
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -408,6 +412,7 @@ int main(int argc, char *argv[])
                 MPI_Finalize();
                 exit(1);
             }
+
             //output_intvector("perm.coo",perm,0, n);getchar();
             if( dpermC( csmat, perm ) != 0 ) {
                 fprintf( stderr, "*** dpermC error ***\n" );
