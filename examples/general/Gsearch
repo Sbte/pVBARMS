@@ -1,0 +1,11 @@
+#/bin/sh
+echo 'Please input keyword: '
+read keyword;
+cd ../..; grep -rin -I "$keyword" *; #cd - 
+
+echo 'DONE -) '
+
+#./zCmmTest.ex --itr_name COCG --preconditioner_name ILUK --mattype_name  CSR  --reordering 0 --outfilesuffix 1
+
+
+

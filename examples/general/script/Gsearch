@@ -1,0 +1,9 @@
+#/bin/sh
+cd ~/Packages/PARMSproject/pARMS_3.2; grep -rin $1 *; #cd - 
+
+echo 'DONE -) '
+
+#./zCmmTest.ex --itr_name COCG --preconditioner_name ILUK --mattype_name  CSR  --reordering 0 --outfilesuffix 1
+
+
+

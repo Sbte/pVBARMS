@@ -1,0 +1,66 @@
+--- barms2.c	2013-04-17 12:03:28.000000000 +0200
++++ barms2 (copy).c	2013-04-25 16:10:56.714979000 +0200
+@@ -31,7 +31,7 @@
+ 
+   parms_barms_data data;
+   vbiluptr LU;
+-  int i, j, n, nnz, *ja, dimR, dimC, *bsz, col, k, kk;
++  int i, j, n, nnz, *ja, dimR, dimC, *bsz, col, k;
+   BData *ba;
+   FILE *fp;
+ 
+@@ -54,7 +54,7 @@
+     {
+       col = ja[j];
+       dimC = B_DIM(bsz, col-LU->L->lsize);
+-      for (kk = 0, k = 0; k < dimC*dimR; k++)
++      for (k = 0; k < dimC*dimR; k++)
+       {
+ #if defined(DBL_CMPLX)
+         fprintf(fp, "%d,%d,%f  %f\n", bsz[i]+k % dimR+1, bsz[col-LU->L->lsize]+k/dimR+1, creal(ba[j][k]),cimag(ba[j][k]));
+@@ -78,7 +78,7 @@
+     {
+       col = ja[j];
+       dimC = B_DIM(bsz, col-LU->U->lsize);
+-      for (kk = 0, k = 0; k < dimC*dimR; k++)
++      for (k = 0; k < dimC*dimR; k++)
+       {
+ #if defined(DBL_CMPLX)
+         fprintf(fp, "d,%d,%f  %f\n", bsz[i]+k % dimR+1, bsz[col-LU->U->lsize]+k/dimR+1, creal(ba[j][k]),cimag(ba[j][k]));
+@@ -193,7 +193,6 @@
+   n      = data->n;
+ 
+   if (ipar[0] == 0) {
+-    if( x!=y)
+       vbUsolp(schur_start, ilus->lu, y, x);
+     return 0;
+   }
+@@ -448,11 +447,6 @@
+   /* compute the number of nonzero entries in block form mat */
+   data->nnz_mat = nnzVBMat1(Amat);//memVBMat(Amat);//nnzVBMat1(Amat);
+ 
+-  int myid;
+-  MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+-  printf("The number of non-zero entries is %d in local block form matrix, pid = %d \n",data->nnz_mat, myid);
+-  printf("The number of stored entries is %d in local block form matrix, pid = %d \n",memVBMat(Amat), myid);
+-  //outputvbmatpa(Amat,"localvbmat_data",1);
+   /* retrieve data from input objects */
+   ipar = param->ipar;
+   lfil = param->lfil;
+@@ -645,8 +639,14 @@
+     //~ if (ilutp == 1)
+       //~ ierr = computschurpartitionp(levc, B, C, droptol, lfil, ipar, schur, nBB, nset);
+     //~ else
+-    printf("levc=%p\n", levc);
+-      ierr = computschurpartition(levc, B, C, droptol, lfil, schur, nBB, nset);
++    //~ printf("levc=%p\n", levc);
++      //~ ierr = computschurpartition(levc, B, C, droptol, lfil, schur, nBB, nset);
++      setupVBMat(schur, nC, NULL);
++      ierr = vbiluNEW(levc, B, C, droptol, lfil, schur);
++      //~ outputvbmat(schur, "newschur", 1);
++      //~ outputvbmat(C, "cvbarms", 1);
++      //~ ierr = computschurpartition(levc, B, C, droptol, lfil, schur, nBB, nset);
++      //~ outputvbmat(schur, "oldschur", 1);
+     /* prtC(levc->L, ilev) ; */
+     if (ierr && ft) { 
+       fprintf(ft," ERROR IN  PILU  -- IERR = %d\n", ierr);
