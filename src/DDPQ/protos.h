@@ -178,10 +178,9 @@ extern int vblusolC( FLOAT *y, FLOAT *x, vbiluptr lu);
 extern int cleanVBILU( vbiluptr lu );
 extern int setupVBILU( vbiluptr lu, int n, int *bsz );
 extern int nnz_vbilu(vbiluptr lu );
-extern int vbiluNEW(vbp4ptr vbmat, vbsptr B, vbsptr C, double *droptol, 
-                    int *lfil, vbsptr schur);
-extern int computschurpartition(vbp4ptr vbmat, vbsptr B, vbsptr C, double *droptol,
-                                int *lfil, vbsptr schur, int *nBB, int nset);
+extern int vbiluNEW(vbp4ptr vbmat, vbsptr B, vbsptr C, double *droptol,int *lfil, vbsptr schur);
+extern int vbilukNEW(vbp4ptr vbmat, vbsptr B, vbsptr C, int lfil, vbsptr schur);
+extern int computschurpartition(vbp4ptr vbmat, vbsptr B, vbsptr C, double *droptol, int *lfil, vbsptr schur, int *nBB, int nset);
 extern int vbilutC( vbsptr vbmat, vbiluptr lu, int lfil, double tol, BData *w, FILE *fp );
 extern int vbilukC( int lofM, vbsptr vbmat, vbiluptr lu, FILE *fp );
 extern int computLUFsparse(vbsptr F, vbiluptr lu, vbsptr FF);

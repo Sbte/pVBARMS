@@ -449,7 +449,7 @@ int parms_arms_vcsr(parms_Mat self, parms_FactParam param, void *mat,
     int myid;
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
     printf("The number of non-zero entries is %d in local matrix, pid = %d \n",data->nnz_mat, myid);
-    outputcsmatpa(Amat,"localcsmat_data",1);
+//    outputcsmatpa(Amat,"localcsmat_data",1);
 
 
     /* retrieve data from input objects */

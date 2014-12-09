@@ -311,19 +311,19 @@ int mm_read_mtx_crd_data(FILE *f, int M, int N, int nz, int *I, int *J,
     }
     else if (mm_is_real(matcode))
     {
-//        printf("in mm is real.\n");//%f %p %s %c
+        //        printf("in mm is real.\n");//%f %p %s %c
 
         for (i=0; i<fnz; i++)
         {
             if (fscanf(f, "%d %d %lg\n", &I[i], &J[i], &val[i])
                     != 3) return MM_PREMATURE_EOF;
-//            if((val[i] <= -EPSILON) && (val[i] >= EPSILON))
-////            if((0 >= -EPSILON) && (0 <= EPSILON))
-////            if(val[i] == 0.0)
-//            {
-//                printf("i is %d, j is %d.\n", I[i], J[i]);//%f %p %s %c
+            //            if((val[i] <= -EPSILON) && (val[i] >= EPSILON))
+            ////            if((0 >= -EPSILON) && (0 <= EPSILON))
+            ////            if(val[i] == 0.0)
+            //            {
+            //                printf("i is %d, j is %d.\n", I[i], J[i]);//%f %p %s %c
 
-//            }
+            //            }
         }
     }
     else if (mm_is_pattern(matcode))
@@ -389,10 +389,10 @@ int mm_read_mtx_crd_data(FILE *f, int M, int N, int nz, int *I, int *J,
 }
 
 int mm_partial_read_mtx_crd_data(FILE *f, int M, int N, int nz, int *I, int *J,
-                                 double *val, int *idom, int *dom, int *perm, int *nB, int 
+                                 double *val, int *idom, int *dom, int *perm, int *nB, int
                                  nBlock, MM_typecode matcode)
 {
-    int i, j, fnz;
+    int i, fnz;
     int pid;
 
     fnz = nz;
@@ -474,13 +474,13 @@ int mm_partial_read_mtx_crd_data(FILE *f, int M, int N, int nz, int *I, int *J,
                     != 3) return MM_PREMATURE_EOF;
 
 
-////            if((val[i] >= -EPSILON) && (val[i] <= EPSILON))
-//            if((0 >= -EPSILON) && (0 <= EPSILON))
-////            if(val[i] == 0.0)
-//            {
-//                printf("i is %d, j is %d.\n", ir, jr);//%f %p %s %c
+            ////            if((val[i] >= -EPSILON) && (val[i] <= EPSILON))
+            //            if((0 >= -EPSILON) && (0 <= EPSILON))
+            ////            if(val[i] == 0.0)
+            //            {
+            //                printf("i is %d, j is %d.\n", ir, jr);//%f %p %s %c
 
-//            }
+            //            }
             if (p[perm[ir-1]])
             {
                 I[i3] = ir;
@@ -679,13 +679,13 @@ char  *mm_typecode_to_str(MM_typecode matcode)
     char buffer[MM_MAX_LINE_LENGTH];
     char *types[4];
     char *mm_strdup(const char *);
-    int error =0;
+    //    int error = 0;
 
     /* check for MTX type */
-    if (mm_is_matrix(matcode))
-        types[0] = MM_MTX_STR;
-    else
-        error=1;
+    //    if (mm_is_matrix(matcode))
+    types[0] = MM_MTX_STR;
+    //    else
+    //        error=1;
 
     /* check for CRD or ARR matrix */
     if (mm_is_sparse(matcode))

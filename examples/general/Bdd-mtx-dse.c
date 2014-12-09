@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     /* declarations related to Harwell-boeing format for reading the HB
      matri. Second part is related to I/O parameters */
     char mname[MAX_MAT][MAX_LINE], key[MAX_LINE];//, type[3];//guesol[2], title[72],
-    int nrhs, nc, n, nnz, tmp0, tmp, tmp2, tmp3, mat;
+    int nrhs, nc, n, nnz, mat;//tmp0,tmp2, tmp3, tmp,
     int myid, ierr, i, nloc;
     /* memory usage of the preconditioning matrix */
     double ratio, Bdensity = 0.0;
@@ -124,7 +124,9 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);//return the pid
     MPI_Comm_size(MPI_COMM_WORLD, &npro);//return the number of the processors
     get_mem = get_memory_usage_;
-    tmp0 = 0;
+
+
+//    tmp0 = 0;
     nrhs = 0;
 
     /*-------------------- read matrix name from input file */
@@ -210,8 +212,8 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "cannot allocate memory for ia\n");
                 MPI_Abort(MPI_COMM_WORLD, 66);
             }
-            tmp2 = n;
-            tmp3 = nnz;
+//            tmp2 = n;
+//            tmp3 = nnz;
 
             /*-------------------- Array sizes determined. Now call
                          wreadmtc again for really reading */
@@ -620,10 +622,10 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
             fprintf(stderr, "cannot allocate memory for rhstmp\n");
             MPI_Abort(MPI_COMM_WORLD, 66);
         }
-        if(nrhs != 0)
-            tmp = 3;
-        else
-            tmp = 2;
+//        if(nrhs != 0)
+//            tmp = 3;
+//        else
+//            tmp = 2;
 
         if (currhs != NULL)
         {

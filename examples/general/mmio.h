@@ -126,6 +126,9 @@ int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
 
 int mm_read_mtx_crd_data(FILE *f, int M, int N, int nz, int *ii, int *J,
         FLOAT *val, MM_typecode matcode);
+int mm_partial_read_mtx_crd_data(FILE *f, int M, int N, int nz, int *I, int *J,
+                                 double *val, int *idom, int *dom, int *perm, int *nB, int
+                                 nBlock, MM_typecode matcode);
 int mm_read_array_data(FILE *f, int N, FLOAT *val, MM_typecode matcode);
 //int mm_read_mtx_crd_entry(FILE *f, int *I, int *J, double *real, double *img,
 //            MM_typecode matcode);//NOT USED

@@ -418,7 +418,7 @@ int main(int argc, char *argv[])
 
         nloc = parms_MapGetLocalSize(map);
 
-        printf("nloc %d n %d\n", nloc, n);
+        printf("nloc %d n %ld\n", nloc, n);
 
         /* Free dom and idom */
         free(dom);

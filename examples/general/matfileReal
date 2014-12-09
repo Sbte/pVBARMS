@@ -1,0 +1,66 @@
+../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
+##
+../../../mtx_matrices/rae.mtx
+##
+../../../mtx_matrices/venkat01.mtx
+../../../mtx_matrices/raefsky3.mtx
+../../../mtx_matrices/ct20stif.mtx
+../../../mtx_matrices/olafu.mtx
+##
+../matrices/mat000.bin ../matrices/rhs000.bin
+##
+/home/vault/essex/hpc023/mat013.bin /home/vault/essex/hpc023/rhs013.bin
+##
+/home/vault/essex/hpc023/mat013.bin /home/vault/essex/hpc023/rhs013.bin
+##
+/home/vault/essex/hpc023/mat000.bin /home/vault/essex/hpc023/rhs000.bin
+##
+
+##
+../../../mtx_matrices/rae.mtx
+##
+../matrices/1138_bus.mtx
+##
+../../../mtx_matrices/bmw7st_1.mtx
+##
+../../../mtx_matrices/venkat01.mtx
+##
+../../../mtx_matrices/bmw7st_1.mtx
+##
+../../../mtx_matrices/venkat01.mtx
+##
+##
+
+../matrices/1138_bus.rb
+##
+
+../matrices/plsk1919.rb
+##
+
+../matrices/plsk1919.mtx
+##
+../matrices/qc2534.rb
+##
+../../../mtx_matrices/stacom.mtx
+##
+../matrices/qc2534.mtx
+##
+##
+../../../mtx_matrices/pwtk.mtx
+##
+
+../../../mtx_matrices/s3dkq4m2.mtx
+##
+../../../mtx_matrices/nasasrb.mtx
+../../../mtx_matrices/oilpan.mtx
+../../../mtx_matrices/bcsstk35.mtx
+../../../mtx_matrices/k3plates.mtx
+../../../mtx_matrices/rae.mtx
+##
+../../../mtx_matrices/k3plates.mtx
+##
+../matrices/testmat.mtx
+##
+../../../mtx_matrices/stacom.mtx
+##
+##

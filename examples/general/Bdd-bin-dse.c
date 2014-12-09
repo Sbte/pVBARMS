@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     /* working array for reading matrix */
     double norm, res1, tpc, ttol;
     FLOAT *a, *rhstmp;
-    int *ja, *nnzptr, *ia, *gia;
+    int *ja, *nnzptr, *gia;//*ia,
     int npro,its, *im, *bim;//bim is for block case
     fprm prm;
     FILE *fp=NULL, *fout=NULL, *binfile=NULL;
@@ -730,7 +730,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         FLOAT *rhstmpp;
         rhstmpp = (FLOAT*)malloc(n*sizeof(FLOAT));
 
-        printf("n value is %d.\n", n);//%f %p %s %c
+        printf("n value is %ld.\n", n);//%f %p %s %c
 
         //output_intvectorpa("perm_init.coo",perm,0, n);
         // output_dblvectorpa("rhstmp",rhstmp, 0, n);

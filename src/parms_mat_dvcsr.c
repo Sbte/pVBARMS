@@ -867,7 +867,7 @@ static int MatExtend_dvcsr(parms_Mat self, parms_Comm handler, int
     PARMS_NEW(new_mat);
     is = self->is;
     lsize = is->lsize;
-    outputcsmatpa(lmat,"lmat",1);
+//    outputcsmatpa(lmat,"lmat",1);
 
     MPI_Comm_dup(handler->comm, &comm);
 

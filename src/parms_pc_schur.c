@@ -515,22 +515,30 @@ static int pc_schur_apply(parms_PC self, FLOAT *y, FLOAT *x)
  */
 static int pc_schur_getratio(parms_PC self, double *ratio)
 {
-  schur_data pc_data;
-  parms_Operator op;
-  long long nnz_mat, nnz_pc;
-  long long gnnz_mat, gnnz_pc;
+    schur_data pc_data;
+    parms_Operator op;
+    int nnz_mat, nnz_pc;
+    //  int gnnz_mat, gnnz_pc;
 
-  pc_data = (schur_data)self->data;
-  op = pc_data->op;
-  parms_OperatorGetNnz(op, &nnz_mat, &nnz_pc);
-  MPI_Allreduce(&nnz_mat, &gnnz_mat, 1, MPI_LONG_LONG, MPI_SUM,
-		MPI_COMM_WORLD); 
-  MPI_Allreduce(&nnz_pc, &gnnz_pc, 1, MPI_LONG_LONG, MPI_SUM,
-		MPI_COMM_WORLD); 
-  printf("gnnz_mat=%d\n", gnnz_mat);
-  printf("gnnz_pc=%d\n", gnnz_pc);
-  *ratio = (double)gnnz_pc/(double)gnnz_mat;
-  return 0;
+    long int gnnz_mat, gnnz_pc;
+    long int nnz_mat_l, nnz_pc_l;
+
+    pc_data = (schur_data)self->data;
+    op = pc_data->op;
+    parms_OperatorGetNnz(op, &nnz_mat, &nnz_pc);
+    nnz_mat_l = (long int)nnz_mat;
+    nnz_pc_l = (long int)nnz_pc;
+
+//    MPI_Allreduce(&nnz_mat, &gnnz_mat, 1, MPI_INT, MPI_SUM,
+//                  MPI_COMM_WORLD);
+//    MPI_Allreduce(&nnz_pc, &gnnz_pc, 1, MPI_INT, MPI_SUM,
+//                  MPI_COMM_WORLD);
+    MPI_Allreduce(&nnz_mat_l, &gnnz_mat, 1, MPI_LONG, MPI_SUM,
+                  MPI_COMM_WORLD);
+    MPI_Allreduce(&nnz_pc_l, &gnnz_pc, 1, MPI_LONG, MPI_SUM,
+                  MPI_COMM_WORLD);
+    *ratio = (double)gnnz_pc/(double)gnnz_mat;
+    return 0;
 }
 
 /** Create a Schur-complement based preconditioner.
