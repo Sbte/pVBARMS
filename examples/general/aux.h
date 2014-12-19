@@ -122,9 +122,9 @@ extern double bswap_double(double a);
 extern double byteswap_double(double v);
 extern int fillinuppertrg(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int *jb, int *ib, SYMMTYPE sytype);
 extern int fullmatize(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int *jb, int*ib, char *type);
-extern int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[], double val[], int *indices, int nindices, int *gia);
-extern int local_read_bin_data_b(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[], double val[], int *idom, int *dom, int *perm, int *nB, int nBlock, int *gia);
-extern int local_read_bin_data(FILE *binfile, long int M, long int N, int nz, int ia[], int ja[], double val[], int *idom, int *dom, int *gia);
+extern int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[], FLOAT val[], int *indices, int nindices, int *gia);
+extern int local_read_bin_data_b(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[], FLOAT val[], int *idom, int *dom, int *perm, int *nB, int nBlock, int *gia);
+extern int local_read_bin_data(FILE *binfile, long int M, long int N, int nz, int ia[], int ja[], FLOAT val[], int *idom, int *dom, int *gia);
 
 //extern int parms_MatSetValues_b(parms_Mat self, int m, int *im, int *ia, int *ja, BData *values, INSERTMODE mode);  //add mode is still missing, each entry of matrix point to the long array BData *values
 //-----------------------------------dividing line-------------------------------------------------------------------

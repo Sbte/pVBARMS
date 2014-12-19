@@ -1087,7 +1087,7 @@ int compare(const void * a, const void * b)
 
 
 int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[],
-                                 double val[], int *indices, int nindices, int *gia)
+                                 FLOAT val[], int *indices, int nindices, int *gia)
 {
     long long offset, ja_startindex, gpindex, numread;
 
@@ -1131,7 +1131,7 @@ int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int 
 }
 
 int local_read_bin_data_b(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[],
-                                 double val[], int *idom, int *dom, int *perm, int *nB, int nBlock, int *gia)
+                                 FLOAT val[], int *idom, int *dom, int *perm, int *nB, int nBlock, int *gia)
 {
     int *bsz = (int *) calloc(nBlock+1, sizeof(int));
 
@@ -1174,7 +1174,7 @@ int local_read_bin_data_b(FILE *binfile, long int M, long int N, int nz, int nnz
 }
 
 int local_read_bin_data(FILE *binfile, long int M, long int N, int nz, int ia[], int ja[],
-                                 double val[], int *idom, int *dom, int *gia)
+                                 FLOAT val[], int *idom, int *dom, int *gia)
 {
     int i1, gpindex;
     int myid;

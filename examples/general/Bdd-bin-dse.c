@@ -538,6 +538,11 @@ int main(int argc, char *argv[])
                 free(jwk);
                 free(link);
             }
+            free(ba);
+            free(bja);
+            free(bia);
+
+
             nzding = (int *) calloc(npro, sizeof(int));
             int i1, i3;
             int i2 = 0, i4;

@@ -601,6 +601,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         }
 
         ierr = mm_partial_read_mtx_crd_data(mtxfile, n, nc, nnz, ia, ja, a, idom, dom, perm, nB, nBlock, matcode);
+//        ierr = mm_partial_read_mtx_crd_data_new(mtxfile, n, nc, nnz, ia, ja, a, idom, dom, perm, nB, nBlock, matcode);
         fclose(mtxfile);
 
         printf("n value is %d, nc value is %d\n", n, nc);//%f %p %s %c

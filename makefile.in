@@ -11,8 +11,8 @@ COPTFLAGS		=	-O3 -Wall -g #
 
 # other compile options
 #CFLAGS			=       -DUSE_MPI -DREAL=double -DDBL_CMPLX -DHAS_BLAS
-CFLAGS			=       -DUSE_MPI -DREAL=double -DDBL -DHAS_BLAS -D_FILE_OFFSET_BITS=64
-CFFLAGS			=	-DFORTRAN_UNDERSCORE -DVOID_POINTER_SIZE_8 -D_FILE_OFFSET_BITS=64
+CFLAGS			=       -DUSE_MPI -DREAL=double -DDBL -DHAS_BLAS
+CFFLAGS			=	-DFORTRAN_UNDERSCORE -DVOID_POINTER_SIZE_8 
 
 # FORTRAN compiler
 FC			=	mpif77
@@ -21,8 +21,7 @@ F90			=	mpif90
 
 # FORTRAN compile options
 #FFLAGS			=	-O3 -DVOID_POINTER_SIZE_8 -DDBL_CMPLX -DHAS_BLAS -g
-FFLAGS			=	-O3 -DVOID_POINTER_SIZE_8 -DDBL -DHAS_BLAS -g
-#FFLAGS			=	-O3 -DVOID_POINTER_SIZE_8 -DDBL -DHAS_BLAS -g
+FFLAGS			=	-O3 -DVOID_POINTER_SIZE_8 -DDBL -DHAS_BLAS -g #
 
 # linker and options
 LINKER			=	${FC}
@@ -44,12 +43,9 @@ MPI_LIB_DIR		=
 MPI_LIB			=
 
 # LAPACK, BLAS library
-#LAPACK_BLAS_LIB		=       -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
-LAPACK_BLAS_LIB_DIR		=       
-LAPACK_BLAS_LIB			=    -llapack -lblas
-#${MKL_LIB}
-#LAPACK_BLAS_LIB_DIR	=       -L/home/hpc/essex/hpc023/sven/lib
-#LAPACK_BLAS_LIB         =       -lopenblas
+LAPACK_BLAS_LIB_DIR	=
+LAPACK_BLAS_LIB		=	-llapack -lblas -ldl
+
 # general math libary
 MATH_LIB_DIR		=     
 MATH_LIB		=     -lm

@@ -1,5 +1,11 @@
 ../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
 ##
+../matrices/1138_bus.mtx
+##
+../matrices/mat000.bin ../matrices/rhs000.bin
+##
+
+
 ../../../mtx_matrices/rae.mtx
 ##
 ../../../mtx_matrices/venkat01.mtx
@@ -7,8 +13,7 @@
 ../../../mtx_matrices/ct20stif.mtx
 ../../../mtx_matrices/olafu.mtx
 ##
-../matrices/mat000.bin ../matrices/rhs000.bin
-##
+
 /home/vault/essex/hpc023/mat013.bin /home/vault/essex/hpc023/rhs013.bin
 ##
 /home/vault/essex/hpc023/mat013.bin /home/vault/essex/hpc023/rhs013.bin
@@ -18,8 +23,6 @@
 
 ##
 ../../../mtx_matrices/rae.mtx
-##
-../matrices/1138_bus.mtx
 ##
 ../../../mtx_matrices/bmw7st_1.mtx
 ##

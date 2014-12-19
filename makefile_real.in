@@ -44,7 +44,7 @@ MPI_LIB			=
 
 # LAPACK, BLAS library
 LAPACK_BLAS_LIB_DIR	=
-LAPACK_BLAS_LIB		=	-llapack -lblas
+LAPACK_BLAS_LIB		=	-llapack -lblas -ldl
 
 # general math libary
 MATH_LIB_DIR		=     
