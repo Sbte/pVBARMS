@@ -691,6 +691,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
 
             fclose(binfile);
         }
+        else nrhs = 0;
         //output_intvectorpa("mapperm_p",map->lvars,0, nloc);getchar();
 
         //getlocalsize

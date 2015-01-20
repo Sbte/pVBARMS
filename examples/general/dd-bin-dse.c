@@ -521,6 +521,7 @@ int main(int argc, char *argv[])
             fclose(binfile);
 
         }
+        else nrhs = 0;
 
 
         if(!nrhs)

@@ -225,9 +225,9 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
-        output_dblvectorpa("HBa", a, 0 , f_nnz);
-        output_intvectorpa("HBja", ja, 0 , f_nnz);
-        output_intvectorpa("HBia", ia, 0 , n+1);
+//        output_dblvectorpa("HBa", a, 0 , f_nnz);
+//        output_intvectorpa("HBja", ja, 0 , f_nnz);
+//        output_intvectorpa("HBia", ia, 0 , n+1);
 
 //        return 0;
         //                csptr smat = malloc(sizeof(*smat));

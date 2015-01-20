@@ -229,6 +229,7 @@ int main(int argc, char *argv[])
                 exit(1);
             }
         }
+        else nrhs = 0;
 
         if(myid == 0){
             if(argc == 3) {

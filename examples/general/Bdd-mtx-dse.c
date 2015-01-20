@@ -99,8 +99,8 @@ int main(int argc, char *argv[])
     fprm prm;
     FILE *fp=NULL, *fout=NULL, *mtxfile=NULL;
     char *name, *iluname, *curmat, *currhs, *curname = NULL, buf[40];
-    int nBlock, *nB = NULL, *perm = NULL;
     int *nzding = NULL;
+    int nBlock, *nB = NULL, *perm = NULL;
     double tib1, tib2, tib3, tib4 = 0.0, blocksize = 0.0;
 
     /*-------------------- variables related to dse partitioning */
@@ -142,8 +142,7 @@ int main(int argc, char *argv[])
     else if (argc == 1){
         read_param("inputs",mname, prm);
     }
-    parms_TimerCreate(&tm);
-    parms_TimerReset(tm);
+
 
     /* variable "mname" stores the name of the file in HB format. Read a
      Harwell-Boeing matrix. using wreadmtc c-version of sparsit
@@ -159,6 +158,8 @@ int main(int argc, char *argv[])
         if (curmat == NULL)
             continue;
         currhs = strtok(NULL, " ");
+        parms_TimerCreate(&tm);
+        parms_TimerReset(tm);
 
         if (myid == 0)
             printf("Reading matrix %s\n", curmat);
@@ -600,8 +601,8 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
             MPI_Abort(MPI_COMM_WORLD, 66);
         }
 
-        ierr = mm_partial_read_mtx_crd_data(mtxfile, n, nc, nnz, ia, ja, a, idom, dom, perm, nB, nBlock, matcode);
-//        ierr = mm_partial_read_mtx_crd_data_new(mtxfile, n, nc, nnz, ia, ja, a, idom, dom, perm, nB, nBlock, matcode);
+//        ierr = mm_partial_read_mtx_crd_data(mtxfile, n, nc, nnz, ia, ja, a, idom, dom, perm, nB, nBlock, matcode);
+        ierr = mm_partial_read_mtx_crd_data_new(mtxfile, n, nc, nnz, ia, ja, a, idom, dom, perm, nB, nBlock, matcode);
         fclose(mtxfile);
 
         printf("n value is %d, nc value is %d\n", n, nc);//%f %p %s %c
@@ -667,6 +668,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
                 exit(1);
             }
         }
+        else nrhs = 0;
 
         csptr csmat = NULL;
 
@@ -804,6 +806,8 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         /*----- permutes right hand side -------------------------------------*/
         //    for( i = 0; i < io.ndim; i++ )
         //      rhs[perm[i]] = rhs0[i];
+        printf("nrhs value is %d.\n", nrhs);//%f %p %s %c
+
         if(!nrhs)
         {
             for(i=0; i<llsize; i++)
@@ -815,6 +819,8 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         else
         {
             parms_VecSetValues_b(rhs, nBlock, bim, rhstmpp, INSERT, map);//changed//parms_VecSetValues_b(rhs, n, im, rhstmp, INSERT, map);
+//            printf(" in arificial vector loading.\n");//%f %p %s %c
+
         }
 
         free(rhstmp);
@@ -831,17 +837,24 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
             x[i] = 0.0;
         }
 
+//                output_dblvector("xvector",x,0, llsize);
 
         /*--------------------Get 2-norm of initial residual */
 
         parms_MatVec(A, x, resvec);
+//                output_dblvector("resvecdbl.coo",resvec,0, llsize);getchar();
+//                output_dblvector("rhs.coo",rhs,0, llsize);getchar();
+
+//        printf("llsize value is %d.\n", llsize);getchar();//%f %p %s %c
 
         for(i=0; i<llsize; i++)
         {
             resvec[i] = resvec[i] - rhs[i];
+//            printf("resvec[i] value is %20.16e.\n", resvec[i]);//%f %p %s %c
+
         }
 
-        //output_dblvectorpa("resvecdbl",resvec,0, llsize);getchar();
+//        output_dblvector("resvecdbl.coo",resvec,0, llsize);getchar();
         parms_VecGetNorm2_b(resvec, &norm, map);
 
         //printf("norm = %20.16e\n",norm);

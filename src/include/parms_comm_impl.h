@@ -19,77 +19,77 @@
 
 struct parms_Comm_ {
 
-  int ref;
-  MPI_Comm     comm;		//!< The communicator. 
-  COMMTYPE     ctype;		//!< The communication style.
-  /*! 
+    int ref;
+    MPI_Comm     comm;		//!< The communicator.
+    COMMTYPE     ctype;		//!< The communication style.
+    /*!
    \param npsend  The number of processors receiving data from the local
-    processor.  
+    processor.
    */
-  int          npsend; 		
-  int          *procs_send;	//!< list of processors to be sent.
-  int          *vlist_send;	//!< list of variables to be sent.
-  /*! 
+    int          npsend;
+    int          *procs_send;	//!< list of processors to be sent.
+    int          *vlist_send;	//!< list of variables to be sent.
+    /*!
    \param ptrvsend An array of pointers to the beginning of the data
-   sent to the i-th processor in vlist_send.   
+   sent to the i-th processor in vlist_send.
   */
-  int          *ptrvsend;	
-  FLOAT        *buf_send;	//!< The send buffer.
-  MPI_Status   *status_send;	//!< The send status.
-  MPI_Request  *req_send;	//!< The send request.
-  /*! 
+    int          *ptrvsend;
+    FLOAT        *buf_send;	//!< The send buffer.
+    MPI_Status   *status_send;	//!< The send status.
+    MPI_Request  *req_send;	//!< The send request.
+    /*!
    \param isdt_alloc Indicate if the derived data type for sending
-   data is created or not.    
+   data is created or not.
   */
-  BOOL         isdt_alloc;
-  /*! 
+    BOOL         isdt_alloc;
+    /*!
    \param mdata_send The maximum number of the data to be sent on each row.
    */
-  int          mdata_send;	
-  MPI_Datatype *dtype_send;	//!< The derived send datatype
-  /*! 
+    int          mdata_send;
+    MPI_Datatype *dtype_send;	//!< The derived send datatype
+    /*!
    \param nprecv The number processors from which data are received
    */
-  int          nprecv;
-  int          nodv;		//!< The number of external variables.
-  /*! 
+    int          nprecv;
+    int          nodv;		//!< The number of external variables.
+    /*!
    \param odvlist The list of external variables stored in processor
-   succession. 
+   succession.
    */
-  int          *odvlist;	
-  /*! 
+    int          *odvlist;
+    /*!
    \param novp The number of subdomains to which the variable is sent
    */
-  int          *novp;
-  /*! 
+    int          *novp;
+    /*!
    \param ptrvrecv An array of the beginning of data received from the
-   i-th processor.   
+   i-th processor.
   */
-  int          *ptrvrecv;
-  /*! 
+    int          *ptrvrecv;
+    /*!
    \param procs_recv The list of processors from which the data are
-   received. 
+   received.
    */
-  int          *procs_recv;
-  FLOAT        *buf_recv;	 //!< The receive buffer.
-  MPI_Status   *status_recv;	//!< The receive status.
-  MPI_Request  *req_recv;	//!< The receive request.
-//----------------------------------------------------------------------------------------------dividing line -----------------------------------------------
-  //int          *lbsz;           //the local block structure, which is also the bsz member of b_diag_mat
+    int          *procs_recv;
+    FLOAT        *buf_recv;	 //!< The receive buffer.
+    MPI_Status   *status_recv;	//!< The receive status.
+    MPI_Request  *req_recv;	//!< The receive request.
+    //----------------------------------------------------------------------------------------------dividing line -----------------------------------------------
+    //int          *lbsz;           //the local block structure, which is also the bsz member of b_diag_mat
 
-  int          *vlist_send_b;	//!< list of variables to be sent, point version in the block case.
-  /*! 
+    int          *vlist_send_b;	//!< list of variables to be sent, point version in the block case.
+    /*!
    \param ptrvsend An array of pointers to the beginning of the data
-   sent to the i-th processor in vlist_send.   
+   sent to the i-th processor in vlist_send.
   */
-  int          *ptrvsend_b;
-  /*! 
+    int          *ptrvsend_b;
+    /*!
    \param ptrvrecv An array of the beginning of data received from the
-   i-th processor.   
+   i-th processor.
   */
-  int          *ptrvrecv_b;
-  FLOAT        *buf_send_b;	//!< The send buffer for block case, it is point form.
-  FLOAT        *buf_recv_b;	 //!< The receive buffer for block case, it is point form.
+    int          *ptrvrecv_b;
+    FLOAT        *buf_send_b;	//!< The send buffer for block case, it is point form.
+    FLOAT        *buf_recv_b;	 //!< The receive buffer for block case, it is point form.
 };
 
 #endif 
