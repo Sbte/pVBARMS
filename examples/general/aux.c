@@ -416,9 +416,36 @@ void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat){
 void output_intvector(char *filename,int *v,int i0, int i1){//output a integer vector output_intvector("initperm.coo" ,perm,0, csmat->n);getchar();
     FILE *fp;
     int jj;
+//    printf(" in side value is.\n" );//%f %p %s %c
+
     fp = fopen(filename,"w");
     for(jj=i0; jj<i1;jj++)
         fprintf(fp,"%d\n",v[jj]);
+    fclose(fp);
+
+}
+
+//void output_intvector(char *filename,int *v,int i0, int i1){//output a integer vector output_intvector("initperm.coo" ,perm,0, csmat->n);getchar();
+void output_csrmatrix(char *filename, int *ia, int *ja, FLOAT *a, int n){
+
+    FILE *fp;
+    int jj, nnz;
+
+    fp = fopen(filename, "w");
+
+    fprintf(fp,"%d\n", n);
+
+    for(jj = 0; jj < n+1; jj++)
+        fprintf(fp, "%d\n", ia[jj]);
+
+    nnz = ia[n];
+
+    for(jj = 0; jj < nnz; jj++)
+        fprintf(fp, "%d\n", ja[jj]);
+
+    for(jj = 0; jj < nnz; jj++)
+        fprintf(fp, "%20.16e\n", a[jj]);
+
     fclose(fp);
 
 }
@@ -432,7 +459,7 @@ void output_dblvector(char *filename, FLOAT *v, int i0, int i1){//output a doubl
         fprintf(fp,"%20.16e  %20.16e\n",creal(v[jj]),cimag(v[jj]));
 #else
     for(jj=i0; jj<i1;jj++)
-        fprintf(fp,"%20.16e\n",v[jj]);//%20.16e//%f\n
+        fprintf(fp, "%20.16e\n", v[jj]);//%20.16e//%f\n
 
 #endif
     fclose(fp);
@@ -1082,12 +1109,12 @@ int fullmatize(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int *jb, in
 
 int compare(const void * a, const void * b)
 {
-  return ( *(int*)a - *(int*)b );
+    return ( *(int*)a - *(int*)b );
 }
 
 
 int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[],
-                                 FLOAT val[], int *indices, int nindices, int *gia)
+                                     FLOAT val[], int *indices, int nindices, int *gia)
 {
     long long offset, ja_startindex, gpindex, numread;
 
@@ -1131,7 +1158,7 @@ int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int 
 }
 
 int local_read_bin_data_b(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[],
-                                 FLOAT val[], int *idom, int *dom, int *perm, int *nB, int nBlock, int *gia)
+                          FLOAT val[], int *idom, int *dom, int *perm, int *nB, int nBlock, int *gia)
 {
     int *bsz = (int *) calloc(nBlock+1, sizeof(int));
 
@@ -1174,7 +1201,7 @@ int local_read_bin_data_b(FILE *binfile, long int M, long int N, int nz, int nnz
 }
 
 int local_read_bin_data(FILE *binfile, long int M, long int N, int nz, int ia[], int ja[],
-                                 FLOAT val[], int *idom, int *dom, int *gia)
+                        FLOAT val[], int *idom, int *dom, int *gia)
 {
     int i1, gpindex;
     int myid;

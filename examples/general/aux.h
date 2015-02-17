@@ -106,6 +106,7 @@ extern void coocsr_(int *nrow, int *nnz, double *a, int *ir, int *jc, double *ao
 extern void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat);
 extern void set_pc_params_b(parms_PC pc, fprm prm);
 extern void output_intvector(char *filename,int *v,int i0, int i1);
+extern void output_csrmatrix(char *filename,int *ia, int *ja, double *a, int n);
 extern void output_dblvector(char *filename, FLOAT *v, int i0, int i1);
 extern int outputcsmat ( csptr mat, char *filename, int onebase);
 extern int colunms2csptr(int n, int *ia, int *ja, FLOAT *a, csptr mat);

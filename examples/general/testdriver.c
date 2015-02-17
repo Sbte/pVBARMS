@@ -286,9 +286,12 @@ int main(int argc, char *argv[])
         ja = jb;
         a = b;
 
-        output_dblvectorpa("MTXa", a, 0 , nnz);
-        output_intvectorpa("MTXja", ja, 0 , nnz);
-        output_intvectorpa("MTXia", ia, 0 , n+1);
+
+        output_dblvector("MTXa", a, 0 , nnz);
+        output_intvector("MTXja", ja, 0 , nnz);
+        output_intvector("MTXia", ia, 0 , n+1);
+
+        output_csrmatrix("csrmat", ia, ja, a, n);
 
         //printf("\n npro=%d\n",npro);
 
