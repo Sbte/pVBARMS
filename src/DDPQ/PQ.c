@@ -213,7 +213,7 @@ int indsetC(csptr mat, int bsize, int *iord, int *nnod, double tol,
     /*----------------------------------------------------------------------
 | scan all nodes first to eliminate those not satisfying DD criterion 
 +----------------------------------------------------------------------*/
-    printf("in indset.\n");//%f %p %s %c
+//    printf("in indset.\n");//%f %p %s %c
 
     nback = n-1;
     nod = 0;

@@ -156,6 +156,7 @@ extern int vbrpermC(vbsptr vbmat, int *perm);
 extern int vbcpermC(vbsptr vbmat, int *perm); 
 extern int vbSplit4copy(vbsptr vbmat, int bsize, int csize, vbsptr B, vbsptr F, vbsptr E, vbsptr C);
 extern int setupVBP4 (vbp4ptr vbmat, int Bn, int Cn,  vbsptr F,  vbsptr E , int *bsz);
+extern int setupVBP4_vbarmsold (vbp4ptr vbmat, int Bn, int Cn,  vbsptr F,  vbsptr E , int *bsz);
 extern int vbilutD( vbsptr schur, double *droptol, int *lfil, vbilutptr vbmat);
 extern int setupVBILUT(vbilutptr vbmat, int len, int *bsz);
 extern int permuten(int *iwork, int *iworkn, int *bsz, int n);

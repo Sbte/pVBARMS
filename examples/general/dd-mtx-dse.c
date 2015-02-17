@@ -286,8 +286,9 @@ int main(int argc, char *argv[])
         ja = jb;
         a = b;
 
-//        output_dblvectorpa("MTXa", a, 0 , nnz);
-//        output_intvectorpa("MTXja", ja, 0 , nnz);
+        output_dblvectorpa("MTXa", a, 0 , nnz);
+        output_intvectorpa("MTXja", ja, 0 , nnz);
+        output_intvectorpa("MTXia", ia, 0 , n+1);
 
         //printf("\n npro=%d\n",npro);
 

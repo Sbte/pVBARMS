@@ -94,7 +94,7 @@ int vbilutC( vbsptr vbmat, vbiluptr lu, int lfil, double tol,
     vbsptr L, U;
     BData *ba, *D, buf_fact, buf_ns;
 
-    printf(" vbilut inside\n");//%f %p %s %c
+//    printf(" vbilut inside\n");//%f %p %s %c
 
 
     if( lfil < 0 ) {

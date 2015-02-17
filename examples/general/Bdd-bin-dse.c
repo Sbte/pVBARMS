@@ -703,6 +703,11 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         //mat = malloc(sizeof(*(csptr)));
         csmat = malloc(sizeof(*csmat));
 
+
+//        output_intvector("nnzptr.coo",nnzptr,0, m);
+//        output_intvector("ja.coo",ja,0, nnz);
+//        output_dblvector("a.coo",a,0, nnz);
+
         bincols2csptr(n, nnzptr, ja, a, csmat);
         //~ coo2csptr(n, nzding[myid], a, ia, ja, csmat);//nzding is the local length array
         printf("nzding[myid] value is %d, myid = %d\n", nzding[myid], myid);//%f %p %s %c

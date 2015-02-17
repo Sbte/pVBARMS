@@ -96,6 +96,10 @@ int cleanVBILU( vbiluptr lu ){
 |   ( lu )  =  Pointer to a VBILUSpar struct.
 |--------------------------------------------------------------------*/
     int n = lu->n, i;
+
+//    printf("lu value is %p.\n", lu);//%f %p %s %c
+
+
     if( NULL == lu ) return 0;
     if( lu->D ) {
         for( i = 0; i < n; i++ ) {
@@ -108,7 +112,11 @@ int cleanVBILU( vbiluptr lu ){
     cleanVBMat( lu->U );
     if( lu->work ) free( lu->work );
     if( lu->bf ) free( lu->bf );
+//    printf("lu value is %d.\n", lu);//%f %p %s %c
+
     free( lu );
+
+//    printf("lu value is %d.\n", lu);//%f %p %s %c
     return 0;
 }
 /*---------------------------------------------------------------------
@@ -593,12 +601,16 @@ int setupVBP4 (vbp4ptr vbmat, int Bn, int Cn,  vbsptr F,  vbsptr E , int *bsz) /
 
    // new sven
    vbmat->lu = (vbiluptr) Malloc(sizeof(VBILUSpar), "setupVBP4:3" );
+//   printf("vbmat->lu value is %p.\n", vbmat->lu);//%f %p %s %c
+
    setupVBILU(vbmat->lu, Bn, bsz);
 
-   //~ vbmat->lu = NULL;
+//   vbmat->lu = NULL;
+//   printf("vbmat->lu value is %p .\n", vbmat->lu);//%f %p %s %c
    vbmat->F = F; 
    vbmat->E = E; 
    vbmat->plu = NULL;
+
    //vbmat->work = (int *)Malloc( sizeof(int) * n, "setupVBILU" );
    //vbmat->bf = (BData)Malloc( max_block_size, "setupVBILU" );
    return 0;
@@ -606,6 +618,88 @@ int setupVBP4 (vbp4ptr vbmat, int Bn, int Cn,  vbsptr F,  vbsptr E , int *bsz) /
 /*---------------------------------------------------------------------
 |     end of setupVBP4 
 |--------------------------------------------------------------------*/
+
+
+int setupVBP4_vbarmsold (vbp4ptr vbmat, int Bn, int Cn,  vbsptr F,  vbsptr E , int *bsz) // not yet
+{
+/*----------------------------------------------------------------------
+| initialize VBPerMat4 struct given the F, E, blocks.
+|----------------------------------------------------------------------
+| on entry:
+|==========
+| ( vbmat )  =  Pointer to a PerMat4 struct.
+|     Bn    =  block dimension of B block
+|     Cn    =  block dimension of C block
+|     F, E  = the two blocks to be assigned to struct - without the
+|
+| On return:
+|===========
+|
+|  vbmat->n
+|	->bsz
+|	->lu                for each block: vbmat->M->n
+|                                             ->nzcount
+|      ->E                                       ->ja
+|      ->F                                       ->ma
+|      ->perm
+|      ->rperm       (if meth[1] > 0)
+|      ->D1          (if meth[2] > 0)
+|      ->D2          (if meth[3] > 0)
+|
+|  Scaling arrays are initialized to 1.0.
+|
+|       integer value returned:
+|             0   --> successful return.
+|             1   --> memory allocation error.
+|--------------------------------------------------------------------*/
+   int n,i,nn;
+   //int max_block_size = sizeof(FLOAT)*MAX_BLOCK_SIZE*MAX_BLOCK_SIZE;
+   /* size n */
+   n = vbmat->n = Bn + Cn;
+   nn = bsz[n];
+   vbmat->bsz=(int *) Malloc((n+1)*sizeof(int), "setupVBP4:2" );
+   for( i = 0; i <= n; i++ ) vbmat->bsz[i] = bsz[i];//??
+//printf("\n vbmat->bsz=%d,max=%d",vbmat->bsz,max_block_size); getchar();
+   vbmat->nB = Bn;
+   //nnB=(int *) Malloc(Bn*sizeof(int), "setupVBP4:2" );
+   //for(i=0;i<Bn;i++){
+   //nnB[i]=B_DIM(bsz,i);
+//printf("\n i=%d,nnb[i]=%d",i,nnB[i]); getchar();
+/* vbmat->perm = (int *) Malloc(n*sizeof(int), "setupP4:1" ); */
+/*   assign space for wk -- note that this is only done at 1st level
+     at other levels, copy pointer of wk from previous level */
+   if (vbmat->prev == NULL)  /* wk has 2 * n entries now */
+     vbmat->wk   = (FLOAT *) Malloc(2*nn*sizeof(FLOAT), "setupVBP4:2" );
+   else
+     vbmat->wk = (vbmat->prev)->wk;
+
+/*-------------------- L and U */
+   //vbmat->L = (vbsptr) Malloc(sizeof(VBSparMat), "setupVBP4:3" );
+   //if (setupVBMat(vbmat->L, Bn,nnB)) return 1;//int setupVBMat( vbsptr vbmat, int n, int *nB )
+   /*    fprintf(stdout,"  -- BN %d   Cn   %d \n", Bn,Cn);  */
+   //vbmat->U = (vbsptr) Malloc(sizeof(VBSparMat), "setupVBP4:4" );
+   //if (setupVBMat(vbmat->U, Bn,nnB)) return 1;
+
+   // new sven
+//   vbmat->lu = (vbiluptr) Malloc(sizeof(VBILUSpar), "setupVBP4:3" );
+//   printf("vbmat->lu value is %p.\n", vbmat->lu);//%f %p %s %c
+
+//   setupVBILU(vbmat->lu, Bn, bsz);
+
+   vbmat->lu = NULL;
+//   printf("vbmat->lu value is %p .\n", vbmat->lu);//%f %p %s %c
+   vbmat->F = F;
+   vbmat->E = E;
+   vbmat->plu = NULL;
+
+   //vbmat->work = (int *)Malloc( sizeof(int) * n, "setupVBILU" );
+   //vbmat->bf = (BData)Malloc( max_block_size, "setupVBILU" );
+   return 0;
+}
+/*---------------------------------------------------------------------
+|     end of setupVBP4
+|--------------------------------------------------------------------*/
+
 int setupVBILUT(vbilutptr vbmat, int len, int *bsz)
 {
 /*----------------------------------------------------------------------
@@ -1053,6 +1147,7 @@ int cleanVBP4(vbp4ptr amat)
 |--------------------------------------------------------------------*/
 
 /*  -------------------------- */
+//    printf("amat->lu value is %p in int cleanVBP4(vbp4ptr amat).\n", amat->lu);//%f %p %s %c
 
 
   if (amat == NULL) return 0;
@@ -1078,7 +1173,9 @@ int cleanVBP4(vbp4ptr amat)
     amat->E = NULL;
   }
   if (amat->lu) {
+
     cleanVBILU(amat->lu);//cleanVBILU(vbiluptr lu);
+//    printf("amat->lu value is %p in int cleanVBP4(vbp4ptr amat).\n", amat->lu);//%f %p %s %c
     amat->lu = NULL;
   }
 
@@ -1146,11 +1243,16 @@ int cleanBARMS(vbarms ArmsPre)
 
   if (indic) { 
     while (levc) {
-      if (cleanVBP4(levc)) return(1) ; 
-      levn = levc->next;
-      free(levc);
-      levc = levn;
-    }		
+//        printf("levc->lu value is %p.\n", levc->lu);//%f %p %s %c
+
+        if (cleanVBP4(levc))
+//        {printf(" if clean vbp4 fail.\n");//%f %p %s %c
+            return(1);
+//        }
+        levn = levc->next;
+        free(levc);
+        levc = levn;
+    }
   }	
    else 	
      if (amat) {
@@ -1653,7 +1755,7 @@ int indsetC2(csptr mat, int bsize, int *iord, int *nnod, double tol,
 | scan all nodes first to eliminate those not satisfying DD criterion 
 +----------------------------------------------------------------------*/
    // nbnd = n;//test
-   printf("nbnd = %d, in indsetC2 \n",nbnd);
+//   printf("nbnd = %d, in indsetC2 \n",nbnd);
 
    nback = n-1; 
    nod = 0;

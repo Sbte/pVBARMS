@@ -687,7 +687,7 @@ static int MatSetup_dvcsr(parms_Mat self)
     /* outputcsmatpa(diag_mat,"diag_data",1); */
     /* outputcsmatpa(offd_mat,"offd_data",1); */
 
-    //output_intvectorpa("columnglobal",handler->odvlist,0, handler->nodv);
+//    output_intvectorpa("columnglobal",handler->odvlist,0, handler->nodv);
     PARMS_FREE(info);
     PARMS_FREE(disp);
 

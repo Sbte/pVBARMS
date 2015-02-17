@@ -1292,7 +1292,9 @@ printf("myid=%d\n", ilev);
         F = (vbsptr) Malloc(sizeof(VBSparMat), "barms2:9" );
         C = (vbsptr) Malloc(sizeof(VBSparMat), "barms2:10" );
         vbSplit4copy(schur, nB, nC, B, F, E, C);
-        ierr = setupVBP4(levc, nB, nC, F, E, schur->bsz);
+        ierr = setupVBP4_vbarmsold(levc, nB, nC, F, E, schur->bsz);
+//        printf("levc->lu value is %p, in barms.\n", levc->lu);//%f %p %s %c
+
         /*--------------------     copy a few pointers       ---- */
         levc->perm  = iworkn;
         levc->rperm = uworkn;
