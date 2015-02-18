@@ -307,9 +307,9 @@ int main(int argc, char *argv[])
             /*     job = 1; */
 
 
-            output_intvector("ia.coo",ia,0, nnz);
-            output_intvector("ja.coo",ja,0, nnz);
-            output_dblvector("a.coo",a,0, nnz);
+//            output_intvector("ia.coo",ia,0, nnz);
+//            output_intvector("ja.coo",ja,0, nnz);
+//            output_dblvector("a.coo",a,0, nnz);
 
 
 
@@ -327,7 +327,7 @@ int main(int argc, char *argv[])
             csmat = malloc(sizeof(*csmat));
 
             coo2csptr(n, nnz, a, ia, ja, csmat);
-            /* outputcsmat(mat,"mat.coo",1);  */
+            outputcsmat(csmat,"mat.coo",0);
 
             /* exit(1); */
 

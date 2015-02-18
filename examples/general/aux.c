@@ -425,8 +425,7 @@ void output_intvector(char *filename,int *v,int i0, int i1){//output a integer v
 
 }
 
-//void output_intvector(char *filename,int *v,int i0, int i1){//output a integer vector output_intvector("initperm.coo" ,perm,0, csmat->n);getchar();
-void output_csrmatrix(char *filename, int *ia, int *ja, FLOAT *a, int n){
+void output_csrmatrix(char *filename,int *ia, int *ja, double *a, int n){
 
     FILE *fp;
     int jj, nnz;
@@ -438,7 +437,9 @@ void output_csrmatrix(char *filename, int *ia, int *ja, FLOAT *a, int n){
     for(jj = 0; jj < n+1; jj++)
         fprintf(fp, "%d\n", ia[jj]);
 
-    nnz = ia[n];
+    nnz = ia[n] - 1;
+
+    printf("nnz value is %d.\n", nnz);//%f %p %s %c
 
     for(jj = 0; jj < nnz; jj++)
         fprintf(fp, "%d\n", ja[jj]);

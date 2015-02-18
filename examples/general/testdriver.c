@@ -292,7 +292,9 @@ int main(int argc, char *argv[])
         output_intvector("MTXia", ia, 0 , n+1);
 
         output_csrmatrix("csrmat", ia, ja, a, n);
+        //        output_csrmatrix("csrmat", ia, ja, a, n);
 
+//        exit(1);
         //printf("\n npro=%d\n",npro);
 
 //return 0;

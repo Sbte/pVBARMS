@@ -1,5 +1,7 @@
 ../matrices/1138_bus.mtx
 ##
+klad.mtx
+##
 ../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
 ##
 ../matrices/mat000.bin ../matrices/rhs000.bin
