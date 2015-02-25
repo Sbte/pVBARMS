@@ -406,7 +406,7 @@ static struct parms_Solver_ops parms_fgmres_sol = {
 };
 
 
-/** Create the FGMRES solver. 
+/** Create the FGMRES solver.
  *
  *  \param self A parms_Solver object.
  *  \return 0 on success.
@@ -419,7 +419,7 @@ int fgmres_create(parms_Solver self)
   fdata->restart = 30;
   fdata->neigs = 0;
   self->data =fdata;
-  PARMS_MEMCPY(self->ops, &parms_fgmres_sol, 1);		
+  PARMS_MEMCPY(self->ops, &parms_fgmres_sol, 1);
 
   return 0;
 }

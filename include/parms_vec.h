@@ -98,28 +98,7 @@ extern int parms_VecDOT_b(FLOAT *self, FLOAT *x, FLOAT *value, parms_Map map);
  */
 int parms_VecDOTC(FLOAT *self, FLOAT *x, REAL *value, parms_Map is);
 int parms_VecDOTC_b(FLOAT *self, FLOAT *x, REAL *value, parms_Map is);
-/** 
- * Perform the inner product between self and an array of parms_Vec
- * objects.  
- *
- * The pseudo code:
- *
- *  \f{verbatim}
- *  for (i = 0; i < n; i++) {
- *    result[i] = self * vecarray[i];
- *  }
- *  \f}
- *
- * @param self     A vector object.                              
- * @param n        The size of vecarray.                         
- * @param vecarray An array of vector objects.                   
- * @param aux      An auxiliary array.                           
- * @param result   An array of size n to store inner products.   
- * 
- * @return 0 on success.
- */
-extern int parms_VecDotArray(FLOAT *self, int n, FLOAT
-			     **vecarray, FLOAT *result, parms_Map map);   
+
 /** 
  * Permute the vector object self.
  *
@@ -147,154 +126,12 @@ extern int parms_VecPerm_b(FLOAT *self, parms_Map map);
 
 extern int parms_VecInvPerm(FLOAT *self, parms_Map map);
 extern int parms_VecInvPerm_b(FLOAT *self, parms_Map map);
-/** 
- * Permute the vector object self into the vector aux.
- *
- * This uses the local permutation based on the local map object.
- * The user needn't call self function directly.
- * 
- * @param self A vector object.
- * @param aux  A vector object containing the permuted vector on return.
- * 
- * @return 0 on success.
- */
 
 
-extern int parms_VecPermAux(FLOAT *self, FLOAT *aux, parms_Map map);
-
-/** 
- * Inverse permutation the vector object self into the vector aux.
- *
- * This uses the local permutation based on the local map object.
- * The user needn't call self function directly.
- * 
- * @param self A vector object.
- * @param aux  A vector object containing the (inverse) permuted vector on return.
- * 
- * @return 0 on success.
- */
-extern int parms_VecInvPermAux(FLOAT *self, FLOAT *aux, parms_Map map);
-
-/** 
- * Insert or add values to vector object self.
- * 
- *  A pseudo code from the global point of view:
- *
- *  \f{verbatim}
- *  for (i = 0; i < m; i++) {
- *    self[im[i]] = values[i]; 
- *  }
- *  \f}
- *  
- * @param self   A vector object.                          
- * @param m      The number of variables to be inserted.  
- * @param im     An array of global variable indices.        
- * @param value  An array of values to be inserted to self.s 
- * @param mode   The style of set values:
- *               -ADD    add values to parms_Vec object self. 
- *               -INSERT assign values to parms_Vec object self.
- *               
- * @return 0 on success.
- */
-extern int parms_VecSetValues(FLOAT *self, int m, int *im, FLOAT
-			       *values, INSERTMODE mode, parms_Map map); 
 extern int parms_VecSetValues_b(FLOAT *self, int m, int *im, FLOAT
 			       *values, INSERTMODE mode, parms_Map map);
-/** 
- * Insert values to parms_Vec object self. This assumes the vector 
- * values are being set element-by-element. A call to parms_vecsetupElements
- * is required to complete the vector once all entries have been added.
- * 
- *  A pseudo code from the global point of view:
- *
- *  \f{verbatim}
- *  for (i = 0; i < m; i++) {
- *    self[im[i]] = values[i]; 
- *  }
- *  \f}
- *  
- * @param self   A vector object.                          
- * @param m      The number of variables to be inserted.     
- * @param im     An array of global variable indices.     
- * @param value  An array of values to be inserted to self.s 
- * @param mode   The style of set values:
- *               -ADD    add values to parms_Vec object self. 
- *               -INSERT assign values to parms_Vec object self.
- *               
- * @return 0 on success.
- */
-int parms_VecSetElementVector(FLOAT *self, int m, int *im, FLOAT
-			       *values, INSERTMODE mode, parms_Map map);
 			       
-/** 
- * Completes setting up values for the distributed vector
- *
- * @param self   A vector object.                          
- * @param map    A pARMS map object
- *               
- * @return 0 on success.
- */
-int parms_VecAssembleElementVector(FLOAT *self, parms_Map map); 			        
 
-/** 
- * Gather distributed vector to a global array.
- * 
- * @param self The distributed vector.
- * @param ga A global vector.
- * 
- * @return 0 on success.
- */
-extern int parms_VecGather(FLOAT *self, FLOAT *ga, parms_Map map);
-
-/*
- *
- * Fortran Wrapper Functions 
- *
-*/
-
-extern void parms_vecaxpy_(FLOAT *self, FLOAT *x, FLOAT *scalar, parms_Map *map, int
-		    *ierr);
-
-extern void parms_vecaypx_(FLOAT *self, FLOAT *x, FLOAT *scalar, parms_Map *map, int
-		    *ierr);
-
-extern void parms_vecdot_(FLOAT *self, FLOAT *x, FLOAT *value, parms_Map *map, int
-		   *ierr);
-
-extern void parms_vecdotc_(FLOAT *self, FLOAT *x, REAL *value, parms_Map *map, int
-		   *ierr);
-
-extern void parms_vecdotarray_(FLOAT *self, int *n, FLOAT **vecarray,
-			FLOAT *result, parms_Map *map, int *ierr);
-
-extern void parms_vecgetnorm2_(FLOAT *self, REAL *value, parms_Map *map, int *ierr);
-
-extern void parms_vecscale_(FLOAT *self, FLOAT *scalar, parms_Map *map, int *ierr);
-
-extern void parms_vecsetvalues_(FLOAT *self, int *m, int *im, FLOAT *values, 
-                  INSERTMODE *mode, parms_Map *map, int *ierr);
-                  
-extern void parms_vecsetelementvector_(FLOAT *self, int *m, int *im, FLOAT *values, 
-                  INSERTMODE *mode, parms_Map *map, int *ierr); 
-			       
-extern void parms_vecassembleelementvector_(FLOAT *self, parms_Map *map, int *ierr);
-
-extern void parms_vecperm_(FLOAT *self, parms_Map *map, int *ierr);
-
-extern void parms_vecinvperm_(FLOAT *self, parms_Map *map, int *ierr);
-
-extern void parms_vecpermaux_(FLOAT *self, FLOAT *aux, parms_Map *map, int *ierr);
-
-extern void parms_vecinvpermaux_(FLOAT *self, FLOAT *aux, parms_Map *map, int *ierr);
-
-extern void parms_vecgather_(FLOAT *self, FLOAT *ga, parms_Map *map, int *ierr);
-
-
-/*
- *
- * End Fortran Wrapper Functions 
- *
-*/
 
 PARMS_CXX_END
 

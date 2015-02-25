@@ -269,24 +269,6 @@ int read_param(char *fname, char mname[MAX_MAT][MAX_LINE], fprm prm)
     return 0;
 }
 
-void set_pc_params(parms_PC pc, fprm prm)
-{
-    parms_PCSetType(pc,            prm->pctype);
-    parms_PCSetILUType(pc,         prm->pcilutype);
-    parms_PCSetNlevels(pc,         prm->ipar[0]);
-    parms_PCSetPermType(pc,        prm->ipar[1]);
-    parms_PCSetBsize(pc,           prm->ipar[2]);
-    parms_PCSetInnerEps(pc,        prm->pgfpar[0]);
-    parms_PCSetInnerKSize(pc,      prm->ipar[4]);
-    parms_PCSetInnerMaxits(pc,     prm->ipar[5]);
-    parms_PCSetFill(pc,            prm->lfil);
-    parms_PCSetTol(pc,             prm->droptol);
-    parms_PCSetTolInd(pc,          prm->tolind);
-    parms_PCSetPermScalOptions(pc, &prm->ipar[10], 1);
-    parms_PCSetPermScalOptions(pc, &prm->ipar[14], 0);
-    parms_PClocalgc_eps(pc,          prm->eps);//new
-
-}
 
 void set_pc_params_b(parms_PC pc, fprm prm)//block version
 {
@@ -337,10 +319,6 @@ void fread_param_(char *fname, fprm *prm, char *matrix, int *matlen, int len)
 
 }
 
-void fset_pc_params_(parms_PC *pc, fprm *prm)
-{
-    set_pc_params(*pc, *prm);
-}
 
 void fset_solver_params_(parms_Solver *solver, fprm *prm)
 {

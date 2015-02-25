@@ -719,6 +719,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         free(nnzptr);
         free(a);
         free(ja);
+
         vbsptr vbmat = NULL;
         /*--------------------create a timer */
         tib1 =  parms_TimerGet(tm);

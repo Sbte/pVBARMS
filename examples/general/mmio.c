@@ -326,7 +326,7 @@ int mm_read_mtx_crd_data(FILE *f, int M, int N, int nz, int ii[], int jj[],
         }
 #endif
     }
-    else if (mm_is_real(matcode))
+    else if (mm_is_real(matcode) || mm_is_integer(matcode))
     {
 #if defined(DBL)
 
@@ -338,11 +338,14 @@ int mm_read_mtx_crd_data(FILE *f, int M, int N, int nz, int ii[], int jj[],
         }
 #endif
     }
+
     else if (mm_is_pattern(matcode))
     {
-        for (i=0; i<fnz; i++)
+        for (i=0; i<fnz; i++){
             if (fscanf(f, "%d %d", &ii[i], &jj[i]) != 2)
                 return MM_PREMATURE_EOF;
+            val[i] = 1.0;
+        }
     }
     else
         return MM_UNSUPPORTED_TYPE;

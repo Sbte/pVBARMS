@@ -76,7 +76,6 @@ typedef enum SYMMTYPE {SYMM, SKEW_SYMM, HERMITION} SYMMTYPE;
 #endif
 
 extern int  read_param(char *fname, char mname[MAX_MAT][MAX_LINE], fprm prm);
-extern void set_pc_params(parms_PC pc, fprm prm);
 extern void set_solver_params(parms_Solver solver, fprm prm);
 extern void fread_param_(char *fname, fprm *prm, char *matrix, int *matlen, int len);
 extern void fset_pc_params_(parms_PC *pc, fprm *prm);

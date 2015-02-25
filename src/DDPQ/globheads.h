@@ -9,7 +9,7 @@
 #include "parms_mat_impl.h"
 #include "parms_opt_impl.h"
 
-#define MAX_BLOCK_SIZE   100
+#define MAX_BLOCK_SIZE   1000
 
 /* FORTRAN style vblock format, compatible for many FORTRAN routines */
 #define DATA(a,row,i,j)  (a[(j)*(row)+(i)])

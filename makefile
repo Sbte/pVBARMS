@@ -17,7 +17,7 @@ IFFLAGS			=  -I./include
 LIB	=    ./lib/libparms.a
 DIRS    =    ./ ./include ./lib ./src ./src/include ./src/DDPQ \
              ./src/FORTRAN ./examples ./examples/general \
-             ./examples/grid ./examples/petsc ./examples/matrices  
+             ./examples/matrices  
 
 # files from the src directory
 OBJ1	=    ./src/parms_comm.o  \
@@ -33,7 +33,7 @@ OBJ1	=    ./src/parms_comm.o  \
              ./src/gmres.o ./src/parms_complex.o ./src/parms_vbilu_vcsr.o
 
 # files from DDPQ directory
-OBJ2 	=    ./src/DDPQ/arms2.o ./src/DDPQ/ilutpC.o  \
+OBJ2 	=    ./src/DDPQ/ilutpC.o  \
 	     ./src/DDPQ/MatOps.o ./src/DDPQ/misc.o  \
 	     ./src/DDPQ/PQ.o ./src/DDPQ/piluNEW.o  \
              ./src/DDPQ/setblks.o ./src/DDPQ/sets.o  \
@@ -44,10 +44,7 @@ OBJ2 	=    ./src/DDPQ/arms2.o ./src/DDPQ/ilutpC.o  \
 #./src/DDPQ/ilut.o
 
 # FORTRAN interface files
-OBJ3	=   ./src/FORTRAN/parms_mapf.o ./src/FORTRAN/parms_matf.o \
-            ./src/FORTRAN/parms_pcf.o ./src/FORTRAN/parms_solverf.o \
-            ./src/FORTRAN/parms_timerf.o ./src/FORTRAN/parms_vecf.o \
-            ./src/FORTRAN/parms_viewerf.o ./src/DDPQ/tools.o
+OBJ3	=   ./src/DDPQ/tools.o
 
 OBJ     =     $(OBJ1) $(OBJ2) $(OBJ3)
 

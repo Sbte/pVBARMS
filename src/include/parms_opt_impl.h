@@ -29,7 +29,6 @@ struct parms_Operator_ {
 extern int parms_ilu0_vcsr(parms_Mat self, parms_FactParam param, void *data, parms_Operator *op); 
 extern int parms_iluk_vcsr(parms_Mat self, parms_FactParam param, void *data, parms_Operator *op); 
 extern int parms_ilut_vcsr(parms_Mat self, parms_FactParam param, void *data, parms_Operator *op); 
-extern int parms_arms_vcsr(parms_Mat self, parms_FactParam param, void *data, parms_Operator *op); 
 extern int parms_barms_vcsr(parms_Mat self, parms_FactParam param, void *data, parms_Operator *op); 
 extern int parms_barms_vcsr_old(parms_Mat self, parms_FactParam param, void *mat, parms_Operator *op);
 extern int parms_barms_vcsr_l(parms_Mat self, parms_FactParam param, void *data, parms_Operator *op); 

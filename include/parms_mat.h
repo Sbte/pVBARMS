@@ -34,26 +34,7 @@ typedef struct parms_Mat_ *parms_Mat;//only
  */
 extern int parms_MatCreate(parms_Mat *self, parms_Map map);
 
-/** 
- * Dump parms_Mat object.
- * 
- * @param self A pointer to a parms_Mat object.
- * @param v    A parms_Viewer object.   
- * 
- * @return 0 on success.
- */
-extern int parms_MatView(parms_Mat self, parms_Viewer v);
 
-extern int parms_MatViewCOO(parms_Mat self, parms_Viewer v);
-
-/** 
- * Free the parms_Mat object pointed to by self.
- * 
- * @param self A pointer to a parms_Mat object.
- * 
- * @return 0 on success.
- */
-extern int parms_MatFree(parms_Mat *self);
 
 extern int parms_MatFree_b(parms_Mat *self);
 /** 
@@ -66,103 +47,6 @@ extern int parms_MatFree_b(parms_Mat *self);
  * @return 0 on success.
  */
 extern int parms_MatVec(parms_Mat self, FLOAT *x, FLOAT *y);
-
-/** 
- * Set up parms_Mat object self.
- *
- * This is the most important functoin for the parms_Mat object. This
- * function combines the function bdry and setup in the old version 
- * of pARMS. The function sets up the data structure needed by the
- * distributed matrix-vector multiplication, divides the variables on
- * the local processors into two categories: interior and interface
- * variables.
- * 
- * @param self A parms_Mat object. 
- * 
- * @return 0 on success.
- */
-extern int parms_MatSetup(parms_Mat self);
-
-/** 
- * Insert/add values to the parms_Mat object self.
- * 
- * @param self    A parms_Mat object.                                
- * @param m 	  The number of rows inserted.    
- * @param im 	An array of row global indices.                
- * @param ia 	  An array of pointer to the beginning of each row in
- *                array ja.    
- * @param ja      An array of column global indices.     
- * @param values  An array of values.                    
- * @param mode 	  Insert value mode:                     
- * 		  - INSERT  insert values to parm_Mat self.
- * 		  - ADD     add values to parm_Mat self.
- * 		  
- * @return 0 on success.
- */
-extern int parms_MatSetValues(parms_Mat self, int m, int *im, int *ia,
-			      int *ja, FLOAT *values, INSERTMODE mode);
-
-/** 
- * Insert/add values to the parms_Mat object self. This assumes matrix 
- * values are being added element-by-element
- * 
- * @param self    A parms_Mat object.                                
- * @param m 	The number of rows inserted.      
- * @param im 	An array of row global indices.                                                 
- * @param ia 	An array of pointer to the beginning of each row in
- *                array ja.    
- * @param ja      An array of column global indices.     
- * @param values  An array of values.                    
- * @param mode 	Insert value mode:                     
- * 		      - INSERT  insert values to parm_Mat self.
- * 		      - ADD     add values to parm_Mat self.
- *
- * NOTE: New entries are always inserted first, so mode does not
- *       matter if this is a new entry. Subsequent calls will either 
- *       replace (mode = INSERT) or add (mode = ADD) to the existing 
- *       entries in a particular position 
- * 		  
- * @return 0 on success.
- */
-extern int parms_MatSetElementMatrix(parms_Mat self, int m, int *im, int *ia,
-		       int *ja, FLOAT *values, INSERTMODE mode); 
-		       
-/** 
- * Assembles the finite element matrix by updating off-processor 
- * contributions.
- * 
- * @param self    A parms_Mat object.                                           
- * @return 0 on success.
- */
-extern int parms_MatAssembleElementMatrix(parms_Mat self);		       
-
-/** 
- * Insert values to the parms_Mat object self. This assumes matrix 
- * values for this row have already been set, and are to be replaced 
- * by the new ones provided as input.
- * 
- * @param self    A parms_Mat object.                                
- * @param m 	The number of rows inserted.      
- * @param im 	An array of row global indices.                                                 
- * @param ia 	An array of pointer to the beginning of each row in
- *                array ja.    
- * @param ja      An array of column global indices.     
- * @param values  An array of values.                      
- * @return 0 on success.
- */
-extern int parms_MatResetRowValues(parms_Mat self, int m, int *im, int *ia,
-		       int *ja, FLOAT *values);
-
-/** 
- * Reset the matrix to be re-used. 
- * @param self    A parms_Mat object.                                
- * @param nonzerostructure  The nonzero structure:
- *                        SAME_NONZERO_STRUCTURE
- *                        DIFFERENT_NONZERO_STRUCTURE     
- *                     
- * @return 0 on success.
- */
-extern int parms_MatReset(parms_Mat self, NNZSTRUCT nonzerostructure);
 
 /** 
  * Set the communication type.

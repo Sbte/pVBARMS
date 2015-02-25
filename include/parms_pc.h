@@ -31,15 +31,7 @@ typedef struct parms_PC_ *parms_PC;
  */
 extern int parms_PCApply(parms_PC self, FLOAT *y, FLOAT *z);
 
-/** 
- * Set the matrix to create the preconditioning matrix.
- * 
- * @param self A preconditioner object.              
- * @param A    The matrix to be used for creating PC.
- * 
- * @return 0 on success.
- */
-extern int parms_PCSetOP(parms_PC self,  parms_Mat A);
+
 
 /** 
  * Set up the preconditioner (create the preconditioning matrix). 
@@ -48,7 +40,6 @@ extern int parms_PCSetOP(parms_PC self,  parms_Mat A);
  * 
  * @return 0 on success.
  */
-extern int parms_PCSetup(parms_PC self);
 extern int parms_PCSetup_b(parms_PC self);
 
 /** 
@@ -59,26 +50,8 @@ extern int parms_PCSetup_b(parms_PC self);
  * 
  * @return 0 on success.
  */
-extern int parms_PCCreate(parms_PC *self, parms_Mat A);
 extern int parms_PCCreate_b(parms_PC *self, parms_Mat A);
 
-/** 
- * Create an abstract preconditioner object.
- * 
- * @param self A pointer to the preconditioner object.
- * 
- * @return 0 on success.
- */
-extern int parms_PCCreateAbstract(parms_PC *self);
-
-/** 
- * Free the memory for the preconditioner object pointed to by self.
- * 
- * @param self A pointer to the memory for the preconditioner object.
- * 
- * @return 0 on success.
- */
-extern int parms_PCFree(parms_PC *self);
 
 extern int parms_PCFree_b(parms_PC *self);
 
@@ -108,7 +81,6 @@ extern void parms_PCView(parms_PC self, parms_Viewer v);
  * 
  * @return 0 on success.
  */
-extern int parms_PCSetType(parms_PC self, PCTYPE pctype);
 extern int parms_PCSetType_b(parms_PC self, PCTYPE pctype);
 /** 
  * Set local preconditioner type.
@@ -145,26 +117,6 @@ extern int parms_PCSetILUType(parms_PC self, PCILUTYPE pcstype);
  */
 extern int parms_PCILU(parms_PC self, parms_FactParam param, void
 			*mat, parms_Operator *op);
-
-/** 
- * Set parameters for the preconditioner object.
- *
- * Supported parameters:
- *   - tol    drop tolerance
- *   - fil    fill-in
- *   - nlev   number of levels
- *   - bsize  block size for finding independent sets in ARMS.
- *   - tolind drop tolerance for finding independent sets.
- *   - iksize the restart size for the inner GMRES.
- *   - imax   the number of iterations for the inner GMRES.
- *
- * @param self   A preconditioner object.
- * @param nflags The number of parameters.
- * @param params A pointer to parameters.
- * 
- * @return 0 on success.
- */
-extern int parms_PCSetParams(parms_PC self, int nflags, char **params);
 
 /** 
  * Set permutation and scaling options for interlevel blocks.
@@ -297,15 +249,6 @@ extern int parms_PCSetInnerEps(parms_PC self, REAL eps);
  */
 extern int parms_PCSetTolInd(parms_PC self, REAL tolind);
 /** 
- * Set the tolerance for finding independent sets.
- * 
- * @param self    A preconditioner object.
- * @param tolind  The drop tolerance for finding independent sets.
- * 
- * @return 0 on success.
- */
-extern int parms_PClocalgc_eps(parms_PC self, REAL eps);
-/** 
  * Get the ratio of the number of nonzero entries of the
  * preconditioning matrix to that of the original matrix.
  * 
@@ -336,68 +279,8 @@ extern int parms_PCGetName(parms_PC self, char **name);
  */
 extern int parms_PCILUGetName(parms_PC self, char **iluname);
 
-/*
- *
- * Fortran Wrapper Functions 
- *
-*/
 
-extern void parms_pccreate_(parms_PC *self, parms_Mat *A, int *ierr);
 
-extern void parms_pcfree_(parms_PC *self, int *ierr);
-
-extern void parms_pcgetratio_(parms_PC *self, double *ratio, int *ierr);
-
-extern void parms_pcsetbsize_(parms_PC *self, int *bsize, int *ierr);
-               
-extern void parms_pcsetfill_(parms_PC *self, int *fill, int *ierr);
-
-extern void parms_pcsetilutype_(parms_PC *self, PCILUTYPE *pcstype, int
-			 *ierr);
-			 
-extern void parms_pcsetinnereps_(parms_PC *self, REAL *eps, int *ierr);
-
-extern void parms_pcsetinnerksize_(parms_PC *self, int *im, int *ierr);
-
-extern void parms_pcsetinnermaxits_(parms_PC *self, int *imax, int *ierr);
-
-extern void parms_pcsetnlevels_(parms_PC *self, int *nlevel, int *ierr);
-
-extern void parms_pcsetparams_(parms_PC *self, int *nflags, char **params,
-			int *ierr);
-
-extern void parms_pcsettol_(parms_PC *self, double *tol, int *ierr);
-
-extern void parms_pcsettolind_(parms_PC *self, REAL *tolind, int *ierr);
-
-extern void parms_pcsettype_(parms_PC *self, PCTYPE *pctype, int *ierr);
-
-extern void parms_pcsetup_(parms_PC *self, int *ierr);
-
-extern void parms_pcsolve_(parms_PC *self, FLOAT *y, FLOAT *z, int *ierr);
-
-extern void parms_pcview_(parms_PC *self, parms_Viewer *v, int *ierr);
-
-extern void parms_pcgetname_(parms_PC *self, char *name, int *size, int
-		      *ierr, int len);
-		      
-extern void parms_pcilugetname_(parms_PC *self, char *name, int *size, int
-			 *ierr, int len);
-			 
-extern void parms_pccreateabstract_(parms_PC *self, int *ierr);
-
-extern void parms_pcsetpermscaloptions_(parms_PC *self, int *meth, int
-				      *flag, int *ierr);
-
-extern void parms_pcsetpermtype_(parms_PC *self, int *type, int *ierr);
-
-extern void parms_pcsetop_(parms_PC *self, parms_Mat *A, int *ierr);
-
-/*
- *
- * end Fortran Wrapper Functions 
- *
-*/
 
 PARMS_CXX_END
 

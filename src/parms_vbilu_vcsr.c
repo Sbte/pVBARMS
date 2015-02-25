@@ -52,66 +52,7 @@ static int parms_vbilu_free(parms_Operator *self)
     return 0;
 }
 
-//~ static int parms_ilu_view(parms_Operator self, parms_Viewer v)
-//~ {
-//~ parms_ilu_data data;
-//~ int i, j, n, nnz, *pj;
-//~ FLOAT *pa;
-//~ FILE *fp;
-//~ 
-//~ parms_ViewerGetFP(v, &fp);
-//~ data = (parms_ilu_data)self->data;
-//~ n = data->L->n;
-//~ fprintf(fp, "L part of the matrix:\n");
-//~ fprintf(fp, "n = %d\n", n);
-//~ #if defined(DBL_CMPLX)  
-//~ for (i = 0; i < n; i++) {
-//~ nnz = data->L->nnzrow[i];
-//~ pj  = data->L->pj[i];
-//~ pa  = data->L->pa[i];
-//~ fprintf(fp, "nnzrow[%d]=%d\n", i, nnz);
-//~ for (j = 0; j < nnz; j++) {
-//~ fprintf(fp, "(%d,%d,%f  %f) ", i, pj[j], creal(pa[j]), cimag(pa[j]));
-//~ }
-//~ }
-//~ n = data->U->n;
-//~ fprintf(fp, "U part of the matrix:\n");
-//~ fprintf(fp, "n = %d\n", n);
-//~ for (i = 0; i < n; i++) {
-//~ nnz = data->U->nnzrow[i];
-//~ pj  = data->U->pj[i];
-//~ pa  = data->U->pa[i];
-//~ fprintf(fp, "nnzrow[%d]=%d\n", i, nnz);
-//~ for (j = 0; j < nnz; j++) {
-//~ fprintf(fp, "(%d,%d,%f  %f) ", i, pj[j], creal(pa[j]), cimag(pa[j]));
-//~ }
-//~ }
-//~ #else
-//~ for (i = 0; i < n; i++) {
-//~ nnz = data->L->nnzrow[i];
-//~ pj  = data->L->pj[i];
-//~ pa  = data->L->pa[i];
-//~ fprintf(fp, "nnzrow[%d]=%d\n", i, nnz);
-//~ for (j = 0; j < nnz; j++) {
-//~ fprintf(fp, "(%d,%d,%f) ", i, pj[j], pa[j]);
-//~ }
-//~ }
-//~ n = data->U->n;
-//~ fprintf(fp, "U part of the matrix:\n");
-//~ fprintf(fp, "n = %d\n", n);
-//~ for (i = 0; i < n; i++) {
-//~ nnz = data->U->nnzrow[i];
-//~ pj  = data->U->pj[i];
-//~ pa  = data->U->pa[i];
-//~ fprintf(fp, "nnzrow[%d]=%d\n", i, nnz);
-//~ for (j = 0; j < nnz; j++) {
-//~ fprintf(fp, "(%d,%d,%f) ", i, pj[j], pa[j]);
-//~ }
-//~ }
-//~ #endif
-//~ parms_ViewerStoreFP(v, fp);
-//~ return 0;
-//~ }
+
 
 static void parms_vbilu_nnz_vcsr(parms_Operator self, int *nnz_mat, int *nnz_pc)
 {

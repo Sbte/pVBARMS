@@ -78,31 +78,12 @@ static int pc_ras_setup(parms_PC self)
     /* get the local matrix */
     parms_MatGetSubMat(A, &lmat);
 
-    //  parms_vcsr localmat;
-    //  localmat = (parms_vcsr)lmat;
-
-    // outputcsmatpa(localmat,"local_data",1);
-    //   outputvbmatpa(localmat,"localvb_data",1);
 
 
     /* extend the local matrix by including the equations correspond to
      the immediate neighbouring variables */
     parms_MatExtend(A, handler, 0, lmat, &pc_data->n, &mat_ext);//block version
 
-    //  parms_vcsr Amat;
-    //  Amat = (parms_vcsr)mat_ext;
-
-    //outputcsmatpa(Amat,"ext_data",1);
-    //outputvbmatpa(Amat,"extvb_data",1);
-    /* MPI_Barrier(MPI_COMM_WORLD); */
-    /* exit(1); */
-
-    /* parms_bvcsr Amat; */
-    /* Amat = (parms_bvcsr)mat_ext; */
-
-    /* outputvbmatpa(Amat,"b_ext_data",1); */
-    /* MPI_Barrier(MPI_COMM_WORLD); */
-    /* exit(1); */
 
 
     parms_MapCreateFromLocal(&pc_data->is, pc_data->n, 0);
@@ -281,11 +262,6 @@ static int pc_ras_b_setup(parms_PC self)
     /* get the local matrix */
     parms_MatGetSubMat(A, &lmat);
 
-    //  parms_bvcsr localmat;
-    //  localmat = (parms_bvcsr)lmat;
-
-    // outputcsmatpa(localmat,"local_data",1);
-    //outputvbmatpa(localmat,"localvb_data",1);
 
 
     /* extend the local matrix by including the equations correspond to
@@ -295,17 +271,6 @@ static int pc_ras_b_setup(parms_PC self)
     parms_bvcsr Amat;
     Amat = (parms_bvcsr)mat_ext;
     pc_data->nn = Amat->bsz[pc_data->n];
-    //outputcsmatpa(Amat,"ext_data",1);
-    //outputvbmatpa(Amat,"extvb_data",1);
-    /* MPI_Barrier(MPI_COMM_WORLD); */
-    /* exit(1); */
-
-    /* parms_bvcsr Amat; */
-    /* Amat = (parms_bvcsr)mat_ext; */
-
-    /* outputvbmatpa(Amat,"b_ext_data",1); */
-    /* MPI_Barrier(MPI_COMM_WORLD); */
-    /* exit(1); */
 
 
     parms_MapCreateFromLocal(&pc_data->is, pc_data->n, 0);
@@ -323,8 +288,6 @@ static int pc_ras_b_setup(parms_PC self)
         param->ipar[5] = 0;
     }
 
-    //MPI_Barrier(MPI_COMM_WORLD);
-    //exit(1);
 
     /* ILU factorization */
     parms_PCILU(self, param, mat_ext, &op);
@@ -400,9 +363,6 @@ static int pc_ras_b_apply(parms_PC self, FLOAT *y, FLOAT *x)
     PARMS_MEMCPY(x, x_ext, llsize);//change nloc
     free(x_ext);
     free(y_ext);
-
-    /* MPI_Barrier(MPI_COMM_WORLD); */
-    /* exit(1); */
 
     return 0;
 }

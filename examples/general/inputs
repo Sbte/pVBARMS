@@ -1,5 +1,5 @@
 BJ              parallel preconditioner (RAS, SCHUR, BJ)
-vbarms           local preconditioner (ilu0, iluk, ilut, arms, vbarms, vbarmsold)
+vbarms           local preconditioner (vbarms, vbarmsold, vbilut, vbiluk)
 0.01            eps(tolerance for inner iteration)
 1.0e-6          eps1(tolerance for outer iteration)
 1               nlev(number of levels for ARMS, ILUK and VBARMS)

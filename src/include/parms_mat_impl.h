@@ -166,12 +166,7 @@ struct parms_Mat_ {
 
 /* external function protos */
 extern int parms_MatCreate_vcsr(parms_Mat self);
-extern int parms_MatCreate_dvcsr(parms_Mat self);
-extern int parms_MatFree_dvcsr(parms_Mat *self);
-extern int parms_MatView_vcsr(parms_Mat self, parms_Viewer v);
-extern int parms_MatViewCOO_vcsr(parms_Mat self, parms_Viewer v);
 extern int parms_MatView_dvcsr(parms_Mat self, parms_Viewer v);
-extern int parms_MatViewCOO_dvcsr(parms_Mat self, parms_Viewer v);
 //-----------------------------------------------------------------------------------------------------------------------------
 extern int parms_MatCreate_b_dvcsr(parms_Mat self);
 extern int parms_MatCreate_b_vcsr(parms_Mat self);

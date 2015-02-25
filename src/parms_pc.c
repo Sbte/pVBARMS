@@ -1,6 +1,5 @@
 /*--------------------------------------------------------------------
-  parms_PCCreate          : create a preconditioner object.
-  parms_PCCreateAbstract  : create an abstract preconditioner object.
+  parms_PCCreate_b          : create a preconditioner object.
   parms_PCFree            : free the memory for the pc.
   parms_PCILU            : Perform the ilu factorization for the local preconditioner.
   parms_PCSetBsize        : set the block size for ARMS.
@@ -67,154 +66,9 @@ int parms_PCCreate_RAS(parms_PC self);
 */
 /*----------End Protos------------------*/
 
-/** 
- * Free the memory for the preconditioner object pointed to by self.
- *
- * @param self A pointer to the memory for the preconditioner object.
- *
- * @return 0 on success.
- */
-int parms_PCFree(parms_PC *self)
-{
-    (*self)->ref--;
-    if ((*self)->ref == 0 ) {
-        (*self)->ops->pc_free(self);
-        parms_MatFree(&(*self)->A);
-        if ((*self)->isperm) {
-            PARMS_FREE((*self)->perm);
-            PARMS_FREE((*self)->iperm);
-        }
-        PARMS_FREE((*self)->param);
-        PARMS_FREE((*self)->ops);
-        PARMS_FREE(*self);
-    }
 
-    return 0;
-}
 
-/** 
- * Set up the preconditioner (create the preconditioning matrix).
- *
- * @param self A preconditioner object.
- *
- * @return 0 on success.
- */
-int parms_PCSetup(parms_PC self)
-{
-    parms_FactParam param;
 
-    param = self->param;
-
-    /*--- Define default preconditioner (Block Jacobi/ILU0) ---*/
-    if(self->isiluset == false){
-        parms_PCSetILUType(self, PCILU0);
-    }
-    if(self->istypeset == false){
-        parms_PCSetType(self, PCBJ);
-    }
-    /*--- end definition of default precon ---*/
-
-    if (self->pctype != PCSCHUR) {
-        param->ipar[4] = 0;
-        param->ipar[5] = 0;
-    }
-    if (self->issetup == false) {
-        self->issetup = true;
-
-        //printf("here ");
-        self->ops->setup(self);
-    }
-    else
-    {
-        /* Re-use the precon data struct */
-        //printf("re-use");
-        self->issetup = false;
-        self->istypeset = false;
-        self->ops->pc_free(&self);
-        parms_PCSetType(self, self->pctype);
-        self->issetup = true;
-        self->ops->setup(self);
-    }
-    return 0;
-}
-
-/** 
- * Create a preconditioner object based on the matrix A.
- *
- * @param self A preconditioner object.
- * @param A    A matrix object.
- *
- * @return 0 on success.
- */
-int parms_PCCreate(parms_PC *self, parms_Mat A)
-{
-    parms_PC new_pc;
-    int i;
-
-    PARMS_NEW0((new_pc));
-    new_pc->ref = 1;
-    PARMS_NEW0((new_pc)->ops);
-    new_pc->isiluset  = false;
-    new_pc->istypeset = false;
-    new_pc->issetup   = false;
-    new_pc->isopset   = true;
-    new_pc->isperm    = false;
-    new_pc->islocalgc    = true;//new
-    new_pc->A = A;
-    A->ref++;
-    PARMS_NEW(new_pc->param);
-    /* set up default values for  */
-    new_pc->param->mc = 1;
-    new_pc->param->isalloc = false;
-    for (i = 0; i < 7; i++) {
-        new_pc->param->lfil[i] = 10;
-    }
-    new_pc->param->ipar[0] = 5;
-    new_pc->param->ipar[1] = 1;
-    new_pc->param->ipar[2] = 20;
-    new_pc->param->ipar[3] = 0;
-    new_pc->param->ipar[4] = 0;
-    new_pc->param->ipar[5] = 0;
-    for (i = 6; i < 18; i++) {
-        new_pc->param->ipar[i] = 0;
-    }
-
-    for (i = 0; i < 7; i++) {
-        new_pc->param->droptol[i] = 0.001;
-    }
-    new_pc->param->tolind = 0.05;
-
-    new_pc->param->pgfpar[0] = 0.001;
-    new_pc->param->pgfpar[1] = 0.001;
-
-    *self = new_pc;
-    return 0;
-}
-
-/** 
- * Create an abstract preconditioner object.
- *
- * @param self A pointer to the preconditioner object.
- *
- * @return 0 on success.
- */
-int parms_PCCreateAbstract(parms_PC *self)
-{
-    parms_PC new_pc;
-
-    PARMS_NEW(new_pc);
-    PARMS_NEW0((new_pc)->ops);
-    new_pc->isiluset  = false;
-    new_pc->istypeset = false;
-    new_pc->issetup   = false;
-    new_pc->isopset   = false;
-    new_pc->isperm    = false;
-    PARMS_NEW(new_pc->param);
-    new_pc->param->isalloc = false;
-
-    *self = new_pc;
-    return 0;
-}
 
 /** 
  * Solve \f$self z = y\f$
@@ -230,25 +84,6 @@ int parms_PCApply(parms_PC self, FLOAT *y, FLOAT *z)
     return self->ops->apply(self, y, z);
 }
 
-/** 
- * Set the matrix to create the preconditioning matrix.
- *
- * @param self A preconditioner object.
- * @param A    The matrix to be used for creating PC.
- *
- * @return 0 on success.
- */
-int parms_PCSetOP(parms_PC self, parms_Mat A)
-{
-
-    self->A = A;
-    if(!self->isopset){
-        A->ref++;
-        self->isopset = true;
-    }
-    //  self->issetup = false;
-    return 0;
-}
 
 /** 
  * Dump preconditioner object self.
@@ -261,66 +96,6 @@ void parms_PCView(parms_PC self, parms_Viewer v)
     self->ops->pc_view(self, v);
 }
 
-/** 
- * Set preconditioner type.
- *
- *  Currently supported preconditioners:
- *  \f{tabular}{ll}
- *  PCBJ     & block Jacobi \\
- *  PCRAS    & restricted additive Schwarz \\
- *  PCSCHUR  & Schur complement
- *  \f}
- *
- * @param self   A preconditioner object.
- * @param pctype The type of preconditioner.
- *               - PCBJ    block Jacobi
- *               - PCRAS   restricted additive Schwarz
- *               - PCSCHUR  Schur complement
- *
- * @return 0 on success.
- */
-int parms_PCSetType(parms_PC self, PCTYPE pctype)
-{
-    parms_Map    is;
-    parms_Mat    A;
-    BOOL         isserial;
-
-    if (self->istypeset && self->pctype == pctype) {
-        return 0;
-    }
-
-    A = self->A;
-    is = A->is;
-    isserial = is->isserial;
-    if (self->issetup) {
-        self->ops->pc_free(&self);
-    }
-
-    if (isserial) {
-        self->pctype = PCBJ;
-        parms_PCCreate_BJ(self);
-        self->istypeset = true;
-        self->issetup   = false;
-    }
-    else {
-        self->pctype = pctype;
-
-        if(pctype == PCBJ)
-            parms_PCCreate_BJ(self);
-        else if(pctype == PCRAS)
-            parms_PCCreate_RAS(self);
-        else if(pctype == PCSCHUR)
-            parms_PCCreate_Schur(self);
-        else
-        {
-            printf("ERROR: Invalid choice of preconditioner - (Check PCTYPE)! \n");
-            PARMS_ABORT(15);
-        }
-        self->istypeset = true;
-        self->issetup = false;
-    }
-    return 0;
-}
 
 /** 
  * Set local preconditioner type.
@@ -366,53 +141,21 @@ int parms_PCILU(parms_PC self, parms_FactParam param, void *mat,
     int type = self->pcilutype;
     int ierr = 0;
 
-    if(type == PCARMS)
-        ierr = parms_arms_vcsr(self->A, param, mat, op);
-    else if(type == PCILUT)
-        ierr = parms_ilut_vcsr(self->A, param, mat, op);
-    else if(type == PCILUK)
-        ierr = parms_iluk_vcsr(self->A, param, mat, op);
-    else if(type == PCILU0)
-        ierr = parms_ilu0_vcsr(self->A, param, mat, op);
-    else if(type == PCVBARMS){
-        //printf("self->islocalgc = %d\n", self->islocalgc);
-        //printf("(*op)->ref = %d\n", (*op)->ref);
-        //(*op)->ref = 1;//self->islocalgc;//for the if in parms_barms_sol_vcsr
-
-        /* MPI_Barrier(MPI_COMM_WORLD); */
-        /* exit(1); */
-
-        //(*op)->islocalgc = true;//self->islocalgc;//for the if in parms_barms_sol_vcsr
-        //printf("(*op)->islocalgc = %d\n", (*op)->islocalgc);
-
+    if(type == PCVBARMS){
         if (self->islocalgc == true){
             printf("before parms_barms_vcsr_l" );
             ierr = parms_barms_vcsr_l(self->A, param, mat, op);
         }
-        //outputvbmatpa(mat,"matbefore_barms",1);
         else {
-            //printf("before parms_barms_vcsr" );
             ierr = parms_barms_vcsr(self->A, param, mat, op);
         }
     }
     else if(type == PCVBARMSOLD){
-        //printf("self->islocalgc = %d\n", self->islocalgc);
-        //printf("(*op)->ref = %d\n", (*op)->ref);
-        //(*op)->ref = 1;//self->islocalgc;//for the if in parms_barms_sol_vcsr
-
-        /* MPI_Barrier(MPI_COMM_WORLD); */
-        /* exit(1); */
-
-        //(*op)->islocalgc = true;//self->islocalgc;//for the if in parms_barms_sol_vcsr
-        //printf("(*op)->islocalgc = %d\n", (*op)->islocalgc);
-
         if (self->islocalgc == true){
             printf("before parms_barms_vcsr_l" );
             ierr = parms_barms_vcsr_l_old(self->A, param, mat, op);
         }
-        //outputvbmatpa(mat,"matbefore_barms",1);
         else {
-            //printf("before parms_barms_vcsr" );
             ierr = parms_barms_vcsr_old(self->A, param, mat, op);
         }
     }
@@ -433,57 +176,6 @@ int parms_PCILU(parms_PC self, parms_FactParam param, void *mat,
     return 0;
 }
 
-/** 
- * Set parameters for the preconditioner object.
- *
- * Supported parameters:
- *   - tol    drop tolerance
- *   - fil    fill-in
- *   - nlev   number of levels
- *   - bsize  block size for finding independent sets in ARMS.
- *   - tolind drop tolerance for finding independent sets.
- *   - iksize the restart size for the inner GMRES.
- *   - imax   the number of iterations for the inner GMRES.
- *
- * @param self   A preconditioner object.
- * @param nflags The number of parameters.
- * @param params A pointer to parameters.
- *
- * @return 0 on success.
- */
-int parms_PCSetParams(parms_PC self, int nflags, char **params)
-{
-    int i, j, k;
-
-    for (i = 0, j = 0; i < nflags; i++) {
-        if (!strcmp(params[j], "fill")) {
-            for (k = 0; k < 7; k++) {
-                self->param->lfil[k] = atoi(params[++j]);
-            }
-        }
-        else if (!strcmp(params[j], "tol")) {
-            for (k = 0; k < 6; k++) {
-                self->param->droptol[k] = atof(params[++j]);
-            }
-        }
-        else if (!strcmp(params[j], "nlev")) {
-            self->param->ipar[0] = atoi(params[++j]);
-        }
-        else if (!strcmp(params[j], "bsize")) {
-            self->param->ipar[2] = atoi(params[++j]);
-        }
-        else if (!strcmp(params[j], "iksize")) {
-            self->param->ipar[4] = atoi(params[++j]);
-        }
-        else if (!strcmp(params[j], "imax")) {
-            self->param->ipar[5] = atoi(params[++j]);
-        }
-        else if (!strcmp(params[j], "tolind")) {
-            self->param->tolind = atof(params[++j]);
-        }
-    }
-    return 0;
-}
 
 /** 
  * Set fill-in parameter for ILUT and ARMS.
@@ -632,19 +324,7 @@ int parms_PCSetTolInd(parms_PC self, REAL tolind)
     return 0;
 }
 
-/** 
- * Set the tolerance for finding independent sets.
- *
- * @param self    A preconditioner object.
- * @param tolind  The drop tolerance for finding independent sets.
- *
- * @return 0 on success.
- */
-int parms_PClocalgc_eps(parms_PC self, REAL eps)
-{
-    self->param->eps = eps;
-    return 0;
-}
+
 /** 
  * Set permutation and scaling options for interlevel blocks
  *

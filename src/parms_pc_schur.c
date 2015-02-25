@@ -582,16 +582,6 @@ static int pc_schur_b_setup(parms_PC self)
   A =  self->A;
 
 
-/*typedef struct schur_data {
-  parms_Operator op;
-  int n, schur_start, nrow;
-  int im, maxits, in_iters;
-  MPI_Comm comm;
-  double pgfpar[2];
-  FLOAT **vv, **hh, *s, *rs, *hcol, *z2, *wk;
-  REAL *c;
-} *schur_data;*/
-
   /* Set parameters for the ILU factorization:
      ILUs in pARMS can perform factorizatoin based on the matrix
      merged implicitly by several submatrices. 
@@ -616,21 +606,9 @@ static int pc_schur_b_setup(parms_PC self)
 
   parms_bvcsr  b_diag_mat;
   b_diag_mat = (parms_bvcsr)diag_mat;//??
-  //localbsz = b_diag_mat->bsz;
+
   PARMS_NEWARRAY(localbsz,    param->n+1);
   PARMS_MEMCPY(localbsz, b_diag_mat->bsz, param->n+1);
-  //printf("b_diag_mat->bsz = %p\n",b_diag_mat->bsz);
-  //output_intvectorpa("b_diag_mat_bsz_schur",b_diag_mat->bsz,0, param->n+1);
-  //printf("localbsz[n] = %d\n",localbsz[param->n]);
-   /* MPI_Barrier(MPI_COMM_WORLD); */
-   /* exit(1); */
-
-
-
-
-  //localbsz = pc_data->localbsz;// = b_diag_mat->bsz;// changed
-
-   //output_intvectorpa("localbsz",localbsz,0, param->n+1);
 
 
   /* Perform local ILU-type factorization */
@@ -666,24 +644,9 @@ static int pc_schur_b_setup(parms_PC self)
   /* Set the beginning location of the Schur complement */
   pc_data->schur_start = parms_OperatorGetSchurPos(op);//block version??
 
-  //printf("pc_data->schur_start = %d\n",pc_data->schur_start);
-/*   pc_data->schur_start = A->is->schur_start; */
-
-/* initialise the localbsz, in the block version code, we set it to diag_mat->bsz*/
-//Amat = (parms_bvcsr)mat;
-
-//printf("pc_data->n = %d, pc_data->schur_start = %d \n",pc_data->n, pc_data->schur_start);
-
-
-//printf("localbsz[pc_data->n] = %d, localbsz[pc_data->schur_start] = %d \n",localbsz[pc_data->n], localbsz[pc_data->schur_start]);
-//printf("localbsz[1653] = %d, localbsz[980] = %d \n",localbsz[1653], localbsz[980]);
-
-  /* The size of local Schur complement */
-  //nrow = localbsz[pc_data->n] - pc_data->schur_start;//nrow = localbsz[pc_data->n] - localbsz[pc_data->schur_start];//nrow = pc_data->n - pc_data->schur_start;//changed
   nrow = pc_data->n - pc_data->schur_start;
-  //printf(" nrow = %d \n",nrow);
- /* MPI_Barrier(MPI_COMM_WORLD); */
- /*  exit(1); */
+
+
   pc_data->nrow = nrow;
 
 
@@ -730,28 +693,7 @@ static int pc_schur_b_setup(parms_PC self)
  */
 static int pc_schur_b_apply(parms_PC self, FLOAT *y, FLOAT *x)
 {
-  /*--------------------------------------------------------------------
-    APPROXIMATE LU-SCHUR LEFT PRECONDITONER
-    *--------------------------------------------------------------------
-    Schur complement left preconditioner.  This is a preconditioner for 
-    the global linear system which is based on solving approximately the
-    Schur  complement system. More  precisely, an  approximation to the
-    local Schur complement  is obtained (implicitly) in  the form of an
-    LU factorization  from the LU  factorization  L_i U_i of  the local
-    matrix A_i. Solving with this approximation amounts to simply doing
-    the forward and backward solves with the bottom part of L_i and U_i
-    only (corresponding to the interface variables).  This is done using
-    a special version of the subroutine lusol0 called lusol0_p. Then it
-    is possible to  solve  for an  approximate  Schur complement system
-    using GMRES  on  the  global  approximate Schur  complement  system
-    (which is preconditionied  by  the diagonal  blocks  represented by
-    these restricted LU matrices).
-    --------------------------------------------------------------------
-    Coded by Y. Saad - Aug. 1997 - updated Nov. 14, 1997.
-    C version coded by Zhongze Li, Jan. 2001, updated Sept, 17th, 2001
-    Revised by Zhongze Li, June 1st, 2006.
-    --------------------------------------------------------------------
-  */
+
   schur_data     pc_data;
   parms_Operator op;
   parms_Map      is;
@@ -779,15 +721,7 @@ static int pc_schur_b_apply(parms_PC self, FLOAT *y, FLOAT *x)
   /* get the matrix A */
   A = self->A;
 
-/* // NEW */
-/*   /\* Get diagonal part of the matrix *\/ */
-/*   parms_dvcsr data; */
-/*   parms_bvcsr b_diag_mat; */
-/*   int *bsz; */
-/*   data = (parms_dvcsr)A->data; */
-/*   b_diag_mat = data->b_diag_mat; */
-/*   bsz = b_diag_mat->bsz; */
-/* //END NEW */
+
 
 // NEW
   /* Get diagonal part of the matrix */
@@ -805,9 +739,6 @@ static int pc_schur_b_apply(parms_PC self, FLOAT *y, FLOAT *x)
 
   is = A->is;
 
-//printf("In schur_apply A = %d\n", A );getchar();
-//outputcsmatpa(A->aux_data,"aux_data",1);
-//output_dblvectorpa("y_in_schur_apply",y,0, pc_data->nrow);//getchar();
   /* get the dimension of the local matrix */
   /* n = pc_data->n; */
 
@@ -899,15 +830,10 @@ static int pc_schur_b_apply(parms_PC self, FLOAT *y, FLOAT *x)
 	 tmp = (0,y)^t: first fill tmp with zero components from 1 to n
 	 then copy rhs into "y" part of tmp
       */
-      /* printf("schur_start = %d\n", schur_start); */
-     /* printf("bsz[is->nint] = %d\n", bsz[is->nint]); */
-     /* printf("is->nint = %d\n", is->nint); */
-     /* printf("is->ninf = %d\n", is->ninf); */
+
       parms_MatVecOffDiag(A, vv[i], z2, schur_start);//change schur_start
 
-      //output_intvectorpa("b_diag_mat_bsz_schur",b_diag_mat->bsz,0, param->n);
-      //MPI_Barrier(MPI_COMM_WORLD);
-      //exit(1);
+
 
       parms_OperatorInvS(op, z2, z2);
 
@@ -1055,13 +981,6 @@ static int pc_schur_b_apply(parms_PC self, FLOAT *y, FLOAT *x)
 
   GCOPY(nrow, wk, incx, &x[schur_start], incx); 
 
-  /* //print to debug  */
-  /* int myid; */
-  /* MPI_Comm_rank(MPI_COMM_WORLD, &myid); */
-  /* printf("bsz[is->ninf] = %d, pid = %d\n", bsz[is->ninf],myid);  */
-  /* printf("bsz[is->nint] = %d, pid = %d\n", bsz[is->nint],myid);  */
-  /* printf("schur_start = %d, pid = %d\n", schur_start,myid);  */
-  /* //debug end  */
   ninf_len  = is->llsize-bsz[is->nint];
   //for (i = 0; i < bsz[is->ninf]; i++) {
   for (i = 0; i < ninf_len; i++) {
