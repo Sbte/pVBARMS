@@ -338,4 +338,21 @@ typedef struct __KeyType
     int key;   /* hash value */
 } KeyType;
 
+//typedef struct Graph {
+
+////   directed graph struct for pablo algorithm
+
+
+//    int n;	/* row dimension of matrix */
+//    int *vertex_array;	/* row dimension of matrix */
+//    int array_size;
+//    int nnz_node;	/* column dimension of matrix */
+//    int *nzcount;  /* length of each row */
+////    int *ja;     /* pointer to store column indices, sorted*/
+////    int *jab;	/* pointer to store block column indices, sorted*/
+////    FLOAT **ma;  /* pointer to store full dense column pointer */
+//} *graph;
+
+
+
 #endif  /* __VBLOCK_HEADER_H__ */

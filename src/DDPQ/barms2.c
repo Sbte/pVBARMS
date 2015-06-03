@@ -761,30 +761,14 @@ label1000:
     +--------------------------------------------------------------------*/
     //~ uwork = NULL;
     iwork = NULL;
-    //~ if (methS[0]) {
-    //~ iwork = (int *) Malloc(nC*sizeof(int), "barms2:3" );
-    //~ uwork = (int *) Malloc(nC*sizeof(int), "barms2:3.5" );
-    //~ tolind = 0.0;
-    //~ PQperm(schur, uwork, iwork, &nB, tolind, nbnd) ;
-    //~ rpermC(schur,uwork);
-    //~ cpermC(schur,iwork);
-    //~ }
+
     ilsch->rperm = iwork; //uwork;
     ilsch->perm  = iwork;
 
     /*   printf("  lf : %d  %d  %d  %d  %d  %d  %d  \n",lfil[0],
        lfil[1], lfil[2], lfil[3], lfil[4], lfil[5], lfil[6]) ; */
 
-    //~ ilsch->perm2 = NULL;
-    //~
-    //~ if (methS[1] == 0)
-    //~ ierr = ilut(schur, ilsch, lfil[5], droptol[5], stderr);
-    //~ else {
-    //~ ilsch->perm2 = (int *) Malloc(nC*sizeof(int), "barms2:ilutpC" );
-    //~ for (j=0; j<nC; j++)
-    //~ ilsch->perm2[j] = j;
     ierr = vbilutD(schur, droptol, lfil, ilsch);
-    //~ }
     /*---------- OPTIMIZATRION: NEED TO COMPOUND THE TWO
     RIGHT PERMUTATIONS -- CHANGES HERE AND IN
     USCHUR SOLVE ==  compound permutations */
@@ -1391,30 +1375,14 @@ label1000:
     +--------------------------------------------------------------------*/
     //~ uwork = NULL;
     iwork = NULL;
-    //~ if (methS[0]) {
-    //~ iwork = (int *) Malloc(nC*sizeof(int), "barms2:3" );
-    //~ uwork = (int *) Malloc(nC*sizeof(int), "barms2:3.5" );
-    //~ tolind = 0.0;
-    //~ PQperm(schur, uwork, iwork, &nB, tolind, nbnd) ;
-    //~ rpermC(schur,uwork);
-    //~ cpermC(schur,iwork);
-    //~ }
+
     ilsch->rperm = iwork; //uwork;
     ilsch->perm  = iwork;
 
     /*   printf("  lf : %d  %d  %d  %d  %d  %d  %d  \n",lfil[0],
        lfil[1], lfil[2], lfil[3], lfil[4], lfil[5], lfil[6]) ; */
 
-    //~ ilsch->perm2 = NULL;
-    //~
-    //~ if (methS[1] == 0)
-    //~ ierr = ilut(schur, ilsch, lfil[5], droptol[5], stderr);
-    //~ else {
-    //~ ilsch->perm2 = (int *) Malloc(nC*sizeof(int), "barms2:ilutpC" );
-    //~ for (j=0; j<nC; j++)
-    //~ ilsch->perm2[j] = j;
     ierr = vbilutD(schur, droptol, lfil, ilsch);
-    //~ }
     /*---------- OPTIMIZATRION: NEED TO COMPOUND THE TWO
     RIGHT PERMUTATIONS -- CHANGES HERE AND IN
     USCHUR SOLVE ==  compound permutations */

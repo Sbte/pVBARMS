@@ -24,7 +24,7 @@ OBJ1	=    ./src/parms_comm.o  \
 	     ./src/parms_map.o  ./src/parms_mat.o  \
 	     ./src/parms_mat_vcsr.o ./src/parms_mat_dvcsr.o  \
              ./src/parms_mem.o ./src/parms_operator.o  \
-             ./src/parms_ilu_vcsr.o ./src/parms_pc.o \
+             ./src/parms_pc.o \
 	     ./src/parms_pc_bj.o  ./src/parms_pc_ras.o  \
 	     ./src/parms_pc_schur.o  \
              ./src/parms_qsplit.o ./src/parms_solver.o  \
@@ -33,9 +33,8 @@ OBJ1	=    ./src/parms_comm.o  \
              ./src/gmres.o ./src/parms_complex.o ./src/parms_vbilu_vcsr.o
 
 # files from DDPQ directory
-OBJ2 	=    ./src/DDPQ/ilutpC.o  \
-	     ./src/DDPQ/MatOps.o ./src/DDPQ/misc.o  \
-	     ./src/DDPQ/PQ.o ./src/DDPQ/piluNEW.o  \
+OBJ2 	=    ./src/DDPQ/MatOps.o ./src/DDPQ/misc.o  \
+	     ./src/DDPQ/PQ.o  \
              ./src/DDPQ/setblks.o ./src/DDPQ/sets.o  \
 	     ./src/DDPQ/svdInvC.o ./src/DDPQ/vbiluk.o \
 	     ./src/DDPQ/vbilut.o ./src/DDPQ/barms2.o  \

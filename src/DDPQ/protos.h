@@ -119,15 +119,7 @@ extern void swapj(int v[], int i, int j);
 extern void swapm(FLOAT v[], int i, int j);
 extern void dswapm(double v[], int i, int j);
 
-/* piluNEW.c */
-extern int pilu(p4ptr amat, csptr B, csptr C, double *droptol, int
-		*lfil, csptr schur);
 
-/* ilutpC.c */
-extern int ilutD(csptr amat, double *droptol, int *lfil, ilutptr
-		 ilusch);
-extern int ilutpC(csptr amat, double *droptol, int *lfil, double
-		  permtol, int mband, ilutptr ilusch);
 
 /* PQ.c */
 extern int PQperm(csptr mat, int *Pord, int *Qord, int
