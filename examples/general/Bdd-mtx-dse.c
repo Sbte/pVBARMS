@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
             csmat = malloc(sizeof(*csmat));
 
             coo2csptr(n, nnz, a, ia, ja, csmat);
-//            outputcsmat(csmat,"mat.coo",0);
+//            outputcsmat(csmat,"1138mat.coo",1);
 
             /* exit(1); */
 
@@ -269,9 +269,18 @@ int main(int argc, char *argv[])
             printf("prm->eps = %f\n",prm->eps);
 
             if (prm->cosine)
+//                ierr = pablo( csmat, prm->eps, 1.0, &nB, &nBlock, &perm);
                 ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);//int init_blocks( csptr csmat, int *pnBlock, int **pnB, int **pperm, double eps)//parms_PCSetup(pc);
             else
                 ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
+//            int pablo(csptr mat, double alpha, double beta, int *nBB, int *nset, int **pperm)
+
+            printf("nBlock value is %d.\n", nBlock);//%f %p %s %c
+//            output_intvector("perm.coo", perm,0 , n);
+            output_intvector("nB.coo", nB,0 , nBlock);
+//            output_intvector("perm.coo", perm,0 , n);
+//            MPI_Finalize();
+//            exit(1);
             //printf("nBlock: %d\n", nBlock);getchar();
             tib1 =  parms_TimerGet(tm);
             printf("\ntime on init=%f\n",tib1);
@@ -298,6 +307,7 @@ int main(int argc, char *argv[])
             tib3 =  parms_TimerGet(tm);
             printf("\ntime on csrvbsrC_new=%f\n",tib3-tib2);
 
+            outputvbmat(vbmat,"1138vbmat.coo",1);
 
             blocksize = (double)csmat->n / (double)nBlock;
             Bdensity = (double)nnzCS( csmat ) / (double)memVBMat( vbmat ) * 100;

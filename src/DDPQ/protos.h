@@ -139,6 +139,9 @@ extern int init_blocks( csptr csmat, int *pnBlock, int **pnB, int
 /*cliques.c*/
 extern int init_blocks_density(csptr A, int *block_number, int **block_sizes, int **pperm, double eps);
 
+/*pablo*/
+extern int pablo(csptr mat, double alpha, double beta, int **nBB, int *nset, int **pperm);
+
 /* systimer.c */
 extern double sys_timer();
 

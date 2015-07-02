@@ -25,7 +25,7 @@ int KeyComp( const void *vfst, const void *vsnd )
   return 1;
 }
 
-typedef struct {
+typedef struct clique{
     int len; // amount of nodes
     int *nodes;
     int size; //size of nodes
@@ -37,7 +37,7 @@ typedef struct {
     void *neighbour_blocks;
 } Clique;
 
-typedef struct {
+typedef struct cliques{
     int len; // amount of cliques
     int size; // size of cliques
     Clique **cliques;

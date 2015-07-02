@@ -1749,17 +1749,17 @@ int indsetC2(csptr mat, int bsize, int *iord, int *nnod, double tol,
     /*  	 call weights to compute the weights for input matrix.. */
     setupCS(matT, mat->n,1);
     SparTran(mat, matT, 1, 0);
-//    outputcsmatpa(mat,"mat.coo",1);
-//    outputcsmatpa(matT,"matT.coo",1);
+    //    outputcsmatpa(mat,"mat.coo",1);
+    //    outputcsmatpa(matT,"matT.coo",1);
     SparTran(matT, mat, 1, 1);//A+A^T
-//    outputcsmatpa(mat,"matsymm.coo",1);
+    //    outputcsmatpa(mat,"matsymm.coo",1);
     weightsC(mat, w);
     /*----------------------------------------------------------------------
 | scan all nodes first to eliminate those not satisfying DD criterion 
 +----------------------------------------------------------------------*/
     // nbnd = n;//test
-    printf("nbnd = %d, in indsetC2 \n", nbnd);
-    printf("n = %d, in indsetC2 \n", n);
+//    printf("nbnd = %d, in indsetC2 \n", nbnd);
+//    printf("n = %d, in indsetC2 \n", n);
 
     nback = n-1;
     nod = 0;
@@ -1785,7 +1785,7 @@ int indsetC2(csptr mat, int bsize, int *iord, int *nnod, double tol,
         begin0  = begin;
         lastlev = begin;
         jcount  = 1;
-        printf("last value is %\d, after adding the node.\n", last);//%f %p %s %c
+//        printf("last value is %d, after adding the node.\n", last);//%f %p %s %c
 
         /*----------------------------------------------------------------------
 |     put all the nearest neighbor nodes of the current node into
@@ -1796,12 +1796,12 @@ int indsetC2(csptr mat, int bsize, int *iord, int *nnod, double tol,
             /*--------------------   traverse all the current level-set   */
             last0 = last;
             jcount0 = jcount;
-            printf("begin value is %d, last0 value is %d.\n", begin, last0);//%f %p %s %c
+//            printf("begin value is %d, last0 value is %d.\n", begin, last0);//%f %p %s %c
 
 
             for (inod=begin; inod<=last0; inod++) {
                 jnod = riord[inod];
-                printf("jnod value is %d.\n", jnod);//%f %p %s %c
+//                printf("jnod value is %d.\n", jnod);//%f %p %s %c
 
                 /*--------------------   This assumes A is not symmetric.   */
                 gmat = mat;
@@ -1883,27 +1883,391 @@ label50:
 |-----end-of-indsetC---------------------------------------------------
 |--------------------------------------------------------------------*/
 
+int setup_graph_c (csptr mat, graph gra){
+    // set up the graph
+    int n = mat->n;
+    gra->n = n;
+    int i;
+//    int *gra->deg_eachnode = gra->deg_eachnode;
+//    int *gra->vertex_array = gra->vertex_array;
+    //    int **pj = gra->pj;
+
+    gra->nnz_edges = 0;
+    for (i = 0; i < n; i++)
+        gra->nnz_edges += mat->nnzrow[i];
+    gra->nnz_edges -= n;//calculate the number of edges
+
+    gra->array_size = n;
+
+    gra->vertex_array = malloc(n*sizeof(*gra->vertex_array));
+    for (i = 0; i < n; i++)
+        gra->vertex_array[i] = i;
+
+    gra->deg_eachnode = malloc(n*sizeof(*gra->deg_eachnode));
+
+    for (i = 0; i < n; i++) {
+        gra->deg_eachnode[i] = mat->nnzrow[i] - 1;
+    }
+
+    //copy the mat->pj to gra->pj
+    //    pj = malloc(n*sizeof(*pj));
+
+    //    for (i = 0; i < n; i++) {
+    //        nzcount = mat->nnzrow[i];
+    //        pj[i] = malloc(nzcount*sizeof(*pj[i]));
+    //        memcpy(pj[i], mat->pj[i], nzcount*sizeof(int));
+    //    }
+
+    return 0;
+}
+
+int setup_graph_p (int n, graph gra){
+    // set up the graph
+
+//    int *gra->vertex_array = gra->vertex_array;
+//    int *gra->deg_eachnode = gra->deg_eachnode;
+
+    //    gra->nnz_edges = 0;
+    //    for (i = 0; i < n; i++)
+    //        gra->nnz_edges += mat->nnzrow[i];
+    gra->n = n;
+    gra->nnz_edges = 0;
+    gra->array_size = 0;
+
+    gra->vertex_array = malloc(n*sizeof(*gra->vertex_array));
+    gra->deg_eachnode = malloc(n*sizeof(*gra->deg_eachnode));
+//    printf("deg_eachnode value is %p.\n", gra->deg_eachnode);//%f %p %s %c
+//    printf("vertex_array value is %p.\n", gra->vertex_array);//%f %p %s %c
+//    printf("gra->vertex_array value is %p.\n", gra->vertex_array);//%f %p %s %c
 
 
-//int add_vertex(graph gra, int i){
+    memset(gra->deg_eachnode, 0, n*sizeof(*gra->deg_eachnode));
+
+//    printf("deg_eachnode[0] value is %d.\n", gra->deg_eachnode[0]);//%f %p %s %c
+
+    return 0;
+}
 
 
-//}
+int reset_graph_p (int n, graph gra){
+    // set up the graph
+
+//    int *gra->vertex_array = gra->vertex_array;
+//    int *gra->deg_eachnode = gra->deg_eachnode;
+
+    //    gra->nnz_edges = 0;
+    //    for (i = 0; i < n; i++)
+    //        gra->nnz_edges += mat->nnzrow[i];
+    gra->nnz_edges = 0;
+    gra->array_size = 0;
+
+//    gra->vertex_array = malloc(n*sizeof(*gra->vertex_array));
+//    gra->deg_eachnode = malloc(n*sizeof(*gra->deg_eachnode));
+//    printf("deg_eachnode value is %p.\n", gra->deg_eachnode);//%f %p %s %c
+//    printf("vertex_array value is %p.\n", gra->vertex_array);//%f %p %s %c
+//    printf("gra->vertex_array value is %p.\n", gra->vertex_array);//%f %p %s %c
 
 
-//int pablo(csptr mat, double alpha, int *beta, int *nBB, int *nset, int *perm)
-//{
-//    n = mat->n;
+    memset(gra->vertex_array, -1, n*sizeof(*gra->vertex_array));
+    memset(gra->deg_eachnode, 0, n*sizeof(*gra->deg_eachnode));
+
+//    printf("deg_eachnode[0] value is %d.\n", gra->deg_eachnode[0]);//%f %p %s %c
+
+    return 0;
+}
+
+int clean_graph (graph gra){
+    // clean up the graph
+
+    //    int i, n;
+
+    if (gra == NULL) return 0;
+    if (gra->n < 1) return 0;
 
 
-//    for (i = 0; i < n; i++)
-//        perm[i] = -1;
+    if (gra->vertex_array) {
+        free(gra->vertex_array);
+        gra->vertex_array = NULL;
+    }
 
-//    for (i = 0; i < n; i++) {
+    if (gra->deg_eachnode) {
+        free(gra->deg_eachnode);
+        gra->deg_eachnode = NULL;
+    }
 
-//    }
+    //    if (gra->pj) {
+    //        for (i = 0; i < n; i++)
+    //            if(gra->pj[i]){
+    //                free(gra->pj[i]);
+    //                gra->pj[i] = NULL;
+    //            }
+    //        free(gra->pj);
+    //        gra->pj = NULL;
 
-//}
+    //    }
+
+    free(gra);
+    gra = NULL;
+
+    return 0;
+}
+
+int add_vertex(graph graph_p, int node_i, csptr mat, int *belong_p, int *perm){//for graph p
+    //add node i into graph gra
+    int array_size, i, col, count_node_in_p = 0;
+    int *vertex_array = graph_p->vertex_array;
+
+    array_size = ++graph_p->array_size;
+
+//    vertex_array[0] = node_i;
+    vertex_array[array_size - 1] = node_i;
+
+    int *pj = mat->pj[node_i];
+    int nzcount = mat->nnzrow[node_i];
+
+    belong_p[node_i] = 1;
+    //    perm[node_i] = ;//when it loops to himself, it can jump over
+    for (i = 0; i < nzcount; i++) {
+//        count_node_in_p = 0;
+        col = pj[i];
+//        printf("col value is %d.\n", col);//%f %p %s %c
+//        printf("belong_p[col] value is %d.\n", belong_p[col]);//%f %p %s %c
+
+        if (col == node_i)//if the node is marked, then jump to the next one
+            continue;
+        else if(belong_p[col] != -1){
+            graph_p->deg_eachnode[col]++;
+//            printf("col degree updated value is %d.\n", col);//%f %p %s %c
+//            printf("count_node_in_p value is %d.\n", count_node_in_p);//%f %p %s %c
+            count_node_in_p++;
+        }
+    }
+//    printf("count_node_in_p value is %d.\n", count_node_in_p);//%f %p %s %c
+
+    graph_p->deg_eachnode[node_i] = count_node_in_p;
+//    belong_p[node_i] = 1;
+    graph_p->nnz_edges += 2*count_node_in_p;
+
+    return 0;
+}
+
+int remove_vertex(graph graph_p, int node_i, csptr mat, int *belong_p,int *perm){//for
+    //remove node i from graph gra
+    int array_size, i, col, count_node_in_p = 0;
+    int *vertex_array = graph_p->vertex_array;
+
+    array_size = --graph_p->array_size;
+    vertex_array[array_size - 1] = -1;
+
+    int *pj = mat->pj[node_i];
+    int nzcount = mat->nnzrow[node_i];
+    belong_p[node_i] = -1;
+
+    //    perm[node_i] = ;//when it loops to himself, it can jump over
+    for (i = 0; i < nzcount; i++) {
+//        count_node_in_p = 0;
+        col = pj[i];
+        if (col == node_i)//do not update the node himself
+            continue;
+        else if(belong_p[col] != -1){
+            graph_p->deg_eachnode[col]--;
+            count_node_in_p++;
+        }
+
+    }
+    graph_p->deg_eachnode[node_i] = 0;
+//    belong_p[node_i] = -1;
+    graph_p->nnz_edges -= 2*count_node_in_p;
+
+
+    return 0;
+}
+
+int remove_vertex_c(graph graph_c, int node_i, csptr mat, int *perm){//for
+    //remove node i from graph gra_C
+    int i, col;
+    int *vertex_array = graph_c->vertex_array;
+
+    --graph_c->array_size;
+    vertex_array[node_i] = -1;
+
+    int *pj = mat->pj[node_i];
+    int nzcount = mat->nnzrow[node_i];
+
+    //    perm[node_i] = ;//when it loops to himself, it can jump over
+    for (i = 0; i < nzcount; i++) {
+//        count_node_in_p = 0;
+        col = pj[i];
+        if (perm[col] != -1)//if the node is marked, then jump to the next one
+            continue;
+//        else if(belong_p[col]){
+        else
+            graph_c->deg_eachnode[col]--;
+//            count_node_in_p++;
+//        }
+
+    }
+    graph_c->deg_eachnode[node_i] = 0;
+//    belong_p[node_i] = -1;
+//    graph_c->nnz_edges -= 2*count_node_in_p;
+
+
+    return 0;
+}
+
+int move_adjacent_nodes(csptr mat, int *array_q, int *perm, int *nzcount_c, int array_q_start, int node_i, int *belong_q)
+{
+    //move node_i's adjacent nodes to array_q
+    int i, counter = 0;
+    int col;
+
+    int nzcount_row = mat->nnzrow[node_i];
+
+    for (i = 0; i < nzcount_row; i++) {
+        col = mat->pj[node_i][i];
+        if (perm[col] == -1){
+            array_q[array_q_start+counter] = col;
+            belong_q[col] = 1;
+            counter++;
+        }
+    }
+    *nzcount_c = counter;
+
+    return 0;
+}
+
+int pablo(csptr mat, double alpha, double beta, int **nBB, int *nset, int **pperm)
+{
+    int i, j, k, n, nzcount_q, Q_id, array_q_start, nzcount_in_q, counter, block_counter, col, degree_in_P;
+    int *array_q, *belong_p, *belong_q;
+    double fullness_P, fullness_P_plus;
+    int start_perm = 0, p_node;
+    int *perm = NULL, *nB = NULL;
+
+    n = mat->n;
+
+    perm = malloc(n*sizeof(*perm));
+    nB = malloc(n*sizeof(*nB));
+    belong_p = malloc(n*sizeof(*belong_p));
+    belong_q = malloc(n*sizeof(*belong_q));
+    array_q = malloc(n*sizeof(*array_q));//nnz instead of n??
+//    memset(array_q, -1, n*sizeof(int));
+
+
+
+    graph gra_c;
+    gra_c = malloc(sizeof(*gra_c));
+    setup_graph_c(mat, gra_c);
+
+    graph gra_p;
+    gra_p = malloc(sizeof(*gra_p));
+    setup_graph_p(n, gra_p);
+//    gra_p->deg_eachnode = malloc(n*sizeof(*gra_p->deg_eachnode));
+    printf("gra_p->deg_eachnode value is %p.\n", gra_p->deg_eachnode);//%f %p %s %c
+    printf("gra_p->vertex_array value is %p.\n", gra_p->vertex_array);//%f %p %s %c
+
+
+    for (i = 0; i < n; i++)
+        perm[i] = -1;
+
+    block_counter = 0;
+    for (i = 0; i < n; i++) {
+        if(perm[i] == -1){
+            memset(belong_p, -1, n*sizeof(int));//start a new p
+            memset(belong_q, -1, n*sizeof(int));//start a new q
+            memset(array_q, -1, n*sizeof(int));//reset set Q
+
+            add_vertex(gra_p, i, mat, belong_p, perm);//add one node //perm[i] = ??
+            perm[i] = start_perm++;
+            array_q_start = 0;
+            move_adjacent_nodes(mat, array_q, perm, &nzcount_q, array_q_start, i, belong_q);//move to Q
+//            printf("nzcount_q value is %d.\n", nzcount_q);//%f %p %s %c
+//            output_intvector("array_q",array_q,0, n);getchar();
+
+            array_q_start += nzcount_q;
+            for (j = 0; j < nzcount_q; j++)
+                gra_p->deg_eachnode[array_q[j]] = 1;//update in for all nodes in Q
+
+            fullness_P = 0;
+//            printf("i value is %d.\n", i);//getchar();//%f %p %s %c
+
+            j = 0;
+//            printf("val value is %d.n", val);//%f %p %s %c
+//            output_intvector("array_q",array_q,0, n);getchar();
+
+            while ((array_q[j] != -1) && (perm[array_q[j]] == -1)){
+                Q_id = array_q[j];
+//                printf("i value is %d, j value is %d, Q_id value is %d.\n", i, j, Q_id);//%f %p %s %c
+
+                if (j)
+                    fullness_P= (double) gra_p->nnz_edges / (double)(gra_p->array_size*gra_p->array_size - gra_p->array_size);
+                degree_in_P = gra_p->deg_eachnode[Q_id];
+                add_vertex(gra_p, Q_id, mat, belong_p, perm);//perm[i] = ??
+                fullness_P_plus = (double) gra_p->nnz_edges / (double)(gra_p->array_size*gra_p->array_size - gra_p->array_size);
+                if ((fullness_P_plus >= alpha*fullness_P) || (degree_in_P >= gra_c->deg_eachnode[Q_id]*beta) ) {
+                    //                    move_adjacent_nodes(mat, array_q, perm, &nzcount_in_q, array_q_start);
+                    perm[Q_id] = start_perm++;
+                    nzcount_in_q = mat->nnzrow[Q_id];
+                    counter = 0;
+                    for (k = 0; k < nzcount_in_q; k++) {//move adjacent nodes
+//                        printf("i, j, k value is %d, %d, %d\n", i, j, k);//getchar();//%f %p %s %c
+
+                        col = mat->pj[Q_id][k];//append
+//                        printf("belong_q[col] value is %d, col value is %d.\n", belong_q[col], col);//%f %p %s %c
+
+                        if (perm[col] == -1 && belong_q[col] == -1){
+//                            printf("array_q_start, counter value is %d, %d.\n", array_q_start, counter);//%f %p %s %c
+
+                            array_q[array_q_start+counter] = col;//
+//                            output_intvector("array_q",array_q,0, n);getchar();
+                            belong_q[col] = 1;
+                            counter++;
+                            gra_p->deg_eachnode[col]++;//update in
+                        }
+                    }
+                    array_q_start += counter;
+                }
+                else {
+                    remove_vertex(gra_p, Q_id, mat, belong_p, perm);//remove p from P
+                    //                    fullness_P= (double) gra_p->nnz_edges / (double)(gra_p->array_size*gra_p->array_size - gra_p->array_size);
+
+                }
+                j++;
+            }
+            nB[block_counter] = gra_p->array_size;
+            block_counter++;
+
+            reset_graph_p(n, gra_p);//reset gra_p
+//            memset(gra_p->deg_eachnode, -1, n*sizeof(*gra_p->deg_eachnode));//reset set P
+//            memset(gra->deg_eachnode, -1, n*sizeof(*gra->deg_eachnode));
+
+//update nBB and nset
+//            for (j = 0; j < gra_p->array_size; j++) {
+//                    perm[j] = gra_p->vertex_array[j] ;
+//            start_pos_perm += gra_p->array_size;
+//            memcpy(&perm[], gra_p->vertex_array, gra_p->array_size*sizeof(int));
+//            }
+        }
+    }
+
+    for (i = 0; i < gra_p->array_size; i++) {
+        p_node = gra_p->vertex_array[i];
+        remove_vertex_c(gra_c, p_node, mat, perm);//update the degree of C set
+    }
+
+    *nset = block_counter;
+
+    *pperm = perm;
+    *nBB = nB;
+
+    free(belong_p);
+    free(belong_q);
+    free(array_q);
+    clean_graph(gra_c);
+    clean_graph(gra_p);
+
+    return 0;
+}
 
 
 //int pablo(csptr mat, int bsize, int *iord, int *nnod, double tol,

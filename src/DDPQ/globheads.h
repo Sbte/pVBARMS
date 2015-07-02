@@ -338,20 +338,20 @@ typedef struct __KeyType
     int key;   /* hash value */
 } KeyType;
 
-//typedef struct Graph {
+typedef struct Graph {
 
-////   directed graph struct for pablo algorithm
+//   directed graph struct for pablo algorithm
+//   graph C and P are different
 
-
-//    int n;	/* row dimension of matrix */
-//    int *vertex_array;	/* row dimension of matrix */
-//    int array_size;
-//    int nnz_node;	/* column dimension of matrix */
-//    int *nzcount;  /* length of each row */
-////    int *ja;     /* pointer to store column indices, sorted*/
-////    int *jab;	/* pointer to store block column indices, sorted*/
-////    FLOAT **ma;  /* pointer to store full dense column pointer */
-//} *graph;
+    int n;	/* row dimension of matrix */
+    int *vertex_array;
+    int array_size;
+    int nnz_edges;	/* column dimension of matrix */
+    int *deg_eachnode;  /* length of each row */
+//    int **pj;     /* pointer to store column indices, sorted*/
+//    int *jab;	/* pointer to store block column indices, sorted*/
+//    FLOAT **ma;  /* pointer to store full dense column pointer */
+} *graph;
 
 
 

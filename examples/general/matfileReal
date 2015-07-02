@@ -1,8 +1,22 @@
-../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
+../../../../mtx_matrices/stacom.mtx
+##
+../../../../mtx_matrices/raefsky3.mtx
+##
+../../../../mtx_matrices/rae.mtx
+##
+../../../cyl/mat000.bin ../../../../../../../mtx_matrices/ct20stif.mtx
+##
+../../../../mtx_matrices/olafu.mtx
+##
+../../../../mtx_matrices/k3plates.mtx
+../../../../mtx_matrices/nasasrb.mtx
+##
+../matrices/steam3.mtx
 ##
 ../matrices/1138_bus.mtx
+../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
 ##
-../../../cyl/mat000.bin ../../../cyl/rhs000.bin
+cyl/rhs000.bin
 ##
 ../../social_network/soc-Slashdot0902/soc-Slashdot0902.mtx
 ../../fortran_examples/Stanford_Berkeley/Stanford_Berkeley.mtx
@@ -18,24 +32,14 @@
 ##
 ../../fortran_examples/web-BerkStan/web-BerkStan.rb
 ##
-../matrices/mat000.bin ../matrices/rhs000.bin
-##
-##
-../../../../mtx_matrices/nasasrb.mtx
-../../../../mtx_matrices/olafu.mtx
-../../../../mtx_matrices/ct20stif.mtx
 ##
 ../../../../mtx_matrices/s3dkq4m2.mtx
-##
-../../../../mtx_matrices/rae.mtx
-../../../../mtx_matrices/raefsky3.mtx
 ##
 ##
 ##
 ../../../../mtx_matrices/pwtk.mtx
 ../../../../mtx_matrices/stacom.mtx
 ##
-../../../../mtx_matrices/k3plates.mt
 ../../../../mtx_matrices/oilpan.mtx
 
 
@@ -92,7 +96,5 @@
 ../../../mtx_matrices/k3plates.mtx
 ##
 ../matrices/testmat.mtx
-##
-../../../mtx_matrices/stacom.mtx
 ##
 ##
