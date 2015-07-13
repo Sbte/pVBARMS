@@ -1,0 +1,7 @@
+#/bin/sh
+cd ../.. && make cleanall && make -j 8 && cd examples/general && make -j 8 && echo 'DONE -) 
+'
+
+
+
+

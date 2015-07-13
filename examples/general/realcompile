@@ -1,0 +1,7 @@
+#/bin/sh
+cp ../../makefile_real.in ../../makefile.in
+cd ../.. && make cleanall && make && cd examples/general && make && echo 'DONE -) '
+
+
+
+
