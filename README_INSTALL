@@ -1,8 +1,8 @@
 
------------------------------- INSTALLING AND RUNNING pARMS3 -----------------
+------------------------------ INSTALLING AND RUNNING pVARMS -----------------
 
 
-I. INSTALLING pARMS.
+I. INSTALLING pVARMS.
 
   a) Copy the appropriate conf/makefile.XX to makefile.in in this 
      directory
@@ -11,7 +11,7 @@ I. INSTALLING pARMS.
      If no BLAS installation exists, remove -DHAS_BLAS from CFLAGS in 
      makefile.in
    
-   NOTE: To compile the complex version of pARMS, replace the -DDBL flag in 
+   NOTE: To compile the complex version of pVARMS, replace the -DDBL flag in
    makefile.in with -DDBL_CMPLX.     
 
   c) Type 'make' to build the library -- 
