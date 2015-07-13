@@ -1,4 +1,6 @@
-../../../../mtx_matrices/stacom.mtx
+../matrices/1138_bus.mtx
+##
+../matrices/sherman5.mtx ../../../../mtx_matrices/stacom.mtx
 ##
 ../../../../mtx_matrices/raefsky3.mtx
 ##
@@ -13,8 +15,7 @@
 ##
 ../matrices/steam3.mtx
 ##
-../matrices/1138_bus.mtx
-../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
+../matrices/sherman5_rhs1.mtx
 ##
 cyl/rhs000.bin
 ##
