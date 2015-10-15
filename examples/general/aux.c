@@ -1,8 +1,12 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "aux.h"
+#include "mmio.h"
+#include <dlfcn.h>
 
 
 int read_param(char *fname, char mname[MAX_MAT][MAX_LINE], fprm prm)
@@ -391,10 +395,11 @@ void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat){
 
 
 
-void output_intvector(char *filename,int *v,int i0, int i1){//output a integer vector output_intvector("initperm.coo" ,perm,0, csmat->n);getchar();
+void output_intvector(char *filename,int *v,int i0, int i1){
+    //output a integer vector
     FILE *fp;
     int jj;
-//    printf(" in side value is.\n" );//%f %p %s %c
+    //    printf(" in side value is.\n" );//%f %p %s %c
 
     fp = fopen(filename,"w");
     for(jj=i0; jj<i1;jj++)
@@ -513,17 +518,11 @@ int colunms2csptr(int n, int *ia, int *ja, FLOAT *a, csptr mat)
  *---------------------------------------------------------------------*/
     int i, j, firstpos;
     int *nnzrow, *pj;
-    //int n = vbmat->n, *ja, *bsz = vbmat->bsz;
-    //double *w;
-    //FLOAT *pj;
 
     setupCS(mat,n,1);//int setupCS(csptr amat, int len, int job)
-    //printf("\n n1=%d",mat->n); getchar();
-    //w =(double*)malloc(n*sizeof(double));
+
     for( i = 0; i < n; i++ )
     {
-        //ia-1;ja-1
-        //printf("\n i=%d",i); getchar();
         nnzrow = mat->nnzrow;
         nnzrow[i] = B_DIM(ia,i);//get the lenth of each row
         firstpos = ia[i]-1;//get the address of the first entry in each row
@@ -533,10 +532,8 @@ int colunms2csptr(int n, int *ia, int *ja, FLOAT *a, csptr mat)
         {
             pj[j] = ja[firstpos+j]-1;//ja[firstpos+j]--;
         }
-        //memcpy(mat->pj[i],&ja[firstpos],nnzrow[i]*sizeof(int));
         mat->pa[i] = (FLOAT *) Malloc(nnzrow[i]*sizeof(FLOAT), "colunms2csptr" );//ja=mat->ja[i]=vbmat->ja[i];
         memcpy(mat->pa[i],&a[firstpos],nnzrow[i]*sizeof(FLOAT));
-        //printf("\n vbmat->ja[i]=%d",vbmat->ja[i]); getchar();
     }
     return 0;
 }
@@ -571,22 +568,13 @@ int csptr2colunms(csptr mat, int *n, int *ia, int *ja)//
     *n = mat->n;
     for( i = 0; i < mat->n; i++ )
     {
-        //ia-1;ja-1
-        //printf("\n i=%d",i); getchar();
         nnzrow = mat->nnzrow;
-        //ia[0] = 1;
-        //for( j = 1; j <= n; j++ ){
         ia[i+1] = ia[i] + nnzrow[i];
-        //}
-        // = nnzrow[i];//get the lenth of each row
         firstpos = ia[i]-1;//get the address of the first entry in each row
-        //mat->pj[i] = (int *) Malloc(nnzrow[i]*sizeof(int), "colunms2csptr" );//ja=mat->ja[i]=vbmat->ja[i];
         pj = mat->pj[i];
-        //pa = mat->pa[i];
         for( j = 0; j < nnzrow[i]; j++ )
         {
             ja[firstpos+j] = pj[j] + 1;//pj[j] = ja[firstpos+j]-1;//ja[firstpos+j]--;
-            //a[firstpos+j] = pa[j];
         }
     }
     return 0;
@@ -729,26 +717,18 @@ int vbsptr2colunms(vbsptr mat, int *bnnz, int *ia, int *ja, BData *a)//
  *             -1  -- error occur
  *
  *---------------------------------------------------------------------*/
-    int i, j, firstpos;//, dimC, dimR, blocksz;
-    int *nzcount, *pj;//, *bsz;
+    int i, j, firstpos;
+    int *nzcount, *pj;
     BData *pa;
 
     ia[0] = 1;
-    //    bsz = mat->bsz;
 
     for( i = 0; i < mat->n; i++ )
     {
-        //dimR = B_DIM(bsz,i);
-        //ia-1;ja-1
-        //printf("\n i=%d",i); getchar();
+
         nzcount = mat->nzcount;
-        //ia[0] = 1;
-        //for( j = 1; j <= n; j++ ){
         ia[i+1] = ia[i] + nzcount[i];
-        //}
-        // = nnzrow[i];//get the lenth of each row
         firstpos = ia[i]-1;//get the address of the first entry in each row
-        //mat->pj[i] = (int *) Malloc(nnzrow[i]*sizeof(int), "colunms2csptr" );//ja=mat->ja[i]=vbmat->ja[i];
         pj = mat->ja[i];
         pa = mat->ba[i];
         for( j = 0; j < nzcount[i]; j++ )
@@ -756,17 +736,10 @@ int vbsptr2colunms(vbsptr mat, int *bnnz, int *ia, int *ja, BData *a)//
             //---------------------------------------------------------------------------------------------------------
             ja[firstpos+j] = pj[j] + 1;
             a[firstpos+j] = pa[j];
-            //--------------------------------------------------------------------------------------------------------
-            //col = pj[j];
-            /*dimC = B_DIM(bsz,pj[j]);//BdimC = B_DIM(bsz,jb[kb]);
-        blocksz = dimR*dimC;
-        ja[firstpos+j] = pj[j] + 1;//pj[j] = ja[firstpos+j]-1;//ja[firstpos+j]--;
-        a[firstpos+j] = (BData)Malloc( blocksz*sizeof(FLOAT), "vbsptr2colunms" );
-        copyBData( dimR, dimC, a[firstpos+j], pa[j], 0 );//a[firstpos+j] = pa[j];*/
+
         }
     }
     *bnnz = ia[mat->n]-1;
-    //printf("*bnnz=%d, ia[mat->n+1]=%d, mat->n=%d ",*bnnz, ia[mat->n],mat->n+1);
     return 0;
 }
 
@@ -783,7 +756,6 @@ int outputcsmatpa ( csptr mat, char *filename, int onebase){//for parallel csr m
     PARMS_NEWARRAY(newfilename, length);
 
     strcpy(newfilename, filename);
-    //printf("A->aux_data=%d",A->aux_data);getchar();
     sprintf(newfilename, "%s_%d.coo", newfilename, myid);
     outputcsmat(mat,newfilename,onebase);//getchar();
     PARMS_FREE(newfilename);
@@ -805,7 +777,6 @@ int output_intvectorpa(char *filename,int *v,int i0, int i1){//for parallel inte
     PARMS_NEWARRAY(newfilename, length);
 
     strcpy(newfilename, filename);
-    //printf("A->aux_data=%d",A->aux_data);getchar();
     sprintf(newfilename, "%s_%d.coo", newfilename, myid);
     output_intvector(newfilename,v,i0,i1);//getchar();
     PARMS_FREE(newfilename);
@@ -827,7 +798,6 @@ int output_dblvectorpa(char *filename,FLOAT *v,int i0, int i1){//for parallel in
     PARMS_NEWARRAY(newfilename, length);
 
     strcpy(newfilename, filename);
-    //printf("A->aux_data=%d",A->aux_data);getchar();
     sprintf(newfilename, "%s_%d.coo", newfilename, myid);
     output_dblvector(newfilename,v,i0,i1);//getchar();
     PARMS_FREE(newfilename);
@@ -893,23 +863,18 @@ int bincols2csptr(int n, int *nnzptr, int *ja, FLOAT *a, csptr mat)
 
     for (i = 0; i < n; ++i)
     {
-        //ia-1;ja-1
-        //printf("\n i=%d",i); getchar();
         nnzrow[i] = nnzptr[i];//get the lenth of each row
         mat->pj[i] = (int *) Malloc(nnzrow[i]*sizeof(int), "colunms2csptr" );//ja=mat->ja[i]=vbmat->ja[i];
-        //~ fprintf(stderr, "nnz %d ", nnzrow[i]);
         memcpy(mat->pj[i], &ja[firstpos], nnzrow[i]*sizeof(int));
-        //memcpy(mat->pj[i],&ja[firstpos],nnzrow[i]*sizeof(int));
         mat->pa[i] = (FLOAT*) Malloc(nnzrow[i]*sizeof(FLOAT), "colunms2csptr" );//ja=mat->ja[i]=vbmat->ja[i];
         memcpy(mat->pa[i],&a[firstpos],nnzrow[i]*sizeof(FLOAT));
-        //printf("\n vbmat->ja[i]=%d",vbmat->ja[i]); getchar();
         firstpos += nnzrow[i];
     }
     return 0;
 }
 
 
-double bswap_double(double a)
+double bswap_double(double a)//
 {
     double b;
     unsigned char *src = (unsigned char *)&a,
@@ -925,7 +890,7 @@ double bswap_double(double a)
 
 double byteswap_double(double v) // This doesn't work for some values
 {
-    union { // This trick is first used in Quake2 source I believe :D
+    union { // This trick is first used
         int64_t i;
         double  d;
     } conv;
@@ -936,7 +901,7 @@ double byteswap_double(double v) // This doesn't work for some values
 
 
 int fillinuppertrg(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int *jb, int *ib, SYMMTYPE sytype){
-
+    //fill in the upper triangle part when matrix is SYMM or HERMITION or SKEW_SYMM
     int i, j, col;
     int *nzcount = malloc(n*sizeof(*nzcount));
 
@@ -1012,8 +977,7 @@ int fillinuppertrg(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int *jb
 
 
 int fullmatize(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int *jb, int*ib, char *type){
-    //int i, j, col;
-    //    int *nzcount = malloc(n*sizeof(*nzcount));
+
 
     if(type[0] == 'R' || type[0] == 'r'){
         switch (type[1]) {
@@ -1086,7 +1050,7 @@ int fullmatize(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int *jb, in
     return 0;
 }
 
-int compare(const void * a, const void * b)
+int compare(const void * a, const void * b)//for qsort
 {
     return ( *(int*)a - *(int*)b );
 }
@@ -1095,6 +1059,7 @@ int compare(const void * a, const void * b)
 int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[],
                                      FLOAT val[], int *indices, int nindices, int *gia)
 {
+
     long long offset, ja_startindex, gpindex, numread;
 
     int i1, rowlength;
@@ -1215,4 +1180,44 @@ int local_read_bin_data(FILE *binfile, long int M, long int N, int nz, int ia[],
     free(indices);
 
     return ierr;
+}
+
+
+unsigned long long (*get_mem)() = NULL;
+
+
+unsigned long long get_memory_usage_()
+{
+    static int once = 0;
+    if (!once)
+    {
+        get_mem = (unsigned long long (*)())dlsym(RTLD_DEFAULT, "get_memory_usage");
+        if (!get_mem)
+        {
+            get_mem = get_memory_usage_;
+            printf("To enable memory profiling you need to LD_PRELOAD the malloc_impl library\n");
+            once = 1;
+            return 0;
+        }
+        return get_mem();
+    }
+    return 0;
+}
+
+void print_mem(const char* descr)
+{
+    int myid;
+    double value;
+    char unit[3];
+    strcpy(unit, "B ");
+    value = get_mem();
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+
+    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "kB");}
+    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "MB");}
+    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "GB");}
+    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "TB");}
+
+    printf("%s on proc %d: %f %s\n", descr, myid, value, unit);
 }

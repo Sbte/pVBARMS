@@ -21,66 +21,66 @@
 
 /*
 typedef  int (*PARMS_ILU)(parms_Mat self, parms_FactParam param, void
-			  *data, parms_Operator *op);  
+              *data, parms_Operator *op);
 */
 
 /*! \struct parms_Mat_ops.
   \brief struct parms_mat_ops.
  */
 typedef struct parms_Mat_ops {
-  /*! function parameter: apply
-    \brief performs \f$y = self \times x\f$. 
+    /*! function parameter: apply
+    \brief performs \f$y = self \times x\f$.
   */
-  int (*apply)(parms_Mat self, FLOAT *x, FLOAT *y);
-  /*! 
+    int (*apply)(parms_Mat self, FLOAT *x, FLOAT *y);
+    /*!
     Divide the local equation into diagonal part and off-diagonal
     part. Set up communcation handler for matrix-vector product.
    */
-  int (*setup)(parms_Mat self);	
-  /*! Set the communication type
+    int (*setup)(parms_Mat self);
+    /*! Set the communication type
     \f{tabular}{ll}
     P2P & Copying data into a temporary buffer \\
     DERIVED & Creating a derived datatype as in the old version of
-    pARMS. 
+    pARMS.
     \f}
    */
-  int (*setcommtype)(parms_Mat self, COMMTYPE ctype);
+    int (*setcommtype)(parms_Mat self, COMMTYPE ctype);
 
-  /*! function parameter: mvpy
+    /*! function parameter: mvpy
     \brief Performs z = beta*y + alpha*self*x.
   */
-  int (*mvpy)(parms_Mat self, FLOAT alpha, FLOAT *x, FLOAT beta,
-	      FLOAT *y, FLOAT *z);
+    int (*mvpy)(parms_Mat self, FLOAT alpha, FLOAT *x, FLOAT beta,
+                FLOAT *y, FLOAT *z);
 
-  /*! function parameter: getdiag
+    /*! function parameter: getdiag
     \brief Get the diagonal part of the local matrix.
    */
-  int (*getdiag)(parms_Mat self, void **mat);
-  /*! function parameter: getlmat
+    int (*getdiag)(parms_Mat self, void **mat);
+    /*! function parameter: getlmat
     \brief Get the local matrix including diagonal and off-diagonal
-    matrix.  
+    matrix.
    */
-  int (*getlmat)(parms_Mat self, void **mat);
-  /*! function parameter: extend
+    int (*getlmat)(parms_Mat self, void **mat);
+    /*! function parameter: extend
     \brief Extend the submatrix mat by including equations that
     correspond to immediate neighbouring variables.
    */
-  int (*extend)(parms_Mat self, parms_Comm handler, int start, void
-		*mat, int *n, void **ext_mat);
-  /*! function Parameter: mvoffd
+    int (*extend)(parms_Mat self, parms_Comm handler, int start, void
+                  *mat, int *n, void **ext_mat);
+    /*! function Parameter: mvoffd
     \brief The matrix-vector product for off-diagonal part.
    */
-  int (*mvoffd)(parms_Mat self, FLOAT *x, FLOAT *y, int pos);
+    int (*mvoffd)(parms_Mat self, FLOAT *x, FLOAT *y, int pos);
 
-  /*! function Parameter: matfree
+    /*! function Parameter: matfree
     \brief Free the matrix mat.
    */
-  int (*matfree)(parms_Mat self, void *mat);
+    int (*matfree)(parms_Mat self, void *mat);
 
-  /*! function Parameter: gethandler
+    /*! function Parameter: gethandler
       \brief Get the communication handler for mv product.
    */
-  int (*gethandler)(parms_Mat self, parms_Comm *handler);
+    int (*gethandler)(parms_Mat self, parms_Comm *handler);
 } *parms_Mat_ops;
 
 
@@ -88,17 +88,17 @@ typedef struct parms_Mat_ops {
   \ Description: struct parms_vcsr.
  */
 typedef struct parms_vcsr {
-  int      n;         	//!< the dimension of the matrix 
-  int      *nnzrow;    //!< the length of each row 
-  int      *space;     //!<  length of space ( a work array)
-  int      off_proc_n; //!< size of off-processor contributions
-  /*! 
-  		Parameter: pj = An indirect pointer to store column indices.
+    int      n;         	//!< the dimension of the matrix
+    int      *nnzrow;    //!< the length of each row
+    int      *space;     //!<  length of space ( a work array)
+    int      off_proc_n; //!< size of off-processor contributions
+    /*!
+        Parameter: pj = An indirect pointer to store column indices.
    */
-  int      **pj;
-  /*! parameter: pa = An indirect pointer to store corresponding nonzero entries.  
+    int      **pj;
+    /*! parameter: pa = An indirect pointer to store corresponding nonzero entries.
   */
-  FLOAT    **pa;
+    FLOAT    **pa;
 } *parms_vcsr;
 
 //---------------------------------------------------------------------------dividing line-------------------------------------------------------------------------------------- 
@@ -108,7 +108,7 @@ typedef struct VBSpaFmt {
     int n;        /* the block row dimension of the matrix      */
     int nc;       //new, specially for rectangular matrix
     int *bsz;     /* the row/col of the first element of each   */
-                  /* diagonal block                             */
+    /* diagonal block                             */
     int *bszc;    //new, specially for rectangular matrix
     int *nzcount;  /* length of each row                         */
     int *space;     //!<  length of space ( a work array)
@@ -130,34 +130,34 @@ typedef vbsptr parms_bvcsr;
  */
 struct parms_Mat_ {
 
-  int ref;
-  parms_Mat_ops ops;
-  void        *data;
-  BOOL        isserial;
-  BOOL        issetup;
-  BOOL        isperm;
-  BOOL        isalloc;
-  BOOL        isreset;
-  //BOOL        isBversion;//vbsptr
-  NNZSTRUCT   resetpattern;
-  MATTYPE     type;
-  PCILUTYPE   ilutype;
-  int         m,n;
-  int         M,N;
-  parms_Map   is;
-  parms_vcsr  aux_data;
-/* data for external contributions */
-  parms_vcsr ext_data;
-  BOOL       isassembled;
-/* Table to track count of offdiagonal variables.
- * This allows efficient update of the hash table 
+    int ref;
+    parms_Mat_ops ops;
+    void        *data;
+    BOOL        isserial;
+    BOOL        issetup;
+    BOOL        isperm;
+    BOOL        isalloc;
+    BOOL        isreset;
+    //BOOL        isBversion;//vbsptr
+    NNZSTRUCT   resetpattern;
+    MATTYPE     type;
+    PCILUTYPE   ilutype;
+    int         m,n;
+    int         M,N;
+    parms_Map   is;
+    parms_vcsr  aux_data;//vbmat
+    /* data for external contributions */
+    parms_vcsr ext_data;
+    BOOL       isassembled;
+    /* Table to track count of offdiagonal variables.
+ * This allows efficient update of the hash table
  * for the variables, when a row is reset.
 */  
-  parms_Table odtable;
-  //--------------------------------------------------------------------
-  parms_bvcsr  b_aux_data;//vbsptr
-  parms_bvcsr  b_ext_data;
-  BOOL         isin_b_schur;//in vbarms case, for the parms_MatGetDiag calls in parms_pc_schur.c file. If it is true, then we will not copy the diag_mat 
+    parms_Table odtable;
+    //--------------------------------------------------------------------
+    parms_bvcsr  b_aux_data;//vbsptr
+    parms_bvcsr  b_ext_data;
+    BOOL         isin_b_schur;//in vbarms case, for the parms_MatGetDiag calls in parms_pc_schur.c file. If it is true, then we will not copy the diag_mat
 
 
 

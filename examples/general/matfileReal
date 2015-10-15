@@ -1,17 +1,29 @@
+../matrices/mat000.bin ../matrices/rhs000.bin
+##
 ../matrices/1138_bus.mtx
 ##
-../matrices/sherman5.mtx ../../../../mtx_matrices/stacom.mtx
+../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
 ##
-../../../../mtx_matrices/raefsky3.mtx
+../../../../mtx_matrices/stacom.mtx
 ##
-../../../../mtx_matrices/rae.mtx
+../../../../mtx_matrices/bcsstk35.mtx
+../../../../mtx_matrices/bmw7st_1.mtx
+../../../../mtx_matrices/venkat01.mtx
+../../../../mtx_matrices/pwtk.mtx
 ##
-../../../cyl/mat000.bin ../../../../../../../mtx_matrices/ct20stif.mtx
-##
-../../../../mtx_matrices/olafu.mtx
-##
+../../../../mtx_matrices/oilpan.mt
+../../../../mtx_matrices/stacom.mtx
 ../../../../mtx_matrices/k3plates.mtx
+../../../../mtx_matrices/olafu.mtx
+../../../../mtx_matrices/rae.mtx
+../../../../mtx_matrices/raefsky3.mtx
+../../../../mtx_matrices/ct20stif.mtx
 ../../../../mtx_matrices/nasasrb.mtx
+../../../../mtx_matrices/s3dkq4m2.mtx
+##
+##
+../../../cyl/mat000.bin
+##
 ##
 ../matrices/steam3.mtx
 ##
@@ -34,21 +46,13 @@ cyl/rhs000.bin
 ../../fortran_examples/web-BerkStan/web-BerkStan.rb
 ##
 ##
-../../../../mtx_matrices/s3dkq4m2.mtx
 ##
 ##
 ##
-../../../../mtx_matrices/pwtk.mtx
-../../../../mtx_matrices/stacom.mtx
-##
-../../../../mtx_matrices/oilpan.mtx
 
 
-../../../../mtx_matrices/venkat01.mtx
+
 ##
-##
-../../../../mtx_matrices/bcsstk35.mtx
-../../../../mtx_matrices/bmw7st_1.mtx
 ##
 ##
 ##

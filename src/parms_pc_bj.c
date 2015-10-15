@@ -209,11 +209,11 @@ int parms_PCCreate_b_BJ(parms_PC self)
 
     PARMS_NEW(data);
     self->data = data;
-    self->ops->pc_free     = pc_bj_free;//pc_bj_free;
+    self->ops->pc_free     = pc_bj_free;
     self->ops->pc_view  = pc_bj_view;
     self->ops->apply    = pc_bj_apply;
     self->ops->setup    = pc_bj_b_setup;
-    self->ops->getratio = pc_bj_getratio;//pc_bj_getratio;
+    self->ops->getratio = pc_bj_getratio;
     return 0;
 }
 

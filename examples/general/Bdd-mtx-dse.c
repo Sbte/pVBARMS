@@ -1,5 +1,5 @@
-#define _GNU_SOURCE
-/*---------------------------------------------------------------------- 
+//#define _GNU_SOURCE
+/*----------------------------------------------------------------------
  *                           Program dd-HB-dse
  *----------------------------------------------------------------------
  *
@@ -12,58 +12,12 @@
  *                       BJ, RAS, SCHUR
  *--------------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #if defined(__ICC)
 #include <mathimf.h>
 #else
 #include <math.h> 
 #endif 
-#include "parms.h"
 #include "aux.h"
-#include "mmio.h"
-
-#include <dlfcn.h>
-#include <stdlib.h>
-
-unsigned long long (*get_mem)() = NULL;
-
-unsigned long long get_memory_usage_()
-{
-    static int once = 0;
-    if (!once)
-    {
-        get_mem = (unsigned long long (*)())dlsym(RTLD_DEFAULT, "get_memory_usage");
-        if (!get_mem)
-        {
-            get_mem = get_memory_usage_;
-            printf("To enable memory profiling you need to LD_PRELOAD the malloc_impl library\n");
-            once = 1;
-            return 0;
-        }
-        return get_mem();
-    }
-    return 0;
-}
-
-void print_mem(const char* descr)
-{
-    int myid;
-    double value;
-    char unit[3];
-    strcpy(unit, "B ");
-    value = get_mem();
-
-    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "kB");}
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "MB");}
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "GB");}
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "TB");}
-
-    printf("%s on proc %d: %f %s\n", descr, myid, value, unit);
-}
 
 
 int main(int argc, char *argv[])
@@ -101,17 +55,11 @@ int main(int argc, char *argv[])
 
 
 
-    /* Viewer object for solver */
-    //  parms_Viewer  sv;
-
     /*-------------------- initialize MPI environment */
     MPI_Init(&argc, &argv);//initilization
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);//return the pid
     MPI_Comm_size(MPI_COMM_WORLD, &npro);//return the number of the processors
-    get_mem = get_memory_usage_;
 
-
-//    tmp0 = 0;
     nrhs = 0;
 
     /*-------------------- read matrix name from input file */
@@ -184,8 +132,6 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "cannot allocate memory for ia\n");
                 MPI_Abort(MPI_COMM_WORLD, 66);
             }
-//            tmp2 = n;
-//            tmp3 = nnz;
 
 
             ierr = mm_read_mtx_crd_data(mtxfile, n, nc, nnz, ia, ja, a, matcode);
@@ -247,47 +193,30 @@ int main(int argc, char *argv[])
 
             csptr csmat = NULL;
 
-            //mat = malloc(sizeof(*(csptr)));
             csmat = malloc(sizeof(*csmat));
 
             coo2csptr(n, nnz, a, ia, ja, csmat);
-//            outputcsmat(csmat,"1138mat.coo",1);
 
-            /* exit(1); */
 
             free(ia);
             free(a);
             free(ja);
 
-
-            //   double t1;
-            //   t1 = sys_timer();
-            //csptr csmat = NULL;
-            //ddouble aa;
             vbsptr vbmat = NULL;
 
             printf("prm->eps = %f\n",prm->eps);
 
             if (prm->cosine)
-//                ierr = pablo( csmat, prm->eps, 1.0, &nB, &nBlock, &perm);
+//                ierr = pablo( csmat, prm->eps, 2.0, &nB, &nBlock, &perm);
                 ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);//int init_blocks( csptr csmat, int *pnBlock, int **pnB, int **pperm, double eps)//parms_PCSetup(pc);
             else
                 ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
-//            int pablo(csptr mat, double alpha, double beta, int *nBB, int *nset, int **pperm)
 
             printf("nBlock value is %d.\n", nBlock);//%f %p %s %c
-//            output_intvector("perm.coo", perm,0 , n);
-            output_intvector("nB.coo", nB,0 , nBlock);
-//            output_intvector("perm.coo", perm,0 , n);
-//            MPI_Finalize();
-//            exit(1);
-            //printf("nBlock: %d\n", nBlock);getchar();
             tib1 =  parms_TimerGet(tm);
             printf("\ntime on init=%f\n",tib1);
             if(ierr != 0) {
-                //fprintf(stderr, "ierr = %d\n", ierr);
                 fprintf(stderr, "*** in init_blocks ierr != 0 ***\n");
-//                goto label1000;
                 MPI_Finalize();
                 exit(1);
             }
@@ -307,7 +236,7 @@ int main(int argc, char *argv[])
             tib3 =  parms_TimerGet(tm);
             printf("\ntime on csrvbsrC_new=%f\n",tib3-tib2);
 
-            outputvbmat(vbmat,"1138vbmat.coo",1);
+            outputvbmat(vbmat,"vbmatparms.coo",1);
 
             blocksize = (double)csmat->n / (double)nBlock;
             Bdensity = (double)nnzCS( csmat ) / (double)memVBMat( vbmat ) * 100;
@@ -317,7 +246,6 @@ int main(int argc, char *argv[])
 
             }
 
-//            goto label1000;
 
             int nbb, *bia, *bja;
             BData *ba;
@@ -332,7 +260,6 @@ int main(int argc, char *argv[])
             tib4 =  parms_TimerGet(tm);
             printf("\ntime on csrvbsrC_new=%f, time on total process = %f\n",tib4-tib3, tib4);
             /*--------------------get the elapsed time spent on creating PC */
-
 
 
 
@@ -400,7 +327,7 @@ int main(int argc, char *argv[])
 
             print_mem("end of proc 1");
             cleanCS( csmat );
-            cleanVBMat( vbmat );//int cleanVBMat( vbsptr vbmat )
+            cleanVBMat( vbmat );
         }
         tib2 =  parms_TimerGet(tm);
         MPI_Bcast(&nBlock, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -489,10 +416,6 @@ int main(int argc, char *argv[])
             fprintf(stderr, "cannot allocate memory for rhstmp\n");
             MPI_Abort(MPI_COMM_WORLD, 66);
         }
-//        if(nrhs != 0)
-//            tmp = 3;
-//        else
-//            tmp = 2;
 
         if (currhs != NULL)
         {
@@ -550,7 +473,7 @@ int main(int argc, char *argv[])
         vbsptr vbmat = NULL;
         /*--------------------create a timer */
         tib1 =  parms_TimerGet(tm);
-        //output_intvector("perm.coo",perm,0, n);getchar();
+
         if( dpermC( csmat, perm ) != 0 ) {
             fprintf( stderr, "*** dpermC error ***\n" );
             MPI_Finalize();
@@ -609,7 +532,7 @@ int main(int argc, char *argv[])
         free(bia);
 
         int llsize;
-        //printf("llsizetest=%d\n", llsize);
+
         llsize = parms_MapGetLocallSize(map);
         printf("llsize=%d, nloc = %d\n", llsize, nloc);
         /*-------------------- Create distributed vectors based on map */
@@ -617,12 +540,10 @@ int main(int argc, char *argv[])
         rhs = (FLOAT *)malloc(llsize*sizeof(FLOAT));
         y = (FLOAT *)malloc(llsize*sizeof(FLOAT));
         resvec = (FLOAT *)malloc(llsize*sizeof(FLOAT));
-        //outputcsmatpa(A->aux_data,"aux_data",1);//int outputcsmat ( csptr mat, char *filename, int onebase){
-        //output_intvectorpa("localpermbefore",A->is->perm,0, nloc);getchar();
 
 
         /*-------------------- Setup the matrix and communication structure */
-        parms_Mat_B_Setup(A);//parms_MatSetup(A);
+        parms_Mat_B_Setup(A);
         printf("\n npro=%d\n",npro);
 
 
@@ -634,6 +555,7 @@ int main(int argc, char *argv[])
             {
                 x[i] = 1.0;
             }
+
             parms_MatVec(A, x, rhs);
         }
         else
@@ -657,6 +579,7 @@ int main(int argc, char *argv[])
 
 
         /*--------------------Get 2-norm of initial residual */
+
 
         parms_MatVec(A, x, resvec);
 
@@ -713,7 +636,6 @@ int main(int argc, char *argv[])
 
 
         /*--------------------set up solver -- no longer needed - DOK */
-        //parms_SolverSetup(solver);
 
         /*--------------------restart the timer */
         parms_TimerRestart(tm);
@@ -734,7 +656,7 @@ int main(int argc, char *argv[])
 
         /*--------------------Compute the residual error  */
         parms_MatVec(A, x, y);
-        for(i=0; i<llsize; i++)//nloc
+        for(i=0; i<llsize; i++)
         {
             y[i] = rhs[i] - y[i];
         }

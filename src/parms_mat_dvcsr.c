@@ -952,8 +952,6 @@ static int MatVec_b_dvcsr(parms_Mat self, FLOAT *x, FLOAT *y)
     parms_CommDataEnd(handler);//block and point version are the same on this routine
     offsetptr = handler->buf_recv_b;// - llsize;// because in the b_offd_mat the stating column index is above lsize.
 
-
-
     bszc = b_offd_mat->bszc;
 
     for (i = 0; i < is->ninf; i++) {

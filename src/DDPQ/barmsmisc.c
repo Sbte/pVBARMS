@@ -2492,7 +2492,7 @@ int vbilutD(vbsptr schur, double *droptol, int *lfil, vbilutptr vbmat)
     //printf("\n lfil=%d,tol=%20.16e",lfil,tol); getchar();
     lu = (vbiluptr)Malloc( sizeof(VBILUSpar), "main" );
     lu->DiagOpt = 0;
-    printf("lfil[7] value is %d\n", lfil[7]);//%f %p %s %c
+//    printf("lfil[7] value is %d\n", lfil[7]);//%f %p %s %c
 
     if (lfil[7] == -1)
         ierr = vbilutC(schur, lu, lfil[5], droptol[5], w, stderr);//int vbilutC( vbsptr vbmat, vbiluptr lu, int lfil, double tol, BData *w, FILE *fp )

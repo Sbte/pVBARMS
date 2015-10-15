@@ -7,7 +7,7 @@ I. INSTALLING pVBARMS.
   a) Dependency: LAPACK, BLAS, MPI
 
   b) NOTE: To compile the complex version of pVARMS, replace the -DDBL flag in
-     makefile.in with -DDBL_CMPLX.
+     makefile.in with -DDBL_CMPLX or goto example/general/;./complexcompile
 
   c) Type 'make' to build the library --
 

@@ -1,83 +1,33 @@
-#define _GNU_SOURCE
 /*----------------------------------------------------------------------
- *                           Program dd-HB-dse
+ *                           Program Bdd-bin-dse
  *----------------------------------------------------------------------
  *
- *  In this test program, each processor reads the whole matrix
- *  from file. The matrix is assumed to be in Harwell-Boeing format.
- *  Matrix graph is then  partitioned  using  DSE, a simple partitioning
- *  routine, and scatters the local matrices to each processor. Once
- *  these submatrices are received each processor solves the problem
- *  using preconditioned FGMRES preconditioned with :
+ *  In this test program, one processor reads the whole matrix
+ *  from file and broadcast to other processors. The matrix is
+ *  assumed to be in binary format. Matrix graph is then  partitioned
+ *  using  DSE, a simple partitioning routine, and scatters the local
+ *  matrices to each processor. Once these submatrices are received each
+ *  processor solves the problem using preconditioned FGMRES
+ *  preconditioned with :
  *                       BJ, RAS, SCHUR
  *--------------------------------------------------------------------*/
 
-
-
-//test version 2
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #if defined(__ICC)
 #include <mathimf.h>
 #else
 #include <math.h>
 #endif
-#include "parms.h"
 #include "aux.h"
-#include "mmio.h"
-
-#include <dlfcn.h>
-
-unsigned long long (*get_mem)() = NULL;
-
-unsigned long long get_memory_usage_()
-{
-    static int once = 0;
-    if (!once)
-    {
-        get_mem = (unsigned long long (*)())dlsym(RTLD_DEFAULT, "get_memory_usage");
-        if (!get_mem)
-        {
-            get_mem = get_memory_usage_;
-            printf("To enable memory profiling you need to LD_PRELOAD the malloc_impl library\n");
-            once = 1;
-            return 0;
-        }
-        return get_mem();
-    }
-    return 0;
-}
-
-void print_mem(const char* descr)
-{
-    int myid;
-    double value;
-    char unit[3];
-    strcpy(unit, "B ");
-    value = get_mem();
-
-    MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "kB");}
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "MB");}
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "GB");}
-    if (value > 1.0e3) {value*=1.0e-3; strcpy(unit, "TB");}
-
-    printf("%s on proc %d: %f %s\n", descr, myid, value, unit);
-}
 
 int main(int argc, char *argv[])
 {
 
-    /* declarations related to Harwell-boeing format for reading the HB
+    /* declarations related to binary format for reading the bin
      matri. Second part is related to I/O parameters */
-    char mname[MAX_MAT][MAX_LINE], key[MAX_LINE];//, type[3];//guesol[2], title[72],
-    int nrhs, mat;//tmp0,
-    //  int nc, n, nnz, tmp, tmp2, tmp3;
-    long int m ;    // = header(1); //row;
-    long int n ;    // = header(2); //column;
+    char mname[MAX_MAT][MAX_LINE], key[MAX_LINE];
+    int nrhs, mat;
+    long int m;    // = header(1); //row;
+    long int n;    // = header(2); //column;
     long int nnz;    // = header(3);%nnz
     long int header; // header to store file type, mat or rhs;
     long int numread;
@@ -88,7 +38,7 @@ int main(int argc, char *argv[])
     /* working array for reading matrix */
     double norm, res1, tpc, ttol;
     FLOAT *a, *rhstmp;
-    int *ja, *nnzptr, *gia;//*ia,
+    int *ja, *nnzptr, *gia;
     int npro,its, *im, *bim;//bim is for block case
     fprm prm;
     FILE *fp=NULL, *fout=NULL, *binfile=NULL;
@@ -109,15 +59,11 @@ int main(int argc, char *argv[])
     parms_Timer     tm;
 
 
-    /* Viewer object for solver */
-    //  parms_Viewer  sv;
-
     /*-------------------- initialize MPI environment */
     MPI_Init(&argc, &argv);//initilization
     MPI_Comm_rank(MPI_COMM_WORLD, &myid);//return the pid
     MPI_Comm_size(MPI_COMM_WORLD, &npro);//return the number of the processors
 
-    //    tmp0 = 0;
     nrhs = 0;
 
     /*-------------------- read matrix name from input file */
@@ -128,19 +74,12 @@ int main(int argc, char *argv[])
     }
 
     if (argc >= 2) {
-        read_param(argv[1],mname, prm);
+        read_param(argv[1], mname, prm);
     }
     else if (argc == 1){
-        read_param("inputs",mname, prm);
+        read_param("inputs", mname, prm);
     }
-            parms_TimerCreate(&tm);
-            parms_TimerReset(tm);
-
-    /* variable "mname" stores the name of the file in HB format. Read a
-     Harwell-Boeing matrix. using wreadmtc c-version of sparsit
-     routine - call wreadmtc a first time to determine sizes of
-     arrys. read in values on the second call.
-  */
+    parms_TimerCreate(&tm);
 
     /* --- Begin loop over matrices ----*/
     mat = 0;
@@ -155,22 +94,12 @@ int main(int argc, char *argv[])
         if (myid == 0)
             printf("Reading matrix %s\n", curmat);
 
-        //~ #if defined(DBL_CMPLX)
-        //~ zreadmtc_(&tmp0,&tmp0,&tmp0,mname[mat],a,ja,ia,rhstmp,&nrhs,
-        //~ guesol,&n,&nc,&nnz,title,key,type,&ierr);
-        //~ #else
-        //~ readmtc_(&tmp0,&tmp0,&tmp0,mname[mat],a,ja,ia,rhstmp,&nrhs,
-        //~ guesol,&n,&nc,&nnz,title,key,type,&ierr);
-        //~ #endif
-
         if ((binfile = fopen(curmat, "r")) == NULL) {
             fprintf(stderr, "Error opening matrix file\n");
             fprintf(stderr, "filename = %s\n", curmat);
             MPI_Finalize();
             exit(1);
         }
-
-
 
         numread = fread(&header, sizeof(int), 1, binfile);
         header = bswap_32(header);
@@ -199,9 +128,6 @@ int main(int argc, char *argv[])
         numread = fread(&nnz, sizeof(int), 1, binfile);
         nnz = bswap_32(nnz);// nnz
 
-//        printf("nnz value is %d, myid = %d.\n", nnz, myid);//%f %p %s %c
-
-
         nnzptr = malloc(m*sizeof(*nnzptr)); //nnz of each row
         numread = fread(nnzptr, sizeof(int), m, binfile);
 
@@ -219,21 +145,14 @@ int main(int argc, char *argv[])
             nnzptr[i] = bswap_32(nnzptr[i]);
             sum_nz += nnzptr[i];
             gia[i+1] = sum_nz;
-            //        printf("nnz[i] = %d\n", nnz[i]);//%f %p %s %c
         }
 
-//        output_intvectorpa("gia.coo",gia,0, m+1);
-
-//            MPI_Barrier(MPI_COMM_WORLD);
-//            MPI_Finalize();
-//            exit(1);
         if (myid == 0){
             if(sum_nz != nnz){
                 fprintf(stderr," No-Nonzeros sum-rowlengths do not match %ld %ld", nnz, sum_nz);
                 MPI_Finalize();
                 exit(1);
             }
-
 
             ja = malloc(nnz*sizeof(*ja)); //column indeces of all non-zero entries
             numread = fread(ja, sizeof(int), nnz, binfile);
@@ -245,7 +164,6 @@ int main(int argc, char *argv[])
 
             for (i = 0; i < nnz; ++i)
                 ja[i] = bswap_32(ja[i]);//swap between big endian and small endian
-
 
             a = malloc(nnz*sizeof(*a)); //values of all non-zero entries
             if (a == NULL) {
@@ -260,29 +178,9 @@ int main(int argc, char *argv[])
             }
 
             for (i = 0; i < nnz; ++i)
-                a[i] = byteswap_double(a[i]);//need to be optimized
-
+                a[i] = byteswap_double(a[i]);
 
             fseek(binfile, 0, 0);
-            //  if(nrhs != 0)
-            //    tmp = 3;
-            //  else
-            //    tmp = 2;
-            //  tmp2 = n;
-            //  tmp3 = nnz;
-
-            /*-------------------- Array sizes determined. Now call
-                         wreadmtc again for really reading */
-
-            //  ierr = mm_read_bin_crd_data(binfile, n, nc, nnz, ia, ja, a, matcode);
-
-            //  if(ierr != 0) {
-            //    fprintf(stderr, "ierr = %d\n", ierr);
-            //    fprintf(stderr, "cannot read matrix\n");
-            //    fprintf(stderr, "filename = %s\n", mname[mat]);
-            //    MPI_Finalize();
-            //    exit(1);
-            //  }
 
             if(myid == 0){
                 if(argc == 3) {
@@ -304,116 +202,35 @@ int main(int argc, char *argv[])
                 fprintf(fp, "\nMatrix %d: %s \n",(mat+1), curname);
                 fprintf(fp, "n = %ld, nnz = %ld\n", n, nnz);
             }
-
-            /* /\*-------------Convert from COO to CSR format ------------*\/ */
-            /*     int *jb, *ib; */
-            /*     FLOAT *b; */
-            /*     b   = malloc(nnz*sizeof(*b)); */
-            /*     if (b == NULL) { */
-            /*       fprintf(stderr, "cannot allocate memory for b\n"); */
-            /*       MPI_Abort(MPI_COMM_WORLD, 66); */
-            /*     } */
-            /*     jb  = malloc(nnz*sizeof(*jb)); */
-            /*     if (jb == NULL) { */
-            /*       fprintf(stderr, "cannot allocate memory for jb\n"); */
-            /*       MPI_Abort(MPI_COMM_WORLD, 66); */
-            /*     } */
-            /*     ib  = malloc((n+1)*sizeof(*ib)); */
-            /*     if (ib == NULL) { */
-            /*       fprintf(stderr, "cannot allocate memory for ib\n"); */
-            /*       MPI_Abort(MPI_COMM_WORLD, 66); */
-            /*     } */
-            /*     job = 1; */
-
-
-            /* output_intvector("ia.coo",ia,0, nnz); */
-            /* output_intvector("ja.coo",ja,0, nnz); */
-            /* output_dblvector("a.coo",a,0, nnz); */
-
-
-
-            /* #if defined(DBL_CMPLX) */
-            /*     zcoocsr_(&n, &nnz, a, ia, ja, b, jb, ib); */
-            /* #else */
-            /*     coocsr_(&n, &nnz, a, ia, ja, b, jb, ib); */
-            /* #endif */
-            /*---------------Free COO matrix ------------------*/
-            /* /\*-------------Convert from COO to C-CSR format ------------*\/ */
+            parms_TimerReset(tm);
 
             csptr csmat = NULL;
 
-            //mat = malloc(sizeof(*(csptr)));
             csmat = malloc(sizeof(*csmat));
 
-            //    output_intvectorpa("nnzptr.coo",nnzptr,0, n);
-            //    exit(1);
-
             bincols2csptr(n, nnzptr, ja, a, csmat);
-            //    int bincols2csptr(int n, int *nnzptr, int *ja, FLOAT *a, csptr mat)
 
-            //    coo2csptr(n, nnz, a, ia, ja, csmat);
-            //            outputcsmat(csmat,"csmat.coo",1);
-            //            output_dblvectorpa("rhstmp",rhstmp,0, n);
-
-            //            exit(1);
-
-            //~ free(nnzptr);
             free(a);
             free(ja);
 
-            /* ia = ib; */
-            /* ja = jb; */
-            /* a = b; */
-
-            //   double t1;
-            //   t1 = sys_timer();
-            //csptr csmat = NULL;
-            //ddouble aa;
             vbsptr vbmat = NULL;
-            //BData bb;
-            //p4ptr prev;
-            /* csmat = (csptr)Malloc( sizeof(SparMat), "testdriver" );//csmat = (csptr)malloc(sizeof(SparMat)); */
-            /* colunms2csptr(n, ia, ja, a, csmat); //int colunms2csptr(int n, int *ia, int *ja, FLOAT *a, csptr mat)  */
-            //if (myid == 0)
-            /* outputcsmatpa(csmat,"csmat.coo",1);  */
-            /* exit(1); */
-            //        double tib1, tib2, tib3, tib4, blocksize;
-            /*--------------------create a timer */
-            //~
-            //~ Cliques *MC = cliques_new();
-            //~ Clique *R = clique_new();
-            //~ Clique *P = clique_new();
-            //~ for (i = 0; i < n; ++i)
-            //~ clique_append(P, i);
-            //~ Clique *X = clique_new();
-            //~ get_maximal_cliques(MC, csmat, R, P, X);
-            //~
-            //~ clique_free(R);
-            //~ clique_free(P);
-            //~ clique_free(X);
-            //~ cliques_free(MC);
-            //~
-            //~ MPI_Abort(MPI_COMM_WORLD, 66);
 
             printf("prm->eps = %f\n",prm->eps);
-            //~ ierr = init_blocks_cliques( csmat, &nBlock, &nB, &perm, prm->eps);
+
             if (prm->cosine)
-                ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);//int init_blocks( csptr csmat, int *pnBlock, int **pnB, int **pperm, double eps)//parms_PCSetup(pc);
+                ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);
             else
                 ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
             printf("prm->cosine = %d\n",prm->cosine);
 
-            //printf("nBlock: %d\n", nBlock);getchar();
             tib1 =  parms_TimerGet(tm);
             printf("\ntime on init=%f\n",tib1);
             if(ierr != 0) {
-                //fprintf(stderr, "ierr = %d\n", ierr);
                 fprintf(stderr, "*** in init_blocks ierr != 0 ***\n");
                 MPI_Finalize();
                 exit(1);
             }
 
-            //output_intvector("perm.coo",perm,0, n);getchar();
             if( dpermC( csmat, perm ) != 0 ) {
                 fprintf( stderr, "*** dpermC error ***\n" );
                 MPI_Finalize();
@@ -423,75 +240,31 @@ int main(int argc, char *argv[])
             printf("\ntime on dpermC=%f\n",tib2-tib1);
             /*-------------------- convert to block matrix. */
             vbmat = (vbsptr)Malloc( sizeof(VBSparMat), "main" );
-            //ierr = csrvbsrC( 1, nBlock, nB, csmat, vbmat );
             ierr = csrvbsrC_new( 1, nBlock, nB, csmat, vbmat );
-            //outputvbmatpa(vbmat,"vbmat2.coo",1);//int outputvbmat( vbsptr vbmat, char *filename, int onebase)
             tib3 =  parms_TimerGet(tm);
             printf("\ntime on csrvbsrC_new=%f\n",tib3-tib2);
-            //~ outputvbmatpa(vbmat,"vbmat2.coo",1);
 
 
-            //exit(1);
-            //if (myid == 0)
-            //outputvbmatpa(vbmat,"vbmat.coo",1);//int outputvbmat( vbsptr vbmat, char *filename, int onebase)
-
-            //sprintf(buf, "%8.2fs", tib);
-            //sprintf(buf, "%8.2fs", tpc);
-            //fprintf(fp, "The time for pc setup %7s %-s\n", "=", strtok(buf, " "));
-            //fprintf(fp, "The time cost for init_blocks %7s %-s\n", "=", strtok(buf, " "));
             blocksize = (double)csmat->n / (double)nBlock;
             Bdensity = (double)nnzCS( csmat ) / (double)memVBMat( vbmat ) * 100;
             if (myid == 0)
                 printf("\n Bsize=%-7f, Bdensity=%-7f\n",blocksize, Bdensity);
-            //MPI_Finalize();
-            //goto label1000;//continue; // only for blocking information
 
 
-//            FLOAT *rhstmpp;
-//            rhstmpp = (FLOAT*)malloc(n*sizeof(FLOAT));
 
-//            //output_intvectorpa("perm_init.coo",perm,0, n);
-//            // output_dblvectorpa("rhstmp",rhstmp, 0, n);
 
-//            for( i = 0; i < n; i++ )
-//                rhstmpp[perm[i]] = rhstmp[i];
-            //output_dblvectorpa("rhstmpp",rhstmpp, 0, n);
-
-            //cleanCS(csmat);//int cleanCS(csptr amat)
             int nbb, *bia, *bja;
             BData *ba;
             bia = (int*)malloc((vbmat->n+1)*sizeof(int));//w =(double*)malloc(n*sizeof(double));
             bja = (int*)malloc(nnz*sizeof(int));
             ba = (BData*)malloc(nnz*sizeof(BData));
             vbsptr2colunms(vbmat, &nbb, bia, bja, ba);//int vbsptr2colunms(vbsptr mat, int *n, int *ia, int *ja)
-            //iia = (int*)malloc(n*sizeof(int)   printf("\n Bsize=%-7f\n",blocksize););//w =(double*)malloc(n*sizeof(double));
-            //jja = (int*)malloc(nnz*sizeof(int));
-            //csptr2colunms(csmat, &nn, iia, jja);//int csptr2colunms(csptr mat, int *n, int *ia, int *ja)//
-            bja = (int*)realloc(bja, nbb*sizeof(int));
-            //printf("bja[0]=%d",bja[0]);
-            //output_intvector("bia.coo",bia,0, nBlock);getchar();
-            //output_intvector("bja.coo",bja,0, nbb);getchar();
 
+            bja = (int*)realloc(bja, nbb*sizeof(int));
 
             tib4 =  parms_TimerGet(tm);
-            printf("\ntime on csrvbsrC_new=%f, time on total process = %f\n",tib4-tib3, tib4);
+            printf("\ntime on csrvbsrC_new=%f, time on whole blocking process = %f\n",tib4-tib3, tib4);
             /*--------------------get the elapsed time spent on creating PC */
-
-            //int dpermC(csptr mat, int *perm)
-
-
-            //printf("\n npro=%d\n",npro);
-            //int nn, *iia, *jja;
-            //iia = (int*)malloc((n+1)*sizeof(int));//w =(double*)malloc(n*sizeof(double));
-            //jja = (int*)malloc(nnz*sizeof(int));
-            //csptr2colunms(csmat, &nn, iia, jja);//int csptr2colunms(csptr mat, int *n, int *ia, int *ja)//
-            //  im = (int *)malloc(n*sizeof(int));
-            //printf("nn = %d\n", nn );getchar();
-            //output_intvector("iia.coo",iia,0, nn+1);getchar();
-            //output_intvector("jja.coo",jja,0, nnz);getchar();
-
-
-
 
             idom = malloc((npro+1)*sizeof(*idom));
             if (idom == NULL) {
@@ -555,13 +328,11 @@ int main(int argc, char *argv[])
                     nzding[i2] += csmat->nnzrow[i3];
             }
 
-//            print_mem("end of proc 1");
             cleanCS( csmat );
-            cleanVBMat( vbmat );//int cleanVBMat( vbsptr vbmat )
+            cleanVBMat( vbmat );
         }
 
 
-//        tib2 =  parms_TimerGet(tm);
         MPI_Bcast(&nBlock, 1, MPI_INT, 0, MPI_COMM_WORLD);
         if (myid != 0)
         {
@@ -592,34 +363,14 @@ int main(int argc, char *argv[])
         MPI_Bcast(idom, npro+1, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(dom, nBlock, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(nzding, npro, MPI_INT, 0, MPI_COMM_WORLD);
-        //~ printf("nzding %d on %d\n", nzding[myid], myid);
-//        print_mem("after free");
-
-
-
-//        tib1 =  parms_TimerGet(tm);
-//        printf("\ntime on send=%f\n",tib1 - tib2);
-        /*
-    for (i = 0; i < n; i++) {
-      dom[i] = i+1;
-    }
-    for(i=1; i<npro; i++)
-    idom[i] = idom[i-1]+(n/npro);
-    idom[npro+1] = n+1;
-printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom[myid]-1]);
-*/
 
         /*-------------------- Create map object */
         parms_MapCreateFromPtr(&map, n, dom, idom, MPI_COMM_WORLD, 1, NONINTERLACED);
-        //map->nB = nB;
-        parms_Map_Assign_blockstructure(map, nB);//int parms_Map_Assign_blockstructure(parms_Map self, int *nB)//
-        //output_intvector("map->nB.coo",map->nB,0, nBlock);getchar();
+
+        parms_Map_Assign_blockstructure(map, nB);
 
 
         nloc = parms_MapGetLocalSize(map);
-
-//        printf("nzding[mydi] value is %d, myid = %d.n", nzding, myid);//%f %p %s %c
-
 
         a = malloc(nzding[myid]*sizeof(*a));
         if (a == NULL) {
@@ -632,12 +383,9 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
             MPI_Abort(MPI_COMM_WORLD, 66);
         }
 
-        printf("m value is %ld, n value is %ld\n", m, n);//%f %p %s %c
         ierr = local_read_bin_data_b(binfile, m, n, nnz, nnzptr, ja, a, idom, dom, perm, nB, nBlock, gia);
         fclose(binfile);
 
-
-        printf("m value is %ld, n value is %ld\n", m, n);//%f %p %s %c
 
         free(dom);
         free(idom);
@@ -692,29 +440,14 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
             fclose(binfile);
         }
         else nrhs = 0;
-        //output_intvectorpa("mapperm_p",map->lvars,0, nloc);getchar();
 
-        //getlocalsize
-        /* Free dom and idom */
-        //        free(dom);
-        //        free(idom);
         csptr csmat = NULL;
 
-        //mat = malloc(sizeof(*(csptr)));
         csmat = malloc(sizeof(*csmat));
 
 
-//        output_intvector("nnzptr.coo",nnzptr,0, m);
-//        output_intvector("ja.coo",ja,0, nnz);
-//        output_dblvector("a.coo",a,0, nnz);
-
         bincols2csptr(n, nnzptr, ja, a, csmat);
-        //~ coo2csptr(n, nzding[myid], a, ia, ja, csmat);//nzding is the local length array
-        printf("nzding[myid] value is %d, myid = %d\n", nzding[myid], myid);//%f %p %s %c
 
-        /* outputcsmat(mat,"mat.coo",1);  */
-
-        /* exit(1); */
 
         free(nnzptr);
         free(a);
@@ -722,49 +455,32 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
 
         vbsptr vbmat = NULL;
         /*--------------------create a timer */
-        tib1 =  parms_TimerGet(tm);
-        //output_intvector("perm.coo",perm,0, n);getchar();
+
         if( dpermC( csmat, perm ) != 0 ) {
             fprintf( stderr, "*** dpermC error ***\n" );
             MPI_Finalize();
             exit(1);
         }
-        tib2 =  parms_TimerGet(tm);
-        printf("\ntime on dpermC=%f\n",tib2-tib1);
         /*-------------------- convert to block matrix. */
         vbmat = (vbsptr)Malloc( sizeof(VBSparMat), "main" );
-        //ierr = csrvbsrC( 1, nBlock, nB, csmat, vbmat );
         ierr = csrvbsrC_new( 1, nBlock, nB, csmat, vbmat );
-        //~ outputvbmatpa(vbmat,"vbmatlocal.coo",1);//int outputvbmat( vbsptr vbmat, char *filename, int onebase)
-        tib3 =  parms_TimerGet(tm);
-        printf("\ntime on csrvbsrC_new=%f\n",tib3-tib2);
+
 
         FLOAT *rhstmpp;
         rhstmpp = (FLOAT*)malloc(n*sizeof(FLOAT));
 
-        printf("n value is %ld.\n", n);//%f %p %s %c
-
-        //output_intvectorpa("perm_init.coo",perm,0, n);
-        // output_dblvectorpa("rhstmp",rhstmp, 0, n);
 
         for( i = 0; i < n; i++ )
             rhstmpp[perm[i]] = rhstmp[i];
-        //output_dblvectorpa("rhstmpp",rhstmpp, 0, n);
 
-        //cleanCS(csmat);//int cleanCS(csptr amat)
         int nbb, *bia, *bja;
         BData *ba;
-        bia = (int*)malloc((vbmat->n+1)*sizeof(int));//w =(double*)malloc(n*sizeof(double));
+        bia = (int*)malloc((vbmat->n+1)*sizeof(int));
         bja = (int*)malloc(nzding[myid]*sizeof(int));
         ba = (BData*)malloc(nzding[myid]*sizeof(BData));
-        vbsptr2colunms(vbmat, &nbb, bia, bja, ba);//int vbsptr2colunms(vbsptr mat, int *n, int *ia, int *ja)
-        //iia = (int*)malloc(n*sizeof(int)   printf("\n Bsize=%-7f\n",blocksize););//w =(double*)malloc(n*sizeof(double));
-        //jja = (int*)malloc(nnz*sizeof(int));
-        //csptr2colunms(csmat, &nn, iia, jja);//int csptr2colunms(csptr mat, int *n, int *ia, int *ja)//
+        vbsptr2colunms(vbmat, &nbb, bia, bja, ba);
         bja = (int*)realloc(bja, nbb*sizeof(int));
 
-        tib3 =  parms_TimerGet(tm);
-        printf("\n after all setup, all time cost=%f\n",tib3);
 
         free(nzding);
 
@@ -781,16 +497,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         for (i = 0; i < nBlock; i++) {
             bim[i] = i+1;
         }
-        parms_MatSetValues_b(A, nBlock, bim, bia, bja, ba, INSERT);//parms_MatSetValues(A, n, im, ia, ja, a, INSERT);
-
-        //parms_MatSetValues_b(A, n, im, ia, ja, a, INSERT);//int parms_MatSetValues_b(parms_Mat self, int m, int *im, int *ia, int *ja, BData *values, INSERTMODE mode)
-        //  parms_MatSetElementMatrix(A, n, im, ia, ja, a, INSERT);
-        //  parms_MatAssembleElementMatrix(A);
-        /*-------------------- free the matrix stored in CSR format(a,ja,ia) */
-        /* free(a); */
-        /* free(ja); */
-        /* free(ia); */
-
+        parms_MatSetValues_b(A, nBlock, bim, bia, bja, ba, INSERT);
 
         free(ba);
         free(bja);
@@ -805,44 +512,14 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         rhs = (FLOAT *)malloc(llsize*sizeof(FLOAT));
         y = (FLOAT *)malloc(llsize*sizeof(FLOAT));
         resvec = (FLOAT *)malloc(llsize*sizeof(FLOAT));
-        //outputcsmatpa(A->aux_data,"aux_data",1);//int outputcsmat ( csptr mat, char *filename, int onebase){
-        //output_intvectorpa("localpermbefore",A->is->perm,0, nloc);getchar();
 
 
         /*-------------------- Setup the matrix and communication structure */
-        parms_Mat_B_Setup(A);//parms_MatSetup(A);
+        parms_Mat_B_Setup(A);
         printf("\n npro=%d\n",npro);
 
-        //MPI_Barrier(MPI_COMM_WORLD);
-        //exit(1);
         /*-------------------- Copy rhs or Setup artifical right-hand-side vector */
-        //nrhs = 0;
-        //output_intvectorpa("localpermafter",A->is->perm,0, nloc);getchar();
-        /*  parms_Viewer v; */
-        /*   /\* parms_ViewerCreate(&v, "foomatcoo"); *\/ */
-        /*   /\* parms_MatView(A, v);//int parms_MatView_vcsr(parms_Mat self, parms_Viewer v) *\/ */
-        /*   /\* parms_MatViewCOO(A, v);//int parms_MatViewCOO_vcsr(parms_Mat self, parms_Viewer v) *\/ */
-        /*   /\* parms_ViewerFree(&v); *\/ */
-        /*   /\* MPI_Barrier(MPI_COMM_WORLD); *\/ */
-        /*   /\* exit(1); *\/ */
-        /* //to output the diag and off mat of each processor */
-        /*   parms_dvcsr data; */
-        /*   data    = (parms_dvcsr)A->data; */
 
-        /*   parms_ViewerCreate(&v, "foomvhandler"); */
-        /*   parms_CommView(data->mvhandler, v);//int parms_CommView(parms_Comm self, parms_Viewer v) */
-        /*   //parms_ViewerFree(&v); */
-
-
-
-        /*   parms_ViewerCreate(&v, "foomapaftersetup"); */
-        /*   parms_MapView(map, v); */
-        /*   //parms_ViewerFree(&v); */
-
-
-        /*----- permutes right hand side -------------------------------------*/
-        //    for( i = 0; i < io.ndim; i++ )
-        //      rhs[perm[i]] = rhs0[i];
         if(!nrhs)
         {
             for(i=0; i<llsize; i++)
@@ -853,7 +530,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         }
         else
         {
-            parms_VecSetValues_b(rhs, nBlock, bim, rhstmpp, INSERT, map);//changed//parms_VecSetValues_b(rhs, n, im, rhstmp, INSERT, map);
+            parms_VecSetValues_b(rhs, nBlock, bim, rhstmpp, INSERT, map);
         }
 
         free(rhstmp);
@@ -861,8 +538,6 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         free(im);
 
         free(bim);
-
-        //output_dblvectorpa("rhs",rhs,0, llsize);getchar();
 
         /*--------------------Setup initial guess to a vector of all-0. */
         for(i=0; i<llsize; i++)
@@ -880,10 +555,8 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
             resvec[i] = resvec[i] - rhs[i];
         }
 
-        //output_dblvectorpa("resvecdbl",resvec,0, llsize);getchar();
         parms_VecGetNorm2_b(resvec, &norm, map);
 
-        //printf("norm = %20.16e\n",norm);
         free(resvec);
         /*--------------------Create preconditioner based on the matrix A. */
         parms_PCCreate_b(&pc, A);
@@ -897,37 +570,6 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         parms_PCSetup_b(pc);
 
 
-        /*   parms_Viewer v; */
-        /*   parms_ViewerCreate(&v, "PC_Bdd");  */
-        /*   parms_PCView(pc, v); */
-
-        /*     FLOAT *xx, *yy; */
-        /*     PARMS_NEWARRAY(xx, llsize); */
-        /*     PARMS_NEWARRAY(yy, llsize); */
-        /*     for (i=0; i < llsize; ++i) */
-        /*         xx[i] = 1.0; */
-
-        /*     /\* for(i=0;i<llsize;i++) {  *\/ */
-        /*     /\*   xx[i]=(double)(rand()/(1000000));  *\/ */
-        /*     /\*   //printf("xx[i] = %d \n",j);  *\/ */
-        /*     /\* }  *\/ */
-        /*     output_dblvectorpa("pcinitial_Bdd",xx, 0, llsize); */
-
-        /*     parms_MatVec(A, xx, yy); */
-
-        /*     //yy = rhs; */
-
-        /*     for (i=0; i < llsize; ++i) */
-        /*         xx[i] = 0.0; */
-        /*     parms_PCApply(pc, yy, xx); */
-        /*     output_dblvectorpa("pcsol_Bdd",xx, 0, llsize); */
-        /*     output_dblvectorpa("pcmv_Bdd",yy, 0, llsize); */
-
-        /* printf("after testing\n"); */
-        /*   /\* MPI_Barrier(MPI_COMM_WORLD); *\/ */
-        /*   /\* exit(1); *\/ */
-
-
         /*--------------------get the elapsed time spent on creating PC */
         tpc =  parms_TimerGet(tm);
 
@@ -937,7 +579,6 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         /*--------------------get the ratio of the number of nonzero entries in the
     preconditioning matrix to that in the original matrix */
         parms_PCGetRatio(pc, &ratio);//block version is not ready
-        //~ printf("ratio %f\n", ratio);
         /*--------------------pause the timer */
         parms_TimerPause(tm);
 
@@ -946,33 +587,24 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         /*--------------------Create a solver based on A and pc */
 
         parms_SolverCreate(&solver, A, pc);
-        //~ printf("create\n");
         /*--------------------Set the solver type */
         parms_SolverSetType_b(solver, SOLFGMRES);
-        //~ printf("set\n");
 
 
 
         /*--------------------set parameters for solver */
         set_solver_params(solver, prm);
-        //~ printf("parms\n");
 
 
 
         /*--------------------set up solver -- no longer needed - DOK */
-        //parms_SolverSetup(solver);
 
-        //~ printf("apply0\n");
         /*--------------------restart the timer */
         parms_TimerRestart(tm);
-        //~ printf("apply1\n");
 
         /*--------------------Solve the linear equation */
         parms_SolverApply_b(solver, rhs, x);
-        //~ printf("apply2\n");
 
-        //MPI_Barrier(MPI_COMM_WORLD);
-        //exit(1);
 
         /*--------------------get total time spent on creating the pc and solving the linear
      system */
@@ -986,7 +618,7 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
 
         /*--------------------Compute the residual error  */
         parms_MatVec(A, x, y);
-        for(i=0; i<llsize; i++)//nloc
+        for(i=0; i<llsize; i++)
         {
             y[i] = rhs[i] - y[i];
         }
@@ -1035,17 +667,10 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
 
         fflush(stdout);
         MPI_Barrier(MPI_COMM_WORLD);
-        //printf("after getratio\n");
-        //MPI_Barrier(MPI_COMM_WORLD);
-        //exit(1);
-        /*
-  parms_ViewerCreate(&sv, "solver.out");
-  parms_TimerView(tm, sv);
-*/
+
         /*--------------------Free memories */
         cleanCS( csmat );
-        cleanVBMat( vbmat );//int cleanVBMat( vbsptr vbmat )
-
+        cleanVBMat( vbmat );
 
 
         free(x);
@@ -1057,12 +682,9 @@ printf("idom[%d] = %d; dom[%d] = %d \n", myid, idom[myid], idom[myid]-1,dom[idom
         parms_PCFree_b(&pc);
         parms_SolverFree_b(&solver);
         parms_TimerFree(&tm);
-        //printf("after cleanning");
-        /*
-  parms_ViewerFree(&sv);
-*/
+
         /*----Goto next matrix ---*/
-        //label1000://for block structure detection
+        //next_mat://for block structure detection
         mat++;
 
     }

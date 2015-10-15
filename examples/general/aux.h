@@ -6,38 +6,39 @@
 #include "parms.h"
 #include <byteswap.h>//biswap_32
 #include "../../src/DDPQ/protos.h"//new
+#include "mmio.h"
 
 
 #define BUFFLEN 200
 #define STR2U(p, p1)				\
-  if (1) {					\
+    if (1) {					\
     p = buf;					\
     while (' ' == *p) {				\
-      p++;					\
+    p++;					\
     }						\
     p1 = malloc((strlen(p)+1)*sizeof(*p1));	\
     p2 = p1;					\
     while (' ' != *p) {				\
-      *p2 = toupper(*p);			\
-      ++p;					\
-      ++p2;					\
+    *p2 = toupper(*p);			\
+    ++p;					\
+    ++p2;					\
     }						\
     *p2 = '\0';					\
-  } else
+    } else
 
 
 
 
 typedef struct fprm_ {
-  PCTYPE     pctype;
-  PCILUTYPE  pcilutype;
-  double     pgfpar[2];
-  double     tolind;
-  double     droptol[7];
-  int        ipar[18];//ipar[2] is the bsize
-  int        lfil[8];
-  double     eps;/* For block version local solver(vbarms and vbilut) only, angle tolerance of init-block subroutine */
-  int        cosine;
+    PCTYPE     pctype;
+    PCILUTYPE  pcilutype;
+    double     pgfpar[2];
+    double     tolind;
+    double     droptol[7];
+    int        ipar[18];//ipar[2] is the bsize
+    int        lfil[8];
+    double     eps;/* For block version local solver(vbarms and vbilut) only, angle tolerance of init-block subroutine */
+    int        cosine;
 } *fprm;
 
 
@@ -82,24 +83,24 @@ extern void fset_pc_params_(parms_PC *pc, fprm *prm);
 extern void fset_solver_params_(parms_Solver *solver, fprm *prm);
 extern void fprm_free_(fprm *prm);
 extern void wreadmtc_(int *nmax, int *nzmax, int *job, char *fname,int
-		      *len, double *a, int *ja, int *ia, double *rhs,
-		      int *nrhs, char *guesol, int *nrow, int *ncol,
-		      int *nnz, char *title, char *key, char *type,
-		      int *ierr); 
+                      *len, double *a, int *ja, int *ia, double *rhs,
+                      int *nrhs, char *guesol, int *nrow, int *ncol,
+                      int *nnz, char *title, char *key, char *type,
+                      int *ierr);
 extern void readmtc_(int *nmax, int *nzmax, int *job, char *fname, double 
-		     *a, int *ja, int *ia, double *rhs, int *nrhs, char 
-		     *guesol, int *nrow, int *ncol,int *nnz, char *title, 
-		     char *key, char *type, int *ierr);
+                     *a, int *ja, int *ia, double *rhs, int *nrhs, char
+                     *guesol, int *nrow, int *ncol,int *nnz, char *title,
+                     char *key, char *type, int *ierr);
 extern void csrcsc_(int *n, int *job, int *ipos, double *a, int *ja,
-		    int *ia, double *ao, int *jao, int *iao);  //      subroutine csrcsc (n,job,ipos,a,ja,ia,ao,jao,iao)
+                    int *ia, double *ao, int *jao, int *iao);  //      subroutine csrcsc (n,job,ipos,a,ja,ia,ao,jao,iao)
 extern void aplb_(int *nrow, int *ncol, int *job, double *a, int *ja,
-		  int *ia, double *b, int *jb, int *ib, double *c, int
-		  *jc, int *ic, int *nnzmax, int *iw, int *ierr); 
+                  int *ia, double *b, int *jb, int *ib, double *c, int
+                  *jc, int *ic, int *nnzmax, int *iw, int *ierr);
 extern void dse_(int *n, int *ja, int *ia, int *ndom, int *riord, int
-		 *dom, int *idom, int *mask, int *jwk, int *link);
+                 *dom, int *idom, int *mask, int *jwk, int *link);
 
 extern void dse_(int *n, int *ja, int *ia, int *ndom, int *riord, int
-		 *dom, int *idom, int *mask, int *jwk, int *link);
+                 *dom, int *idom, int *mask, int *jwk, int *link);
 extern void coocsr_(int *nrow, int *nnz, double *a, int *ir, int *jc, double *ao, int *jao, int *iao);  //      subroutine coocsr(nrow,nnz,a,ir,jc,ao,jao,iao)
 //-----------------------------------dividing line-------------------------------------------------------------------
 extern void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat);
@@ -125,6 +126,8 @@ extern int fullmatize(int n, int nnz, FLOAT *a, int *ja, int *ia, FLOAT *b, int 
 extern int local_read_bin_data_from_indices(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[], FLOAT val[], int *indices, int nindices, int *gia);
 extern int local_read_bin_data_b(FILE *binfile, long int M, long int N, int nz, int nnzptr[], int ja[], FLOAT val[], int *idom, int *dom, int *perm, int *nB, int nBlock, int *gia);
 extern int local_read_bin_data(FILE *binfile, long int M, long int N, int nz, int ia[], int ja[], FLOAT val[], int *idom, int *dom, int *gia);
+extern unsigned long long get_memory_usage_();
+extern void print_mem(const char* descr);
 
 //extern int parms_MatSetValues_b(parms_Mat self, int m, int *im, int *ia, int *ja, BData *values, INSERTMODE mode);  //add mode is still missing, each entry of matrix point to the long array BData *values
 //-----------------------------------dividing line-------------------------------------------------------------------
@@ -148,22 +151,22 @@ extern int local_read_bin_data(FILE *binfile, long int M, long int N, int nz, in
 #define aplb_                aplb
 #endif
 extern void zwreadmtc_(int *nmax, int *nzmax, int *job, char *fname,int
-		      *len, complex double *a, int *ja, int *ia, complex double *rhs,
-		      int *nrhs, char *guesol, int *nrow, int *ncol,
-		      int *nnz, char *title, char *key, char *type,
-		      int *ierr); 
+                       *len, complex double *a, int *ja, int *ia, complex double *rhs,
+                       int *nrhs, char *guesol, int *nrow, int *ncol,
+                       int *nnz, char *title, char *key, char *type,
+                       int *ierr);
 extern void zreadmtc_(int *nmax, int *nzmax, int *job, char *fname, complex double 
-		     *a, int *ja, int *ia, complex double *rhs, int *nrhs, char 
-		     *guesol, int *nrow, int *ncol,int *nnz, char *title, 
-		     char *key, char *type, int *ierr);
+                      *a, int *ja, int *ia, complex double *rhs, int *nrhs, char
+                      *guesol, int *nrow, int *ncol,int *nnz, char *title,
+                      char *key, char *type, int *ierr);
 extern void zcsrcsc_(int *n, int *job, int *ipos, complex double *a, int *ja,
-		    int *ia, complex double *ao, int *jao, int *iao);  
+                     int *ia, complex double *ao, int *jao, int *iao);
 extern void zaplb_(int *nrow, int *ncol, int *job, complex double *a, int *ja,
-		  int *ia, complex double *b, int *jb, int *ib, complex double *c, int
-		  *jc, int *ic, int *nnzmax, int *iw, int *ierr); 
+                   int *ia, complex double *b, int *jb, int *ib, complex double *c, int
+                   *jc, int *ic, int *nnzmax, int *iw, int *ierr);
 
 extern void zcoocsr_(int *nrow, int *nnz, complex double *a, int *ir, int *jc,
-         complex double *ao, int *jao, int *iao);
+                     complex double *ao, int *jao, int *iao);
 //      subroutine coocsr(nrow,nnz,a,ir,jc,ao,jao,iao);
 
 #endif
