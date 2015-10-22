@@ -45,7 +45,8 @@ int main(int argc, char *argv[])
     char *name, *iluname, *curmat, *currhs, *curname = NULL, buf[40];
     int *nzding = NULL;
     int nBlock, *nB = NULL, *perm = NULL;
-    double tib1, tib2, tib3, tib4 = 0.0, blocksize = 0.0;
+    //double tib1, tib2, tib3, tib4 = 0.0;
+    double blocksize = 0.0;
 
     /*-------------------- variables related to dse partitioning */
     int *riord, *dom = NULL, *idom = NULL, *mask, *jwk, *link;
@@ -202,6 +203,9 @@ int main(int argc, char *argv[])
                 fprintf(fp, "\nMatrix %d: %s \n",(mat+1), curname);
                 fprintf(fp, "n = %ld, nnz = %ld\n", n, nnz);
             }
+
+
+
             parms_TimerReset(tm);
 
             csptr csmat = NULL;
@@ -223,8 +227,8 @@ int main(int argc, char *argv[])
                 ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
             printf("prm->cosine = %d\n",prm->cosine);
 
-            tib1 =  parms_TimerGet(tm);
-            printf("\ntime on init=%f\n",tib1);
+//            tib1 =  parms_TimerGet(tm);
+//            printf("\ntime on init=%f\n",tib1);
             if(ierr != 0) {
                 fprintf(stderr, "*** in init_blocks ierr != 0 ***\n");
                 MPI_Finalize();
@@ -236,13 +240,13 @@ int main(int argc, char *argv[])
                 MPI_Finalize();
                 exit(1);
             }
-            tib2 =  parms_TimerGet(tm);
-            printf("\ntime on dpermC=%f\n",tib2-tib1);
+//            tib2 =  parms_TimerGet(tm);
+//            printf("\ntime on dpermC=%f\n",tib2-tib1);
             /*-------------------- convert to block matrix. */
             vbmat = (vbsptr)Malloc( sizeof(VBSparMat), "main" );
             ierr = csrvbsrC_new( 1, nBlock, nB, csmat, vbmat );
-            tib3 =  parms_TimerGet(tm);
-            printf("\ntime on csrvbsrC_new=%f\n",tib3-tib2);
+//            tib3 =  parms_TimerGet(tm);
+//            printf("\ntime on csrvbsrC_new=%f\n",tib3-tib2);
 
 
             blocksize = (double)csmat->n / (double)nBlock;
@@ -262,8 +266,8 @@ int main(int argc, char *argv[])
 
             bja = (int*)realloc(bja, nbb*sizeof(int));
 
-            tib4 =  parms_TimerGet(tm);
-            printf("\ntime on csrvbsrC_new=%f, time on whole blocking process = %f\n",tib4-tib3, tib4);
+//            tib4 =  parms_TimerGet(tm);
+//            printf("\ntime on csrvbsrC_new=%f, time on whole blocking process = %f\n",tib4-tib3, tib4);
             /*--------------------get the elapsed time spent on creating PC */
 
             idom = malloc((npro+1)*sizeof(*idom));

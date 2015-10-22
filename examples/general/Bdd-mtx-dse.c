@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
             tib3 =  parms_TimerGet(tm);
             printf("\ntime on csrvbsrC_new=%f\n",tib3-tib2);
 
-            outputvbmat(vbmat,"vbmatparms.coo",1);
+//            outputvbmat(vbmat,"vbmatparms.coo",1);
 
             blocksize = (double)csmat->n / (double)nBlock;
             Bdensity = (double)nnzCS( csmat ) / (double)memVBMat( vbmat ) * 100;
@@ -325,7 +325,7 @@ int main(int argc, char *argv[])
                     nzding[i2] += csmat->nnzrow[i3];
             }
 
-            print_mem("end of proc 1");
+//            print_mem("end of proc 1");
             cleanCS( csmat );
             cleanVBMat( vbmat );
         }
@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
         MPI_Bcast(dom, nBlock, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(nzding, npro, MPI_INT, 0, MPI_COMM_WORLD);
         printf("nzding %d on %d\n", nzding[myid], myid);
-        print_mem("after free");
+//        print_mem("after free");
 
 
         tib1 =  parms_TimerGet(tm);
@@ -507,7 +507,7 @@ int main(int argc, char *argv[])
         vbsptr2colunms(vbmat, &nbb, bia, bja, ba);//int vbsptr2colunms(vbsptr mat, int *n, int *ia, int *ja)
 
         bja = (int*)realloc(bja, nbb*sizeof(int));
-        print_mem("end of partial load");
+//        print_mem("end of partial load");
 
         free(nzding);
 
