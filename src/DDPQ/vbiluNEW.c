@@ -99,7 +99,7 @@ int vbiluNEW(vbp4ptr vbmat, vbsptr B, vbsptr C, double *droptol,
 
     lsize = vbmat->nB;
     rsize = C->n;
-    printf("lsize %d, rsize %d, n %d\n", lsize, rsize, n);
+//    printf("lsize %d, rsize %d, n %d\n", lsize, rsize, n);
     n = lsize > rsize ? lsize : rsize;
 
     if(fil0 < 0 || fil1 < 0 || n <= 0) {
@@ -756,7 +756,7 @@ int vbilukNEW(vbp4ptr vbmat, vbsptr B, vbsptr C,
 
     lsize = vbmat->nB;
     rsize = C->n;
-    printf("lsize %d, rsize %d, n %d\n", lsize, rsize, n);
+//    printf("lsize %d, rsize %d, n %d\n", lsize, rsize, n);
     n = lsize > rsize ? lsize : rsize;
 
     if(lfil < 0 || n <= 0) {

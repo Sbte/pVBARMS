@@ -97,7 +97,7 @@ static void parms_barms_nnz(parms_Operator self, int *nnz_mat, int
                             *nnz_pc)
 {
     parms_barms_data data;
-    printf("in parms_barms_nnz\n");
+//    printf("in parms_barms_nnz\n");
     data = (parms_barms_data)self->data;
     *nnz_mat = data->nnz_mat;
     *nnz_pc  = data->nnz_prec;
@@ -509,7 +509,7 @@ int parms_barms_vcsr(parms_Mat self, parms_FactParam param, void *mat,
 
     nlev = ipar[0];
     //printf("nlev=%d\n", nlev);
-    printf("in barms_vcsr\n");
+//    printf("in barms_vcsr\n");
     fflush(stdout);
     bsize = ipar[2];
     iout = ipar[3];
@@ -1125,7 +1125,7 @@ int parms_barms_vcsr_old(parms_Mat self, parms_FactParam param, void *mat,
 
     nlev = ipar[0];
     //printf("nlev=%d\n", nlev);
-    printf("in barms_vcsr\n");
+//    printf("in barms_vcsr\n");
     fflush(stdout);
     bsize = ipar[2];
     iout = ipar[3];

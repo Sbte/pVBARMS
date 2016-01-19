@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
         int llsize;
 
         llsize = parms_MapGetLocallSize(map);
-        printf("llsize=%d, nloc = %d\n", llsize, nloc);
+//        printf("llsize=%d, nloc = %d\n", llsize, nloc);
         /*-------------------- Create distributed vectors based on map */
         x = (FLOAT *)malloc(llsize*sizeof(FLOAT));
         rhs = (FLOAT *)malloc(llsize*sizeof(FLOAT));

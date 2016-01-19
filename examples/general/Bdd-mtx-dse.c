@@ -210,37 +210,7 @@ int main(int argc, char *argv[])
             else
                 ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
 
-//            char Tau_string[80];
 
-//            sprintf(Tau_string, "%0.2f", prm->eps);
-
-//            printf("Tau_string value is %s\n", Tau_string);//%f %p %s %c
-
-//            char str1[80];
-//            strcpy(str1, "perm_");
-
-//            char* perm_file_name = strcat(str1, curname);
-//            char str2[80];
-//            strcpy(str2, "nB_");
-//            char* nB_file_name = strcat(str2, curname);
-
-//            printf("perm_file_name value is %s\n", perm_file_name);//%f %p %s %c
-
-//            perm_file_name = strcat(perm_file_name, "_");
-//            perm_file_name = strcat(perm_file_name, Tau_string);
-//            perm_file_name = strcat(perm_file_name, ".txt");
-
-//            nB_file_name = strcat(nB_file_name, "_");
-//            nB_file_name = strcat(nB_file_name, Tau_string);
-//            nB_file_name = strcat(nB_file_name, ".txt");
-
-//            printf("curname value is %s\n", curname);//%f %p %s %c
-
-//            output_intvector(perm_file_name, perm, 0, csmat->n);
-//            output_intvector(nB_file_name, nB, 0, nBlock);
-
-
-//            goto nextmat;
 
             printf("nBlock value is %d.\n", nBlock);//%f %p %s %c
             tib1 =  parms_TimerGet(tm);
@@ -389,7 +359,7 @@ int main(int argc, char *argv[])
         MPI_Bcast(idom, npro+1, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(dom, nBlock, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(nzding, npro, MPI_INT, 0, MPI_COMM_WORLD);
-        printf("nzding %d on %d\n", nzding[myid], myid);
+//        printf("nzding %d on %d\n", nzding[myid], myid);
 
 
         tib1 =  parms_TimerGet(tm);
@@ -425,7 +395,7 @@ int main(int argc, char *argv[])
         ierr = mm_partial_read_mtx_crd_data_new(mtxfile, n, nc, nnz, ia, ja, a, idom, dom, perm, nB, nBlock, matcode);
         fclose(mtxfile);
 
-        printf("n value is %d, nc value is %d\n", n, nc);//%f %p %s %c
+//        printf("n value is %d, nc value is %d\n", n, nc);//%f %p %s %c
 
 
         free(dom);
@@ -491,7 +461,7 @@ int main(int argc, char *argv[])
         csmat = malloc(sizeof(*csmat));
 
         coo2csptr(n, nzding[myid], a, ia, ja, csmat);//nzding is the local length array
-        printf("nzding[myid] value is %d, myid = %d\n", nzding[myid], myid);//%f %p %s %c
+//        printf("nzding[myid] value is %d, myid = %d\n", nzding[myid], myid);//%f %p %s %c
 
 
         free(ia);
@@ -521,7 +491,7 @@ int main(int argc, char *argv[])
         rhstmpp = (FLOAT*)malloc(n*sizeof(FLOAT));
 
 
-        printf("n value is %d\n", n);//%f %p %s %c
+//        printf("n value is %d\n", n);//%f %p %s %c
 
 
         for( i = 0; i < n; i++ )
@@ -561,7 +531,7 @@ int main(int argc, char *argv[])
         int llsize;
 
         llsize = parms_MapGetLocallSize(map);
-        printf("llsize=%d, nloc = %d\n", llsize, nloc);
+//        printf("llsize=%d, nloc = %d\n", llsize, nloc);
         /*-------------------- Create distributed vectors based on map */
         x = (FLOAT *)malloc(llsize*sizeof(FLOAT));
         rhs = (FLOAT *)malloc(llsize*sizeof(FLOAT));
@@ -574,7 +544,7 @@ int main(int argc, char *argv[])
         printf("\n npro=%d\n",npro);
 
 
-        printf("nrhs value is %d.\n", nrhs);//%f %p %s %c
+//        printf("nrhs value is %d.\n", nrhs);//%f %p %s %c
 
         if(!nrhs)
         {

@@ -1,6 +1,6 @@
-../../../../mtx_matrices/stacom.mtx
-##
 ../matrices/1138_bus.mtx
+##
+../../../../mtx_matrices/stacom.mtx
 ../matrices/sherman5.mtx ../matrices/sherman5_rhs1.mtx
 ##
 ##

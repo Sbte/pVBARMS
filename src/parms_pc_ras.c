@@ -145,8 +145,8 @@ static int pc_ras_apply(parms_PC self, FLOAT *y, FLOAT *x)
     y_ext = (FLOAT *)malloc((n+1)*sizeof(FLOAT));
     x_ext = (FLOAT *)malloc((n+1)*sizeof(FLOAT));
 
-    printf("pc_data->n value is %d.\n", pc_data->n);//%f %p %s %c
-    printf("pc_data->nloc value is %d.\n", pc_data->nloc);//%f %p %s %c
+//    printf("pc_data->n value is %d.\n", pc_data->n);//%f %p %s %c
+//    printf("pc_data->nloc value is %d.\n", pc_data->nloc);//%f %p %s %c
 
 
     /* exchange interface variables */
