@@ -1,10 +1,10 @@
 //#define _GNU_SOURCE
 /*----------------------------------------------------------------------
- *                           Program dd-HB-dse
+ *                           Program Bdd-mtx-dse
  *----------------------------------------------------------------------
  *
  *  In this test program, each processor reads the whole matrix
- *  from file. The matrix is assumed to be in Harwell-Boeing format.
+ *  from file. The matrix is assumed to be in MTX format.
  *  Matrix graph is then  partitioned  using  DSE, a simple partitioning
  *  routine, and scatters the local matrices to each processor. Once
  *  these submatrices are received each processor solves the problem
@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
 
     /* declarations related to matrix market format for reading the mtx
      matrices. Second part is related to I/O parameters */
-    char mname[MAX_MAT][MAX_LINE], key[MAX_LINE];//, type[3];//guesol[2], title[72],
-    int nrhs, nc, n, nnz, mat;//tmp0,tmp2, tmp3, tmp,
+    char mname[MAX_MAT][MAX_LINE], key[MAX_LINE];
+    int nrhs, nc, n, nnz, mat;
     int myid, ierr, i, nloc;
     /* memory usage of the preconditioning matrix */
     double ratio, Bdensity = 0.0;
@@ -190,13 +190,11 @@ int main(int argc, char *argv[])
                 fprintf(fp, "n = %d, nnz = %d\n", n, nnz);
             }
 
-
             csptr csmat = NULL;
 
             csmat = malloc(sizeof(*csmat));
 
             coo2csptr(n, nnz, a, ia, ja, csmat);
-
 
             free(ia);
             free(a);
@@ -208,9 +206,41 @@ int main(int argc, char *argv[])
 
             if (prm->cosine)
 //                ierr = pablo( csmat, prm->eps, 2.0, &nB, &nBlock, &perm);
-                ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);//int init_blocks( csptr csmat, int *pnBlock, int **pnB, int **pperm, double eps)//parms_PCSetup(pc);
+                ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);
             else
                 ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
+
+//            char Tau_string[80];
+
+//            sprintf(Tau_string, "%0.2f", prm->eps);
+
+//            printf("Tau_string value is %s\n", Tau_string);//%f %p %s %c
+
+//            char str1[80];
+//            strcpy(str1, "perm_");
+
+//            char* perm_file_name = strcat(str1, curname);
+//            char str2[80];
+//            strcpy(str2, "nB_");
+//            char* nB_file_name = strcat(str2, curname);
+
+//            printf("perm_file_name value is %s\n", perm_file_name);//%f %p %s %c
+
+//            perm_file_name = strcat(perm_file_name, "_");
+//            perm_file_name = strcat(perm_file_name, Tau_string);
+//            perm_file_name = strcat(perm_file_name, ".txt");
+
+//            nB_file_name = strcat(nB_file_name, "_");
+//            nB_file_name = strcat(nB_file_name, Tau_string);
+//            nB_file_name = strcat(nB_file_name, ".txt");
+
+//            printf("curname value is %s\n", curname);//%f %p %s %c
+
+//            output_intvector(perm_file_name, perm, 0, csmat->n);
+//            output_intvector(nB_file_name, nB, 0, nBlock);
+
+
+//            goto nextmat;
 
             printf("nBlock value is %d.\n", nBlock);//%f %p %s %c
             tib1 =  parms_TimerGet(tm);
@@ -249,10 +279,10 @@ int main(int argc, char *argv[])
 
             int nbb, *bia, *bja;
             BData *ba;
-            bia = (int*)malloc((vbmat->n+1)*sizeof(int));//w =(double*)malloc(n*sizeof(double));
+            bia = (int*)malloc((vbmat->n+1)*sizeof(int));
             bja = (int*)malloc(nnz*sizeof(int));
             ba = (BData*)malloc(nnz*sizeof(BData));
-            vbsptr2colunms(vbmat, &nbb, bia, bja, ba);//int vbsptr2colunms(vbsptr mat, int *n, int *ia, int *ja)
+            vbsptr2colunms(vbmat, &nbb, bia, bja, ba);
 
             bja = (int*)realloc(bja, nbb*sizeof(int));
 
@@ -325,7 +355,6 @@ int main(int argc, char *argv[])
                     nzding[i2] += csmat->nnzrow[i3];
             }
 
-//            print_mem("end of proc 1");
             cleanCS( csmat );
             cleanVBMat( vbmat );
         }
@@ -361,7 +390,6 @@ int main(int argc, char *argv[])
         MPI_Bcast(dom, nBlock, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(nzding, npro, MPI_INT, 0, MPI_COMM_WORLD);
         printf("nzding %d on %d\n", nzding[myid], myid);
-//        print_mem("after free");
 
 
         tib1 =  parms_TimerGet(tm);
@@ -501,13 +529,12 @@ int main(int argc, char *argv[])
 
         int nbb, *bia, *bja;
         BData *ba;
-        bia = (int*)malloc((vbmat->n+1)*sizeof(int));//w =(double*)malloc(n*sizeof(double));
+        bia = (int*)malloc((vbmat->n+1)*sizeof(int));
         bja = (int*)malloc(nzding[myid]*sizeof(int));
         ba = (BData*)malloc(nzding[myid]*sizeof(BData));
-        vbsptr2colunms(vbmat, &nbb, bia, bja, ba);//int vbsptr2colunms(vbsptr mat, int *n, int *ia, int *ja)
+        vbsptr2colunms(vbmat, &nbb, bia, bja, ba);
 
         bja = (int*)realloc(bja, nbb*sizeof(int));
-//        print_mem("end of partial load");
 
         free(nzding);
 
@@ -524,7 +551,7 @@ int main(int argc, char *argv[])
         for (i = 0; i < nBlock; i++) {
             bim[i] = i+1;
         }
-        parms_MatSetValues_b(A, nBlock, bim, bia, bja, ba, INSERT);//parms_MatSetValues(A, n, im, ia, ja, a, INSERT);
+        parms_MatSetValues_b(A, nBlock, bim, bia, bja, ba, INSERT);
 
 
         free(ba);
@@ -616,7 +643,7 @@ int main(int argc, char *argv[])
 
         /*--------------------get the ratio of the number of nonzero entries in the
             preconditioning matrix to that in the original matrix */
-        parms_PCGetRatio(pc, &ratio);//block version is not ready
+        parms_PCGetRatio(pc, &ratio);
         /*--------------------pause the timer */
         parms_TimerPause(tm);
 
@@ -708,7 +735,7 @@ int main(int argc, char *argv[])
 
         /*--------------------Free memories */
         cleanCS( csmat );
-        cleanVBMat( vbmat );//int cleanVBMat( vbsptr vbmat )
+        cleanVBMat( vbmat );
         free(x);
         free(y);
         free(rhs);
@@ -718,10 +745,9 @@ int main(int argc, char *argv[])
         parms_PCFree_b(&pc);
         parms_SolverFree_b(&solver);
         parms_TimerFree(&tm);
-        //printf("after cleanning");
 
         /*----Goto next matrix ---*/
-//        label1000://for block structure detection
+        nextmat://for block structure detection
         mat++;
 
     }

@@ -19,22 +19,9 @@ IFFLAGS			=  -I../../include
 #SHFLAGS			=	
 PARMS_LIBS		=	-L../../lib -lparms
 
-#allexe: dd-HB-dse.ex dd-HB-metis.ex fdd-HB-dse.ex fdd-HB-metis.ex
 
 allexe: Bdd-HB-dse.ex Bdd-mtx-dse.ex Bdd-bin-dse.ex
-#allexe: dd-HB-dse.ex fdd-HB-dse.ex testdriver.ex Bdd-HB-dse.ex dd-mtx-dse.ex Bdd-mtx-#dse.ex Bdd-bin-dse.ex dd-bin-dse.ex
 
-#dd-HB-dse.ex: dd-HB-dse.o aux.o skit.o
-#	${LINKER} ${CLINKFLAGS} -o $@ dd-HB-dse.o aux.o skit.o \
-#	${SHFLAGS} ${LIBFLAGS} ${PARMS_LIBS} \
-#	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR} ${LAPACK_BLAS_LIB} \
-#	${MATH_LIB_DIR} ${MATH_LIB} 
-
-#dd-mtx-dse.ex: dd-mtx-dse.o aux.o skit.o mmio.o
-#	${LINKER} ${CLINKFLAGS} -o $@ dd-mtx-dse.o aux.o skit.o mmio.o \
-#	${SHFLAGS} ${LIBFLAGS} ${PARMS_LIBS} \
-#	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR} ${LAPACK_BLAS_LIB} \
-#	${MATH_LIB_DIR} ${MATH_LIB} 
 
 Bdd-mtx-dse.ex: Bdd-mtx-dse.o aux.o skit.o mmio.o
 	${LINKER} ${CLINKFLAGS} -o $@ Bdd-mtx-dse.o aux.o skit.o mmio.o \
@@ -48,17 +35,6 @@ Bdd-bin-dse.ex: Bdd-bin-dse.o aux.o skit.o mmio.o
 	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR} ${LAPACK_BLAS_LIB} \
 	${MATH_LIB_DIR} ${MATH_LIB}
 
-#dd-bin-dse.ex: dd-bin-dse.o aux.o skit.o mmio.o
-#	${LINKER} ${CLINKFLAGS} -o $@ dd-bin-dse.o aux.o skit.o mmio.o \
-#	${SHFLAGS} ${LIBFLAGS} ${PARMS_LIBS} \
-#	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR} ${LAPACK_BLAS_LIB} \
-#	${MATH_LIB_DIR} ${MATH_LIB}
-	
-#testdriver.ex: testdriver.o aux.o skit.o mmio.o
-#	${LINKER} ${CLINKFLAGS} -o $@ testdriver.o aux.o skit.o mmio.o \
-#	${SHFLAGS} ${LIBFLAGS} ${PARMS_LIBS} \
-#	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR} ${LAPACK_BLAS_LIB} \
-#	${MATH_LIB_DIR} ${MATH_LIB} 
 
 Bdd-HB-dse.ex: Bdd-HB-dse.o aux.o skit.o
 	${LINKER} ${CLINKFLAGS} -o $@ Bdd-HB-dse.o aux.o skit.o \
@@ -72,23 +48,7 @@ XIFLAGS	= -I/home/saad/scicom/METIS-4.0/Lib
 # METIS library path
 XLIB	= -L/home/saad/scicom/METIS-4.0 -lmetis
 
-#dd-HB-metis.ex: dd-HB-metis.o aux.o skit.o
-#	${LINKER} ${LINKFLAGS} -o $@ dd-HB-metis.o aux.o skit.o \
-#	${SHFLAGS} ${LIBFLAGS} ${PARMS_LIBS} ${XLIB} \
-#	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR}  ${LAPACK_BLAS_LIB} \
-#	${MATH_LIB_DIR} ${MATH_LIB} 
 
-#fdd-HB-dse.ex: fdd-HB-dse.o aux.o skit.o
-#	${F90LINKER} ${FLINKFLAGS} -o $@ fdd-HB-dse.o aux.o skit.o \
-#	${SHFLAGS} ${LIBFLAGS} ${PARMS_LIBS} \
-#	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR}  ${LAPACK_BLAS_LIB} \
-#	${MATH_LIB_DIR} ${MATH_LIB} 
-
-#fdd-HB-metis.ex: fdd-HB-metis.o aux.o skit.o
-#	${LINKER} ${LINKFLAGS} -o $@ fdd-HB-metis.o aux.o skit.o \
-#	${SHFLAGS} ${LIBFLAGS} ${PARMS_LIBS} ${XLIB} \
-#	${MPI_LIB_DIR} ${MPI_LIB} ${LAPACK_BLAS_LIB_DIR}  ${LAPACK_BLAS_LIB} \
-#	${MATH_LIB_DIR} ${MATH_LIB} 
 
 
 .c.o:

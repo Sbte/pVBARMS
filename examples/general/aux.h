@@ -3,7 +3,7 @@
 #define  MAX_LINE  100
 #define MAX_MAT 100
 
-#include "parms.h"
+#include "../../src/include/parms.h"
 #include <byteswap.h>//biswap_32
 #include "../../src/DDPQ/protos.h"//new
 #include "mmio.h"

@@ -39,7 +39,7 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include "./include/parms_timer_impl.h"
-#include "parms_viewer.h"
+#include "include/parms_viewer.h"
 
 /** 
  * Return the elapsed time since the Epoch.

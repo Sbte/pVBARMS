@@ -40,11 +40,11 @@
   $Id: parms_solver.c,v 1.5 2006-12-01 20:44:20 zzli Exp $
  -------------------------------------------------------------------*/
 #include <stdlib.h>
-#include "parms_vec.h"
-#include "parms_viewer.h"
-#include "parms_mat_impl.h"
-#include "parms_pc_impl.h"
-#include "parms_solver_impl.h"
+#include "include/parms_vec.h"
+#include "include/parms_viewer.h"
+#include "include/parms_mat_impl.h"
+#include "include/parms_pc_impl.h"
+#include "include/parms_solver_impl.h"
 
 
 /** 

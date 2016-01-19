@@ -4,7 +4,7 @@
  *
  *  In this test program, one processor reads the whole matrix
  *  from file and broadcast to other processors. The matrix is
- *  assumed to be in binary format. Matrix graph is then  partitioned
+ *  assumed to be in binary format. Matrix graph is then partitioned
  *  using  DSE, a simple partitioning routine, and scatters the local
  *  matrices to each processor. Once these submatrices are received each
  *  processor solves the problem using preconditioned FGMRES

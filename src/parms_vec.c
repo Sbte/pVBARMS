@@ -27,10 +27,10 @@
 
   $Id: parms_vec.c,v 1.3 2007-05-10 14:11:21 zzli Exp $
   ------------------------------------------------------------------*/
-#include "parms_sys.h"
-#include "parms_viewer.h"
-#include "parms_vec.h"
-#include "parms_map_impl.h"
+#include "include/parms_sys.h"
+#include "include/parms_viewer.h"
+#include "include/parms_vec.h"
+#include "include/parms_map_impl.h"
 #if defined(__ICC)
 #include <mathimf.h>
 #else

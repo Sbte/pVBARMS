@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
-  fgmres_create    : create the FGMRES solver. 
-  fgmres_free      : free the memory for the FGMRES solver. 
+  fgmres_create    : create the FGMRES solver.
+  fgmres_free      : free the memory for the FGMRES solver.
   fgmres_setksize  : set the restart size of the FGMRES solver.
   fgmres_view      : dump the FGMRES solver.
   parms_fgmres     : the FGMRES solve function.
@@ -17,16 +17,16 @@
 #include <math.h>
 #endif 
 #endif 
-#include "parms_vec.h"
-#include "parms_mat.h"
-#include "parms_pc.h"
+#include "include/parms_vec.h"
+#include "include/parms_mat.h"
+#include "include/parms_pc.h"
 #include "./include/parms_solver_impl.h"
 
 #define DBL_EPSILON 2.2204460492503131e-16 // double epsilon
 
 typedef struct fgmres_data {
-  int restart;
-  int neigs;
+    int restart;
+    int neigs;
 } *fgmres_data;
 
 #define TINY 1.0e-20
@@ -40,7 +40,7 @@ int parms_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
 #if defined(DBL_CMPLX)
     FLOAT rot;
 #else
-    REAL gam;    
+    REAL gam;
 #endif    
 
     parms_Mat A;
@@ -64,36 +64,36 @@ int parms_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
     nloc    = parms_MapGetLocalSize(is);//nloc
     comm  =  is->comm;
 
-    FILE *fout=NULL;       
+    FILE *fout=NULL;
     fout = fopen("plotting.coo", "aw");//plotting
 
-/* --- first permute x and y for pARMS matrix structure ------*/
-    parms_VecPerm(x, is); 
+    /* --- first permute x and y for pARMS matrix structure ------*/
+    parms_VecPerm(x, is);
     parms_VecPerm(y, is);
-/* ---- set isvecperm to true -----*/
+    /* ---- set isvecperm to true -----*/
     is->isvecperm = true;
 
-/*----- allocate memory for working local arrays -------*/
+    /*----- allocate memory for working local arrays -------*/
 
-/* ---------allocate size for nx(m+1) matrix vv */
-    size = nloc*(restart+1); 
+    /* ---------allocate size for nx(m+1) matrix vv */
+    size = nloc*(restart+1);
     PARMS_NEWARRAY(vv, size);
-/*-------- allocate size for nxm matrix z -----*/    
-    size = nloc*restart; 
+    /*-------- allocate size for nxm matrix z -----*/
+    size = nloc*restart;
     PARMS_NEWARRAY(z,  size);
 
-/*----- allocate memory for Hessenberg matrix (nonzeros only) 
- *----- and rotation vectors s and rs -------------------*/    
+    /*----- allocate memory for Hessenberg matrix (nonzeros only)
+ *----- and rotation vectors s and rs -------------------*/
     size = (((restart+1)*(restart+2)/2) - 1) + 2*(restart+1);
     PARMS_NEWARRAY(hh, size);
 
     s = hh + ((restart+1)*(restart+2)/2) - 1;
     rs = s + restart + 1;
-/*--------- allocate memory for rotation matrix c -------
+    /*--------- allocate memory for rotation matrix c -------
  * This is done separately since for complex valued systems
- * c is still a real-valued vector, and hence cannot be 
- * allocated as sizeof(complex double) as is the case for 
- * s and rs and hh above --------------------------------*/    
+ * c is still a real-valued vector, and hence cannot be
+ * allocated as sizeof(complex double) as is the case for
+ * s and rs and hh above --------------------------------*/
     PARMS_NEWARRAY(c, restart+1);
     
     /* outer loop starts here */
@@ -101,196 +101,196 @@ int parms_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
 
     outflag = true;
     while(outflag) {
-      /* compute vv[0] = A * x */
-      parms_MatVec(A, x, vv);
+        /* compute vv[0] = A * x */
+        parms_MatVec(A, x, vv);
 
-      /* compute residual vector */
-      parms_VecAYPX(vv, y, -1.0, is);
-      /* compute the norm of the residual */
-      parms_VecGetNorm2(vv, &ro, is);
+        /* compute residual vector */
+        parms_VecAYPX(vv, y, -1.0, is);
+        /* compute the norm of the residual */
+        parms_VecGetNorm2(vv, &ro, is);
 
-	//printf("ro = %20.16e\n",ro);
+        //printf("ro = %20.16e\n",ro);
 
-      if(ABS_VALUE(ro) <= DBL_EPSILON)  {      
-	outflag = false;
-	break;
-      }
-      t1 = 1.0 / ro;
-      parms_VecScale(vv, t1, is);      
-      if(its == 0)
-	eps1 = tol*ro;
+        if(ABS_VALUE(ro) <= DBL_EPSILON)  {
+            outflag = false;
+            break;
+        }
+        t1 = 1.0 / ro;
+        parms_VecScale(vv, t1, is);
+        if(its == 0)
+            eps1 = tol*ro;
 
-/* ----------initialize 1-st term of rhs of hessenberg system ------------*/
+        /* ----------initialize 1-st term of rhs of hessenberg system ------------*/
 
-      rs[0] = ro;
+        rs[0] = ro;
 
-      i = -1;
-      pti = 0;
-      pti1 = 0;
-      ptih = 0;
-      intflag = true;
-      while (intflag) {
-	i++;
-	its++;
-	i1 = i + 1;
-        pti = i*nloc;
-        pti1 = i1*nloc;
-       // printf("its = %d\n",its);
-	//printf("nloc = %d\n",nloc);
-        //printf("pti = %d\n",pti);
-        //printf("pti1 = %d\n",pti1);
-/*------------- preconditioning operation z = K^{-1}vv ---------------*/
-	parms_PCApply(pc, &vv[pti], &z[pti]);
+        i = -1;
+        pti = 0;
+        pti1 = 0;
+        ptih = 0;
+        intflag = true;
+        while (intflag) {
+            i++;
+            its++;
+            i1 = i + 1;
+            pti = i*nloc;
+            pti1 = i1*nloc;
+            // printf("its = %d\n",its);
+            //printf("nloc = %d\n",nloc);
+            //printf("pti = %d\n",pti);
+            //printf("pti1 = %d\n",pti1);
+            /*------------- preconditioning operation z = K^{-1}vv ---------------*/
+            parms_PCApply(pc, &vv[pti], &z[pti]);
 
-/*------------- compute A*z -----------------*/
-	parms_MatVec(A, &z[pti], &vv[pti1]);
-	
-/*------------- classical Gram - Schmidt -------------------*/
+            /*------------- compute A*z -----------------*/
+            parms_MatVec(A, &z[pti], &vv[pti1]);
+
+            /*------------- classical Gram - Schmidt -------------------*/
 #if defined(DBL_CMPLX)
-/* ----- Check for serial case ------ */
-        if(is->isserial)
-        {
-            for(j=0; j<i1; j++)
+            /* ----- Check for serial case ------ */
+            if(is->isserial)
             {
-                 hh[ptih+j] = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                 alpha = -hh[ptih+j];
-      	         GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	 }
-      	 else /*-------------- parallel case -------*/
-      	 {
-            for(j=0; j<i1; j++)
+                for(j=0; j<i1; j++)
+                {
+                    hh[ptih+j] = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
+            else /*-------------- parallel case -------*/
             {
-                t1 = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_CMPLX, MPI_CMPLX_SUM, comm);
-                alpha = -hh[ptih+j];
-      	        GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	}       	           	 
+                for(j=0; j<i1; j++)
+                {
+                    t1 = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_CMPLX, MPI_CMPLX_SUM, comm);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
 #else
-/* ----- Check for serial case ------ */
-        if(is->isserial)
-        {
-            for(j=0; j<i1; j++)
+            /* ----- Check for serial case ------ */
+            if(is->isserial)
             {
-                 hh[ptih+j] = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                 alpha = -hh[ptih+j];
-      	         GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	 }
-      	 else /*-------------- parallel case -------*/
-      	 {
-            for(j=0; j<i1; j++)
+                for(j=0; j<i1; j++)
+                {
+                    hh[ptih+j] = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
+            else /*-------------- parallel case -------*/
             {
-                t1 = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_DOUBLE, MPI_SUM, comm);
-                alpha = -hh[ptih+j];
-      	        GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	}  
+                for(j=0; j<i1; j++)
+                {
+                    t1 = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_DOUBLE, MPI_SUM, comm);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
 #endif  
-        parms_VecGetNorm2(&vv[pti1], &t, is);      
-        hh[ptih+i1] = t;
+            parms_VecGetNorm2(&vv[pti1], &t, is);
+            hh[ptih+i1] = t;
 
-	if (fabs(t) > TINY) {
-	  t1 = 1.0 / t;
-	  parms_VecScale(&vv[pti1], t1, is);
-	}
+            if (fabs(t) > TINY) {
+                t1 = 1.0 / t;
+                parms_VecScale(&vv[pti1], t1, is);
+            }
 
-	/* done with classical Gram-Schmidt and Arnoldi step. now update
-	 * factorization of hh */
+            /* done with classical Gram-Schmidt and Arnoldi step. now update
+     * factorization of hh */
 #if defined(DBL_CMPLX)		 
-	if (i != 0) {
-	  for(k = 1; k <= i; k++) {
-	    k1 = k-1;
-	    t1 = hh[ptih+k1];
-	    
-	    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
-	    hh[ptih+k] = -conj(s[k1])*t1 + c[k1]*hh[ptih+k];	    
-	  }
-      }
-/*-----------get next plane rotation------------ */
-      zclartg(hh[ptih+i], hh[ptih+i1], &c[i], &s[i], &rot);
-      rs[i1] = -conj(s[i])*rs[i];
-      rs[i] = c[i]*rs[i];      
-      hh[ptih+i] = rot;
-      ro = cabs(rs[i1]);	
+            if (i != 0) {
+                for(k = 1; k <= i; k++) {
+                    k1 = k-1;
+                    t1 = hh[ptih+k1];
+
+                    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
+                    hh[ptih+k] = -conj(s[k1])*t1 + c[k1]*hh[ptih+k];
+                }
+            }
+            /*-----------get next plane rotation------------ */
+            zclartg(hh[ptih+i], hh[ptih+i1], &c[i], &s[i], &rot);
+            rs[i1] = -conj(s[i])*rs[i];
+            rs[i] = c[i]*rs[i];
+            hh[ptih+i] = rot;
+            ro = cabs(rs[i1]);
 #else
-	if (i != 0) {
-	  for(k=1; k<=i; k++){ 
-	    k1 = k-1;
-	    t1 = hh[ptih+k1];
-	    
-	    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
-	    hh[ptih+k] = -s[k1]*t1 + c[k1]*hh[ptih+k];
-	  }
-	}
-/*-----------get next plane rotation------------ */
-	gam = sqrt(hh[ptih+i]*hh[ptih+i] + hh[ptih+i1]*hh[ptih+i1]);
-      /* 
-	 if gamma is zero then any small value will do ...
-	 will affect only residual estimate 
-      */	
-	if (fabs(gam) <= TINY) gam = TINY;
-	
-	/* determine-next-plane-rotation */
-	c[i] = hh[ptih+i]/gam;
-	s[i] = hh[ptih+i1]/gam;
-	
-	rs[i1] = -s[i]*rs[i];
-	rs[i] = c[i]*rs[i];
-	/* determine res. norm and test for convergence */
-	hh[ptih+i] = c[i]*hh[ptih+i] + s[i]*hh[ptih+i1];
-	ro = fabs(rs[i1]);	
+            if (i != 0) {
+                for(k=1; k<=i; k++){
+                    k1 = k-1;
+                    t1 = hh[ptih+k1];
+
+                    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
+                    hh[ptih+k] = -s[k1]*t1 + c[k1]*hh[ptih+k];
+                }
+            }
+            /*-----------get next plane rotation------------ */
+            gam = sqrt(hh[ptih+i]*hh[ptih+i] + hh[ptih+i1]*hh[ptih+i1]);
+            /*
+     if gamma is zero then any small value will do ...
+     will affect only residual estimate
+      */
+            if (fabs(gam) <= TINY) gam = TINY;
+
+            /* determine-next-plane-rotation */
+            c[i] = hh[ptih+i]/gam;
+            s[i] = hh[ptih+i1]/gam;
+
+            rs[i1] = -s[i]*rs[i];
+            rs[i] = c[i]*rs[i];
+            /* determine res. norm and test for convergence */
+            hh[ptih+i] = c[i]*hh[ptih+i] + s[i]*hh[ptih+i1];
+            ro = fabs(rs[i1]);
 #endif	
 
-	if (rank == 0)
-	  fprintf(fout, "%20.16e\n",ro);//plotting
-//printf("ro = %20.16e\n",ro);
-/*------------ Check for convergence ---------*/    
-	if ((i+1 >= restart) || (ro <= eps1) || isnan(ro) || its >= maxits)   
-	   intflag = false;
-	else
-/*------------ update hh pointer ptih ---------*/   
-           ptih += i+2;    	
-      }
+            if (rank == 0)
+                fprintf(fout, "%20.16e\n",ro);//plotting
+            //printf("ro = %20.16e\n",ro);
+            /*------------ Check for convergence ---------*/
+            if ((i+1 >= restart) || (ro <= eps1) || isnan(ro) || its >= maxits)
+                intflag = false;
+            else
+                /*------------ update hh pointer ptih ---------*/
+                ptih += i+2;
+        }
 
-      /* now compute solution first solve upper triangular system */
-      rs[i] = rs[i]/hh[ptih+i];
-      for (ii = 1; ii <= i; ii++) {
-	k = i-ii;
-	k1 = k+1;
-	t1 = rs[k];
-	for (j = k1; j <= i; j++) {
-	  jj = ((j+1)*(j+2)/2) - 1;
-	  t1 = t1 - hh[jj+k]*rs[j];
-	}
-	jj = ((k+1)*(k+2)/2)-1;
-	rs[k] = t1/hh[jj+k];
-      }
-	/* done with back substitution. now form linear combination to
-	 * get solution */
-      for (j = 0; j <= i; j++) {
-	t1 = rs[j];
-	parms_VecAXPY(x, &z[j*nloc], t1, is);
-      }
-      /* test for return */
-      if ((ro <= eps1) || isnan(ro) || (its >= maxits)) {
-	outflag = false;
-      }
+        /* now compute solution first solve upper triangular system */
+        rs[i] = rs[i]/hh[ptih+i];
+        for (ii = 1; ii <= i; ii++) {
+            k = i-ii;
+            k1 = k+1;
+            t1 = rs[k];
+            for (j = k1; j <= i; j++) {
+                jj = ((j+1)*(j+2)/2) - 1;
+                t1 = t1 - hh[jj+k]*rs[j];
+            }
+            jj = ((k+1)*(k+2)/2)-1;
+            rs[k] = t1/hh[jj+k];
+        }
+        /* done with back substitution. now form linear combination to
+     * get solution */
+        for (j = 0; j <= i; j++) {
+            t1 = rs[j];
+            parms_VecAXPY(x, &z[j*nloc], t1, is);
+        }
+        /* test for return */
+        if ((ro <= eps1) || isnan(ro) || (its >= maxits)) {
+            outflag = false;
+        }
     }
 
     free(vv);
     free(z);
     free(hh);
     free(c);
-    fclose(fout);//plotting 
+    fclose(fout);//plotting
 
 
-/* reset isvecperm and do inverse permutation*/
+    /* reset isvecperm and do inverse permutation*/
     is->isvecperm = false; // this comes before inverse permutation
     /* permutes x and y */
-    parms_VecInvPerm(x, is); 
+    parms_VecInvPerm(x, is);
     parms_VecInvPerm(y, is);
 
     self->its = its;
@@ -308,7 +308,7 @@ static int fgmres_getresidual(parms_Solver self, FLOAT *y, FLOAT *x, FLOAT *res)
 
     return 0;
 }
-     
+
 static int fgmres_getresidualnorm2(parms_Solver self, FLOAT *y, FLOAT *x, REAL *rnorm)
 {
 
@@ -320,9 +320,9 @@ static int fgmres_getresidualnorm2(parms_Solver self, FLOAT *y, FLOAT *x, REAL *
     A  = self->A;
     is = A->is;
     nloc = parms_MapGetLocalSize(is);
-    PARMS_NEWARRAY(res,  nloc);    
+    PARMS_NEWARRAY(res,  nloc);
 
-    parms_MatMVPY(A, -1.0, x, 1.0, y, res);    
+    parms_MatMVPY(A, -1.0, x, 1.0, y, res);
 
     parms_VecGetNorm2(res, rnorm, is);
 
@@ -334,75 +334,75 @@ static int fgmres_getresidualnorm2(parms_Solver self, FLOAT *y, FLOAT *x, REAL *
 
 static int fgmres_free(parms_Solver *self)
 {
-  fgmres_data fdata;
+    fgmres_data fdata;
 
-/* free data associated with solver */  
-  fdata = (fgmres_data)(*self)->data;
-  PARMS_FREE(fdata);  
-  return 0;
+    /* free data associated with solver */
+    fdata = (fgmres_data)(*self)->data;
+    PARMS_FREE(fdata);
+    return 0;
 }
 
 static int fgmres_view(parms_Solver self, parms_Viewer v)
 {
-  FILE *fp;
-  char *name, *iluname;
-  int restart;
-  fgmres_data fdata;
+    FILE *fp;
+    char *name, *iluname;
+    int restart;
+    fgmres_data fdata;
 
-  fdata = (fgmres_data)self->data;
-  restart = fdata->restart;
+    fdata = (fgmres_data)self->data;
+    restart = fdata->restart;
 
-  parms_ViewerGetFP(v, &fp);
+    parms_ViewerGetFP(v, &fp);
 
-  fprintf(fp,"\n=============================\n");
-  fprintf(fp,"	Solver Parameters	\n");
-  fprintf(fp,"=============================\n");
-  
-  fprintf(fp, "Solver type = flexible gmres (fgmres) \n");
-  
-  fprintf(fp, "maxits = %d \n", self->maxits);
-  fprintf(fp, "Relative tolerance = %-8.2e \n", self->tol);
+    fprintf(fp,"\n=============================\n");
+    fprintf(fp,"	Solver Parameters	\n");
+    fprintf(fp,"=============================\n");
 
-  fprintf(fp, "Krylov dimension = %d \n", restart);
+    fprintf(fp, "Solver type = flexible gmres (fgmres) \n");
 
-  parms_PCGetName(self->pc, &name);
-  parms_PCILUGetName(self->pc, &iluname);
-  fprintf(fp, "Global Preconditioner: %s\n", name);
-  fprintf(fp, "Local Preconditioner: %s\n", iluname);
+    fprintf(fp, "maxits = %d \n", self->maxits);
+    fprintf(fp, "Relative tolerance = %-8.2e \n", self->tol);
 
-  parms_ViewerGetFP(v, &fp);
+    fprintf(fp, "Krylov dimension = %d \n", restart);
 
-  return 0;
+    parms_PCGetName(self->pc, &name);
+    parms_PCILUGetName(self->pc, &iluname);
+    fprintf(fp, "Global Preconditioner: %s\n", name);
+    fprintf(fp, "Local Preconditioner: %s\n", iluname);
+
+    parms_ViewerGetFP(v, &fp);
+
+    return 0;
 }
 
 static int fgmres_setksize(parms_Solver self, int restart)
 {
-  fgmres_data fdata;
+    fgmres_data fdata;
 
-  fdata = (fgmres_data)self->data;
-  fdata->restart = restart;
+    fdata = (fgmres_data)self->data;
+    fdata->restart = restart;
 
-  return 0;
+    return 0;
 }
 
 static int fgmres_setneig(parms_Solver self, int neigs)
 {
-  fgmres_data fdata;
+    fgmres_data fdata;
 
-  fdata = (fgmres_data)self->data;
-  fdata->neigs = neigs;
+    fdata = (fgmres_data)self->data;
+    fdata->neigs = neigs;
 
-  return 0;
+    return 0;
 }
 
 static struct parms_Solver_ops parms_fgmres_sol = {
-  parms_fgmres,
-  fgmres_getresidual,
-  fgmres_getresidualnorm2,
-  fgmres_setksize,
-  fgmres_setneig,
-  fgmres_free,
-  fgmres_view
+    parms_fgmres,
+    fgmres_getresidual,
+    fgmres_getresidualnorm2,
+    fgmres_setksize,
+    fgmres_setneig,
+    fgmres_free,
+    fgmres_view
 };
 
 
@@ -413,15 +413,15 @@ static struct parms_Solver_ops parms_fgmres_sol = {
  */
 int fgmres_create(parms_Solver self)
 {
-  fgmres_data fdata;
+    fgmres_data fdata;
 
-  PARMS_NEW(fdata);
-  fdata->restart = 30;
-  fdata->neigs = 0;
-  self->data =fdata;
-  PARMS_MEMCPY(self->ops, &parms_fgmres_sol, 1);
+    PARMS_NEW(fdata);
+    fdata->restart = 30;
+    fdata->neigs = 0;
+    self->data =fdata;
+    PARMS_MEMCPY(self->ops, &parms_fgmres_sol, 1);
 
-  return 0;
+    return 0;
 }
 
 
@@ -437,7 +437,7 @@ int parms_b_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
 #if defined(DBL_CMPLX)
     FLOAT rot;
 #else
-    REAL gam;    
+    REAL gam;
 #endif    
 
     parms_Mat A;
@@ -460,38 +460,38 @@ int parms_b_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
     eps1 = tol;
     nloc    = parms_MapGetLocallSize(is);//mark
 
-    FILE *fout=NULL;       
-    fout = fopen("plotting.coo", "aw");//plotting       
+    FILE *fout=NULL;
+    fout = fopen("plotting.coo", "aw");//plotting
 
     comm  =  is->comm;
 
-/* --- first permute x and y for pARMS matrix structure ------*/
-    parms_VecPerm_b(x, is); 
+    /* --- first permute x and y for pARMS matrix structure ------*/
+    parms_VecPerm_b(x, is);
     parms_VecPerm_b(y, is);
-/* ---- set isvecperm to true -----*/
+    /* ---- set isvecperm to true -----*/
     is->isvecperm = true;
 
-/*----- allocate memory for working local arrays -------*/
+    /*----- allocate memory for working local arrays -------*/
 
-/* ---------allocate size for nx(m+1) matrix vv */
-    size = nloc*(restart+1); 
+    /* ---------allocate size for nx(m+1) matrix vv */
+    size = nloc*(restart+1);
     PARMS_NEWARRAY(vv, size);
-/*-------- allocate size for nxm matrix z -----*/    
-    size = nloc*restart; 
+    /*-------- allocate size for nxm matrix z -----*/
+    size = nloc*restart;
     PARMS_NEWARRAY(z,  size);
 
-/*----- allocate memory for Hessenberg matrix (nonzeros only) 
- *----- and rotation vectors s and rs -------------------*/    
+    /*----- allocate memory for Hessenberg matrix (nonzeros only)
+ *----- and rotation vectors s and rs -------------------*/
     size = (((restart+1)*(restart+2)/2) - 1) + 2*(restart+1);
     PARMS_NEWARRAY(hh, size);
 
     s = hh + ((restart+1)*(restart+2)/2) - 1;
     rs = s + restart + 1;
-/*--------- allocate memory for rotation matrix c -------
+    /*--------- allocate memory for rotation matrix c -------
  * This is done separately since for complex valued systems
- * c is still a real-valued vector, and hence cannot be 
- * allocated as sizeof(complex double) as is the case for 
- * s and rs and hh above --------------------------------*/    
+ * c is still a real-valued vector, and hence cannot be
+ * allocated as sizeof(complex double) as is the case for
+ * s and rs and hh above --------------------------------*/
     PARMS_NEWARRAY(c, restart+1);
     
     /* outer loop starts here */
@@ -499,188 +499,190 @@ int parms_b_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
 
     outflag = true;
     while(outflag) {
-      /* compute vv[0] = A * x */
-      parms_MatVec(A, x, vv);
+        /* compute vv[0] = A * x */
+        parms_MatVec(A, x, vv);
 
-      /* compute residual vector */
-      parms_VecAYPX_b(vv, y, -1.0, is);
-      /* compute the norm of the residual */
-      parms_VecGetNorm2_b(vv, &ro, is);
+        /* compute residual vector */
+        parms_VecAYPX_b(vv, y, -1.0, is);
+        /* compute the norm of the residual */
+        parms_VecGetNorm2_b(vv, &ro, is);
 
-      //printf("ro = %20.16e\n",ro);
+        //printf("ro = %20.16e\n",ro);
 
-      if(ABS_VALUE(ro) <= DBL_EPSILON)  {      
-	outflag = false;
-	break;
-      }
-      t1 = 1.0 / ro;
-      parms_VecScale_b(vv, t1, is);      
-      if(its == 0)
-	eps1 = tol*ro;
+        if(ABS_VALUE(ro) <= DBL_EPSILON)  {
+            outflag = false;
+            break;
+        }
+        t1 = 1.0 / ro;
+        parms_VecScale_b(vv, t1, is);
+        if(its == 0)
+            eps1 = tol*ro;
 
-/* ----------initialize 1-st term of rhs of hessenberg system ------------*/
+        /* ----------initialize 1-st term of rhs of hessenberg system ------------*/
 
-      rs[0] = ro;
+        rs[0] = ro;
 
-      i = -1;
-      pti = 0;
-      pti1 = 0;
-      ptih = 0;
-      intflag = true;
-      while (intflag) {
-	i++;
-	its++;
+        i = -1;
+        pti = 0;
+        pti1 = 0;
+        ptih = 0;
+        intflag = true;
+        while (intflag) {
+            i++;
+            its++;
 
 
-	i1 = i + 1;
-        pti = i*nloc;
-        pti1 = i1*nloc;
-        
-/*------------- preconditioning operation z = K^{-1}vv ---------------*/
-//	if (rank == 0)
-	//  printf("its = %d\n",its);
-	//printf("nloc = %d\n",nloc);
-        //printf("pti = %d\n",pti);
-        //printf("pti1 = %d\n",pti1);
-	parms_PCApply(pc, &vv[pti], &z[pti]);//we dont have to change it 
+            i1 = i + 1;
+            pti = i*nloc;
+            pti1 = i1*nloc;
 
-/*------------- compute A*z -----------------*/
-	parms_MatVec(A, &z[pti], &vv[pti1]);
-	 
-/*------------- classical Gram - Schmidt -------------------*/
+            /*------------- preconditioning operation z = K^{-1}vv ---------------*/
+            //	if (rank == 0)
+//            printf(" inside fgmres.\n");//%f %p %s %c
+
+            //  printf("its = %d\n",its);
+            //printf("nloc = %d\n",nloc);
+            //printf("pti = %d\n",pti);
+            //printf("pti1 = %d\n",pti1);
+            parms_PCApply(pc, &vv[pti], &z[pti]);
+
+            /*------------- compute A*z -----------------*/
+            parms_MatVec(A, &z[pti], &vv[pti1]);
+
+            /*------------- classical Gram - Schmidt -------------------*/
 #if defined(DBL_CMPLX)
-/* ----- Check for serial case ------ */
-        if(is->isserial)
-        {
-            for(j=0; j<i1; j++)
+            /* ----- Check for serial case ------ */
+            if(is->isserial)
             {
-                 hh[ptih+j] = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                 alpha = -hh[ptih+j];
-      	         GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	 }
-      	 else /*-------------- parallel case -------*/
-      	 {
-            for(j=0; j<i1; j++)
+                for(j=0; j<i1; j++)
+                {
+                    hh[ptih+j] = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
+            else /*-------------- parallel case -------*/
             {
-                t1 = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_CMPLX, MPI_CMPLX_SUM, comm);
-                alpha = -hh[ptih+j];
-      	        GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	}       	           	 
+                for(j=0; j<i1; j++)
+                {
+                    t1 = GDOTC(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_CMPLX, MPI_CMPLX_SUM, comm);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
 #else
-/* ----- Check for serial case ------ */
-        if(is->isserial)
-        {
-            for(j=0; j<i1; j++)
+            /* ----- Check for serial case ------ */
+            if(is->isserial)
             {
-                 hh[ptih+j] = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                 alpha = -hh[ptih+j];
-      	         GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	 }
-      	 else /*-------------- parallel case -------*/
-      	 {
-            for(j=0; j<i1; j++)
+                for(j=0; j<i1; j++)
+                {
+                    hh[ptih+j] = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
+            else /*-------------- parallel case -------*/
             {
-                t1 = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
-                MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_DOUBLE, MPI_SUM, comm);
-                alpha = -hh[ptih+j];
-      	        GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
-      	    }
-      	}  
+                for(j=0; j<i1; j++)
+                {
+                    t1 = GDOT(nloc, &vv[j*nloc], one, &vv[pti1], one);
+                    MPI_Allreduce(&t1, &hh[ptih+j], one, MPI_DOUBLE, MPI_SUM, comm);
+                    alpha = -hh[ptih+j];
+                    GAXPY(nloc, alpha, &vv[j*nloc], one, &vv[pti1], one);
+                }
+            }
 #endif  
-        parms_VecGetNorm2_b(&vv[pti1], &t, is);      
-        hh[ptih+i1] = t;
+            parms_VecGetNorm2_b(&vv[pti1], &t, is);
+            hh[ptih+i1] = t;
 
-	if (fabs(t) > TINY) {
-	  t1 = 1.0 / t;
-	  parms_VecScale_b(&vv[pti1], t1, is);
-	}
+            if (fabs(t) > TINY) {
+                t1 = 1.0 / t;
+                parms_VecScale_b(&vv[pti1], t1, is);
+            }
 
-	/* done with classical Gram-Schmidt and Arnoldi step. now update
-	 * factorization of hh */
+            /* done with classical Gram-Schmidt and Arnoldi step. now update
+     * factorization of hh */
 #if defined(DBL_CMPLX)		 
-	if (i != 0) {
-	  for(k = 1; k <= i; k++) {
-	    k1 = k-1;
-	    t1 = hh[ptih+k1];
-	    
-	    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
-	    hh[ptih+k] = -conj(s[k1])*t1 + c[k1]*hh[ptih+k];	    
-	  }
-      }
-/*-----------get next plane rotation------------ */
-      zclartg(hh[ptih+i], hh[ptih+i1], &c[i], &s[i], &rot);
-      rs[i1] = -conj(s[i])*rs[i];
-      rs[i] = c[i]*rs[i];      
-      hh[ptih+i] = rot;
-      ro = cabs(rs[i1]);	
+            if (i != 0) {
+                for(k = 1; k <= i; k++) {
+                    k1 = k-1;
+                    t1 = hh[ptih+k1];
+
+                    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
+                    hh[ptih+k] = -conj(s[k1])*t1 + c[k1]*hh[ptih+k];
+                }
+            }
+            /*-----------get next plane rotation------------ */
+            zclartg(hh[ptih+i], hh[ptih+i1], &c[i], &s[i], &rot);
+            rs[i1] = -conj(s[i])*rs[i];
+            rs[i] = c[i]*rs[i];
+            hh[ptih+i] = rot;
+            ro = cabs(rs[i1]);
 #else
-	if (i != 0) {
-	  for(k=1; k<=i; k++){ 
-	    k1 = k-1;
-	    t1 = hh[ptih+k1];
-	    
-	    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
-	    hh[ptih+k] = -s[k1]*t1 + c[k1]*hh[ptih+k];
-	  }
-	}
-/*-----------get next plane rotation------------ */
-	gam = sqrt(hh[ptih+i]*hh[ptih+i] + hh[ptih+i1]*hh[ptih+i1]);
-      /* 
-	 if gamma is zero then any small value will do ...
-	 will affect only residual estimate 
-      */	
-	if (fabs(gam) <= TINY) gam = TINY;
-	
-	/* determine-next-plane-rotation */
-	c[i] = hh[ptih+i]/gam;
-	s[i] = hh[ptih+i1]/gam;
-	
-	rs[i1] = -s[i]*rs[i];
-	rs[i] = c[i]*rs[i];
-	/* determine res. norm and test for convergence */
-	hh[ptih+i] = c[i]*hh[ptih+i] + s[i]*hh[ptih+i1];
-	ro = fabs(rs[i1]);	
+            if (i != 0) {
+                for(k=1; k<=i; k++){
+                    k1 = k-1;
+                    t1 = hh[ptih+k1];
+
+                    hh[ptih+k1] = c[k1]*t1 + s[k1]*hh[ptih+k];
+                    hh[ptih+k] = -s[k1]*t1 + c[k1]*hh[ptih+k];
+                }
+            }
+            /*-----------get next plane rotation------------ */
+            gam = sqrt(hh[ptih+i]*hh[ptih+i] + hh[ptih+i1]*hh[ptih+i1]);
+            /*
+     if gamma is zero then any small value will do ...
+     will affect only residual estimate
+      */
+            if (fabs(gam) <= TINY) gam = TINY;
+
+            /* determine-next-plane-rotation */
+            c[i] = hh[ptih+i]/gam;
+            s[i] = hh[ptih+i1]/gam;
+
+            rs[i1] = -s[i]*rs[i];
+            rs[i] = c[i]*rs[i];
+            /* determine res. norm and test for convergence */
+            hh[ptih+i] = c[i]*hh[ptih+i] + s[i]*hh[ptih+i1];
+            ro = fabs(rs[i1]);
 #endif	
-	if (rank == 0)
-	  fprintf(fout, "%20.16e\n",ro);//plotting
+            if (rank == 0)
+                fprintf(fout, "%20.16e\n",ro);//plotting
 
-//printf("ro = %20.16e\n",ro);
+            //printf("ro = %20.16e\n",ro);
 
-/*------------ Check for convergence ---------*/    
-	if ((i+1 >= restart) || (ro <= eps1) || isnan(ro) || its >= maxits)   
-	   intflag = false;
-	else
-/*------------ update hh pointer ptih ---------*/   
-           ptih += i+2;    	
-      }
+            /*------------ Check for convergence ---------*/
+            if ((i+1 >= restart) || (ro <= eps1) || isnan(ro) || its >= maxits)
+                intflag = false;
+            else
+                /*------------ update hh pointer ptih ---------*/
+                ptih += i+2;
+        }
 
-      /* now compute solution first solve upper triangular system */
-      rs[i] = rs[i]/hh[ptih+i];
-      for (ii = 1; ii <= i; ii++) {
-	k = i-ii;
-	k1 = k+1;
-	t1 = rs[k];
-	for (j = k1; j <= i; j++) {
-	  jj = ((j+1)*(j+2)/2) - 1;
-	  t1 = t1 - hh[jj+k]*rs[j];
-	}
-	jj = ((k+1)*(k+2)/2)-1;
-	rs[k] = t1/hh[jj+k];
-      }
-	/* done with back substitution. now form linear combination to
-	 * get solution */
-      for (j = 0; j <= i; j++) {
-	t1 = rs[j];
-	parms_VecAXPY_b(x, &z[j*nloc], t1, is);
-      }
-      /* test for return */
-      if ((ro <= eps1) || isnan(ro) || (its >= maxits)) {
-	outflag = false;
-      }
+        /* now compute solution first solve upper triangular system */
+        rs[i] = rs[i]/hh[ptih+i];
+        for (ii = 1; ii <= i; ii++) {
+            k = i-ii;
+            k1 = k+1;
+            t1 = rs[k];
+            for (j = k1; j <= i; j++) {
+                jj = ((j+1)*(j+2)/2) - 1;
+                t1 = t1 - hh[jj+k]*rs[j];
+            }
+            jj = ((k+1)*(k+2)/2)-1;
+            rs[k] = t1/hh[jj+k];
+        }
+        /* done with back substitution. now form linear combination to
+     * get solution */
+        for (j = 0; j <= i; j++) {
+            t1 = rs[j];
+            parms_VecAXPY_b(x, &z[j*nloc], t1, is);
+        }
+        /* test for return */
+        if ((ro <= eps1) || isnan(ro) || (its >= maxits)) {
+            outflag = false;
+        }
     }
 
     free(vv);
@@ -688,12 +690,12 @@ int parms_b_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
     free(hh);
     free(c);
 
-    fclose(fout);//plotting 
+    fclose(fout);//plotting
 
-/* reset isvecperm and do inverse permutation*/
+    /* reset isvecperm and do inverse permutation*/
     is->isvecperm = false; // this comes before inverse permutation
     /* permutes x and y */
-    parms_VecInvPerm_b(x, is); 
+    parms_VecInvPerm_b(x, is);
     parms_VecInvPerm_b(y, is);
 
     self->its = its;
@@ -701,24 +703,24 @@ int parms_b_fgmres(parms_Solver self, FLOAT *y, FLOAT *x)
 }
 
 static struct parms_Solver_ops parms_fgmres_b_sol = {
-  parms_b_fgmres,//parms_b_fgmres,
-  0,//fgmres_getresidual,
-  0,//fgmres_getresidualnorm2,
-  fgmres_setksize,//fgmres_setksize,
-  fgmres_setneig,//fgmres_setneig,
-  fgmres_free,//fgmres_free,
-  fgmres_view//fgmres_view
+    parms_b_fgmres,//parms_b_fgmres,
+    0,//fgmres_getresidual,
+    0,//fgmres_getresidualnorm2,
+    fgmres_setksize,//fgmres_setksize,
+    fgmres_setneig,//fgmres_setneig,
+    fgmres_free,//fgmres_free,
+    fgmres_view//fgmres_view
 };
 
 int fgmres_create_b(parms_Solver self)
 {
-  fgmres_data fdata;
+    fgmres_data fdata;
 
-  PARMS_NEW(fdata);
-  fdata->restart = 30;
-  fdata->neigs = 0;
-  self->data =fdata;
-  PARMS_MEMCPY(self->ops, &parms_fgmres_b_sol, 1);		
+    PARMS_NEW(fdata);
+    fdata->restart = 30;
+    fdata->neigs = 0;
+    self->data =fdata;
+    PARMS_MEMCPY(self->ops, &parms_fgmres_b_sol, 1);
 
-  return 0;
+    return 0;
 }

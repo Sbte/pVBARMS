@@ -140,7 +140,10 @@ int init_blocks( csptr csmat, int *pnBlock, int **pnB, int **pperm,
  * during Angle method. Or, we'll get incorrect inner product.
  *--------------------------------------------------------------*/
     for( i = 0; i < n; i++ ) {//because group's original value will not be used anymore
+//        printf("group[i].key value is %d.\n", group[i].key);//%f %p %s %c
+
         group[i].var = compress[i].grp;
+//        printf("group[i].var value is %d, i is %d.\n", group[i].var, i);//%f %p %s %c
         group[i].key = compress[i].count;
     }
 

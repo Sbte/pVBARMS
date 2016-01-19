@@ -18,9 +18,9 @@
 #include <math.h>
 #endif 
 #endif 
-#include "parms_vec.h"
-#include "parms_mat.h"
-#include "parms_pc.h"
+#include "include/parms_vec.h"
+#include "include/parms_mat.h"
+#include "include/parms_pc.h"
 #include "./include/parms_solver_impl.h"
 
 #define DBL_EPSILON 2.2204460492503131e-16 // double epsilon

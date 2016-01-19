@@ -21,8 +21,6 @@
 
 
 
-
-
 int main(int argc, char *argv[])
 {
 
@@ -226,7 +224,7 @@ int main(int argc, char *argv[])
 
         printf("prm->eps = %f\n",prm->eps);
         if (prm->cosine)
-            ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);//int init_blocks( csptr csmat, int *pnBlock, int **pnB, int **pperm, double eps)//parms_PCSetup(pc);
+            ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);
         else
             ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
         tib1 =  parms_TimerGet(tm);
@@ -321,7 +319,7 @@ int main(int argc, char *argv[])
         }
         /*-------------------- Create map object */
         parms_MapCreateFromPtr(&map, n, dom, idom, MPI_COMM_WORLD, 1, NONINTERLACED);
-        parms_Map_Assign_blockstructure(map, nB);//int parms_Map_Assign_blockstructure(parms_Map self, int *nB)//
+        parms_Map_Assign_blockstructure(map, nB);
 
         nloc = parms_MapGetLocalSize(map);
 
@@ -374,7 +372,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            parms_VecSetValues_b(rhs, nBlock, bim, rhstmpp, INSERT, map);//changed//parms_VecSetValues_b(rhs, n, im, rhstmp, INSERT, map);
+            parms_VecSetValues_b(rhs, nBlock, bim, rhstmpp, INSERT, map);
         }
 
         free(rhstmp);
@@ -422,7 +420,7 @@ int main(int argc, char *argv[])
 
         /*--------------------get the ratio of the number of nonzero entries in the
     preconditioning matrix to that in the original matrix */
-        parms_PCGetRatio(pc, &ratio);//block version is not ready
+        parms_PCGetRatio(pc, &ratio);
         /*--------------------pause the timer */
         parms_TimerPause(tm);
 
@@ -462,7 +460,7 @@ int main(int argc, char *argv[])
 
         /*--------------------Compute the residual error  */
         parms_MatVec(A, x, y);
-        for(i=0; i<llsize; i++)//nloc
+        for(i=0; i<llsize; i++)
         {
             y[i] = rhs[i] - y[i];
         }

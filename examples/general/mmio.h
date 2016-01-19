@@ -6,7 +6,7 @@
 *
 */
 //#include "parms.h"
-#include "parms_sys.h"
+#include "../../src/include/parms_sys.h"
 
 #ifndef MM_IO_H
 #define MM_IO_H

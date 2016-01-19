@@ -12,7 +12,7 @@
   $Id: parms_mem.c,v 1.1.1.1 2006-11-27 22:28:01 zzli Exp $
 --------------------------------------------------------------------*/
 
-#include "parms_mem.h"
+#include "include/parms_mem.h"
 
 #ifdef C99
 

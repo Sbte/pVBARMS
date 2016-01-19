@@ -6,8 +6,8 @@
 #else
 #include <math.h>
 #endif 
-#include "parms_mat_impl.h"
-#include "parms_opt_impl.h"
+#include "../include/parms_mat_impl.h"
+#include "../include/parms_opt_impl.h"
 
 #define MAX_BLOCK_SIZE   1000
 
