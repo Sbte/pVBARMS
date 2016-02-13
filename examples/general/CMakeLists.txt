@@ -7,6 +7,7 @@ include_directories(${INC_BUILD_DIR})
 configure_file(inputs ${BIN_BUILD_DIR}/inputs COPYONLY)
 configure_file(matfileReal ${BIN_BUILD_DIR}/matfileReal COPYONLY)
 configure_file(matfileCmplx ${BIN_BUILD_DIR}/matfileCmplx COPYONLY)
+configure_file(README ${BIN_BUILD_DIR}/README COPYONLY)
 configure_file(../matrices/1138_bus.mtx ${CMAKE_BINARY_DIR}/matrices/1138_bus.mtx COPYONLY)
 
 set(EXAMPLE_SOURCES

@@ -1,5 +1,5 @@
 
-README for examples/general directory
+README for excutable files
 ================================
 
 This  directory contains  a few  test drivers  to solve  a distributed
@@ -100,7 +100,7 @@ vbarms          local preconditioner (vbarms, vbarmsold, vbilut, vbiluk)
 Matrix Files
 ===================
 The files, matfileReal and matfileCmplx contain a list of matrices 
-to be tested. These matrices are stored in the /examples/matices/ 
+to be tested. These matrices are stored in the /build/matices/
 folder, and contain both complex and real-valued matrices. matfileReal 
 will read only the real matrices, and matfileCmplx will read only the 
 complex-valued matrices.

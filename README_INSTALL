@@ -2,16 +2,27 @@
 ------------------------------ INSTALLING AND RUNNING pVBARMS -----------------
 
 
-I. INSTALLING pVBARMS.
+## INSTALLING pVBARMS AND RUN EXAMPLES##
 
-  a) Dependency: LAPACK, BLAS, MPI
+Makefile build:
+    a) Dependency: LAPACK, BLAS, MPI
 
-  b) NOTE: To compile the complex version of pVARMS, replace the -DDBL flag in
-     makefile.in with -DDBL_CMPLX or goto example/general/;./complexcompile
+    b) NOTE: To compile the complex version of pVARMS, replace the -DDBL flag in
+       makefile.in with -DDBL_CMPLX or goto example/general/;./complexcompile
 
-  c) Type 'make' to build the library --
+    c) Type 'make' to build the library --
 
-  d) 'cd example/general/;./recompile' to compile and generate excutable files.
+    d) 'cd example/general/;./recompile' to compile and generate excutable files.
+
+CMAKE build:
+    a) Dependency: LAPACK, BLAS, MPI
+
+    b) NOTE: To compile the complex version of pVARMS, replace the -DDBL flag in
+       CMakeLists.txt with -DDBL_CMPLX
+
+    c) 'mkdir build; cd build; cmake ..; make' to generate excutable files.
+
+    d) 'cd bin; ./Bdd-mtx.dse' to run excutable files.
 
 II. Running the examples 
 
@@ -34,7 +45,7 @@ IV. Sequences in which routines are called.
       above. pARMS_MatCreate(&mat, map);
   d). Insert entries into the vectors and the matrix. Note that
       the indices of entries are in global labeling. Vectors in this 
-      version of pARMS use the standard C array pointers. FLOAT *rhs, *sol;
+      version of pVBARMS use the standard C array pointers. FLOAT *rhs, *sol;
   e). Set up the matrix by calling
       pARMS_MatSetup(mat); After this call above, one cannot insert entries to
       the matrix anymore.  
