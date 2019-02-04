@@ -27,4 +27,5 @@ vbarms          local preconditioner (vbarms, vbarmsold, vbilut, vbiluk)
 0.90            eps_init(For block version local solver(vbarms and vbilut) only, angle tolerance of init-block subroutine)
 1               0 is for clique based graph compression, and 1 is for row pattern based one
 -1              lfil7(it is vbiluk's level when he is a local solver of vbarms, -1 means vbilut was chosen)
+4               constant block size. Not used if < 1
 ##

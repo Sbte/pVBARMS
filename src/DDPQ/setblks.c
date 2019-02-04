@@ -229,3 +229,23 @@ int init_blocks( csptr csmat, int *pnBlock, int **pnB, int **pperm,
 
     return 0;
 }
+
+int init_blocks_constant(csptr A, int *block_number, int **block_sizes, int **pperm, int constant_block_size)
+{
+    *block_number = ceil(A->n / (float)constant_block_size);
+
+    *block_sizes = (int *) Malloc(*block_number * sizeof(int), "init_blocks_constant");
+    *pperm = (int *) Malloc(A->n * sizeof(int), "init_blocks_constant");
+
+    for (int i = 0; i < *block_number; i++)
+    {
+        (*block_sizes)[i] = 0;
+        for (int j = 0; j < constant_block_size && i * constant_block_size + j < A->n; j++)
+        {
+            (*pperm)[i * constant_block_size + j] = i * constant_block_size + j;
+            (*block_sizes)[i]++;
+        }
+    }
+
+    return 0;
+}

@@ -233,6 +233,12 @@ int read_param(char *fname, char mname[MAX_MAT][MAX_LINE], fprm prm)
         fprintf(stderr, "Error reading value");
         exit(1);
     }
+    while(fgetc(fp) != '\n');
+    /*--- for a constant block size ---*/
+    if(fscanf(fp,"%d",&prm->constant_block_size) != 1){
+        fprintf(stderr, "Error reading value");
+        exit(1);
+    }
     prm->droptol[1] = prm->droptol[2] = prm->droptol[3] =
             prm->droptol[0];
     prm->droptol[6] = prm->droptol[5];

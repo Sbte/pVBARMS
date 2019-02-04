@@ -204,7 +204,9 @@ int main(int argc, char *argv[])
 
             printf("prm->eps = %f\n",prm->eps);
 
-            if (prm->cosine)
+            if (prm->constant_block_size > 0)
+                ierr = init_blocks_constant( csmat, &nBlock, &nB, &perm, prm->constant_block_size);
+            else if (prm->cosine == 1)
 //                ierr = pablo( csmat, prm->eps, 2.0, &nB, &nBlock, &perm);
                 ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);
             else

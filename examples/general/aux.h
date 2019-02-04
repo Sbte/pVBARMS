@@ -39,6 +39,7 @@ typedef struct fprm_ {
     int        lfil[8];
     double     eps;/* For block version local solver(vbarms and vbilut) only, angle tolerance of init-block subroutine */
     int        cosine;
+    int        constant_block_size;
 } *fprm;
 
 

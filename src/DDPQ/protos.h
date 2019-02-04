@@ -136,6 +136,7 @@ extern int indsetC(csptr mat, int bsize, int *iord, int *nnod, double
 extern int KeyComp( const void *vfst, const void *vsnd );
 extern int init_blocks( csptr csmat, int *pnBlock, int **pnB, int
 			**pperm, double eps);//, double *t_hash, double*t_angle );
+extern int init_blocks_constant(csptr A, int *block_number, int **block_sizes, int **pperm, int constant_block_size);
 /*cliques.c*/
 extern int init_blocks_density(csptr A, int *block_number, int **block_sizes, int **pperm, double eps);
 

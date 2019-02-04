@@ -221,7 +221,9 @@ int main(int argc, char *argv[])
 
             printf("prm->eps = %f\n",prm->eps);
 
-            if (prm->cosine)
+            if (prm->constant_block_size > 0)
+                ierr = init_blocks_constant( csmat, &nBlock, &nB, &perm, prm->constant_block_size);
+            else if (prm->cosine)
                 ierr = init_blocks( csmat, &nBlock, &nB, &perm, prm->eps);
             else
                 ierr = init_blocks_density( csmat, &nBlock, &nB, &perm, prm->eps);
