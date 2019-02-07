@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 
             csmat = malloc(sizeof(*csmat));
 
-            coo2csptr(n, nnz, a, ia, ja, csmat);
+            coo2csptr(n, nnz, a, ia, ja, csmat, false);
 
             free(ia);
             free(a);
@@ -462,7 +462,7 @@ int main(int argc, char *argv[])
 
         csmat = malloc(sizeof(*csmat));
 
-        coo2csptr(n, nzding[myid], a, ia, ja, csmat);//nzding is the local length array
+        coo2csptr(n, nzding[myid], a, ia, ja, csmat, true);//nzding is the local length array
 //        printf("nzding[myid] value is %d, myid = %d\n", nzding[myid], myid);//%f %p %s %c
 
 

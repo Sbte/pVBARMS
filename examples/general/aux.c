@@ -341,7 +341,7 @@ void fprm_free_(fprm *prm)
 }
 
 //-------------------------------------dividing line, the subroutines below are added by George Liao-----------------------------------------------------------------------------------------------------
-void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat){
+void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat, bool drop){
 
     /* ----------------------------------------------------------------------- */
     /*   Coordinate     to   Compressed Sparse Row C-style */
@@ -377,8 +377,9 @@ void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat){
     memset(mat->nnzrow, 0, n*sizeof(int));
     
     for (i = 0; i < nnz; i++)
-        mat->nnzrow[ir[i]-1]++;
-    
+        if (a[i] || !drop)
+            mat->nnzrow[ir[i]-1]++;
+
     for(i = 0; i < n; i++){
         len = mat->nnzrow[i];
         if (len) {
@@ -390,13 +391,14 @@ void coo2csptr(int n, int nnz, FLOAT *a, int *ir, int *jc, csptr mat){
     }
 
     for (i = 0; i < nnz; i++){
-        mat->pj[ir[i]-1][counter[ir[i]-1]] = jc[i]-1;
-        mat->pa[ir[i]-1][counter[ir[i]-1]] = a[i];
-        counter[ir[i]-1]++;
+        if (a[i] || !drop){
+            mat->pj[ir[i]-1][counter[ir[i]-1]] = jc[i]-1;
+            mat->pa[ir[i]-1][counter[ir[i]-1]] = a[i];
+            counter[ir[i]-1]++;
+        }
     }
 
     free(counter);counter = NULL;
-
 }
 
 
